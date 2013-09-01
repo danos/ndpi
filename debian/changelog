@@ -1,0 +1,5 @@
+ndpi (1.4.0+svn6712-1) unstable; urgency=low
+
+  * Initial release. Thanks to Raphaël Hertzog. (Closes: #721551)
+
+ -- Ludovico Cavedon <cavedon@debian.org>  Sun, 01 Sep 2013 23:06:24 +0200

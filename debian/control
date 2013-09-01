@@ -1,0 +1,47 @@
+Source: ndpi
+Section: libs
+Priority: optional
+Maintainer: Ludovico Cavedon <cavedon@debian.org>
+Build-Depends: debhelper (>= 9), autotools-dev, dh-autoreconf
+Standards-Version: 3.9.4
+Homepage: http://www.ntop.org/products/ndpi/
+Vcs-Git: git://anonscm.debian.org/collab-maint/ndpi.git
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/ndpi.git
+
+Package: libndpi-dev
+Section: libdevel
+Architecture: any
+Depends: libndpi1 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Description: extensible deep packet inspection library - development files
+ nDPI is a ntop-maintained superset of the popular OpenDPI library. Released
+ under the LGPL license, its goal is to extend the original library by adding
+ new protocols that are otherwise available only on the paid version of
+ OpenDPI.
+ .
+ nDPI has also been modified to be suitable for traffic monitoring
+ applications, by disabling specific features that slow down the DPI engine
+ while being them un-necessary for network traffic monitoring.
+ .
+ With nDPI, it is possible to both detect known protocols on non-standard ports
+ (e.g. detect http non ports other than 80), and also the opposite.
+ .
+ This package contains the static library and compilation headers.
+
+Package: libndpi1
+Architecture: any
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: extensible deep packet inspection library - shared library
+ nDPI is a ntop-maintained superset of the popular OpenDPI library. Released
+ under the LGPL license, its goal is to extend the original library by adding
+ new protocols that are otherwise available only on the paid version of
+ OpenDPI.
+ .
+ nDPI has also been modified to be suitable for traffic monitoring
+ applications, by disabling specific features that slow down the DPI engine
+ while being them un-necessary for network traffic monitoring.
+ .
+ With nDPI, it is possible to both detect known protocols on non-standard ports
+ (e.g. detect http non ports other than 80), and also the opposite.
+ .
+ This package contains the shared library.

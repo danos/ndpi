@@ -1,0 +1,4 @@
+usr/include/*
+usr/lib/*/libndpi.a
+usr/lib/*/libndpi.so
+usr/lib/*/pkgconfig
