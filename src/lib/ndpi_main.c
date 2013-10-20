@@ -41,6 +41,9 @@
 #define printf printk
 #else
 #include <time.h>
+#ifndef WIN32
+#include <unistd.h>
+#endif
 #endif
 
 // #include "ndpi_credis.c"
@@ -717,6 +720,7 @@ ndpi_protocol_match host_match[] = {
   { ".tuenti.com",       "Tuenti", NDPI_PROTOCOL_TUENTI },
   { ".skype.com",        "Skype", NDPI_PROTOCOL_SKYPE },
   { ".skypeassets.com",  "Skype", NDPI_PROTOCOL_SKYPE },
+  { ".yahoo.",           "Yahoo", NDPI_PROTOCOL_YAHOO },
   { NULL, 0 }
 };
 
@@ -984,7 +988,7 @@ static void ndpi_init_protocol_defaults(struct ndpi_detection_module_struct *ndp
 			  ndpi_build_default_ports(ports_b, 0, 0, 0, 0, 0) /* UDP */);
   ndpi_set_proto_defaults(ndpi_mod, NDPI_PROTOCOL_IPSEC, "IPsec",
 			  ndpi_build_default_ports(ports_a, 500, 0, 0, 0, 0) /* TCP */,
-			  ndpi_build_default_ports(ports_b, 500, 0, 0, 0, 0) /* UDP */);
+			  ndpi_build_default_ports(ports_b, 500, 4500, 0, 0, 0) /* UDP */);
   ndpi_set_proto_defaults(ndpi_mod, NDPI_PROTOCOL_GRE, "GRE",
 			  ndpi_build_default_ports(ports_a, 0, 0, 0, 0, 0) /* TCP */,
 			  ndpi_build_default_ports(ports_b, 0, 0, 0, 0, 0) /* UDP */);
@@ -3949,8 +3953,7 @@ unsigned int ndpi_detection_process_packet(struct ndpi_detection_module_struct *
 	if ((ndpi_struct->callback_buffer_tcp_payload[a].ndpi_selection_bitmask & ndpi_selection_packet) ==
 	    ndpi_struct->callback_buffer_tcp_payload[a].ndpi_selection_bitmask
 	    && NDPI_BITMASK_COMPARE(flow->excluded_protocol_bitmask,
-				    ndpi_struct->
-				    callback_buffer_tcp_payload[a].excluded_protocol_bitmask) == 0
+				    ndpi_struct->callback_buffer_tcp_payload[a].excluded_protocol_bitmask) == 0
 	    && NDPI_BITMASK_COMPARE(ndpi_struct->callback_buffer_tcp_payload[a].detection_bitmask,
 				    detection_bitmask) != 0) {
 	  ndpi_struct->callback_buffer_tcp_payload[a].func(ndpi_struct, flow);
@@ -5178,7 +5181,11 @@ unsigned int ndpi_guess_undetected_protocol(struct ndpi_detection_module_struct 
 /* ****************************************************** */
 
 char* ndpi_get_proto_name(struct ndpi_detection_module_struct *ndpi_mod, u_int16_t proto_id) {
-  if(proto_id >= ndpi_mod->ndpi_num_supported_protocols) proto_id = NDPI_PROTOCOL_UNKNOWN;
+  if((proto_id >= ndpi_mod->ndpi_num_supported_protocols) 
+     && ((proto_id < NDPI_MAX_SUPPORTED_PROTOCOLS+NDPI_MAX_NUM_CUSTOM_PROTOCOLS)
+	 && (ndpi_mod->proto_defaults[proto_id].protoName == NULL)))
+    proto_id = NDPI_PROTOCOL_UNKNOWN;
+
   return(ndpi_mod->proto_defaults[proto_id].protoName);
 }
 
@@ -5344,7 +5351,7 @@ void ndpi_set_automa(struct ndpi_detection_module_struct *ndpi_struct, void* aut
 /* ****************************************************** */
 
 char* ndpi_revision() {
-  return("$Revision: 6712 $");
+  return("$Revision: 6880 $");
 }
 
 /* ****************************************************** */
@@ -5391,3 +5398,32 @@ int gettimeofday(struct timeval * tp, struct timezone * tzp) {
  }
 #endif
 
+int NDPI_BITMASK_COMPARE(NDPI_PROTOCOL_BITMASK a, NDPI_PROTOCOL_BITMASK b) {
+  int i;
+
+  for(i=0; i<NDPI_NUM_FDS_BITS; i++) {
+    if(a.fds_bits[i] & b.fds_bits[i])
+      return(1);
+  }
+
+  return(0);
+}
+
+int NDPI_BITMASK_IS_EMPTY(NDPI_PROTOCOL_BITMASK a) {
+  int i;
+
+  for(i=0; i<NDPI_NUM_FDS_BITS; i++)
+    if(a.fds_bits[i] != 0)
+      return(0);
+
+  return(1);
+}
+
+void NDPI_DUMP_BITMASK(NDPI_PROTOCOL_BITMASK a) {
+  int i;
+
+  for(i=0; i<NDPI_NUM_FDS_BITS; i++)
+    printf("[%d=%u]", i, a.fds_bits[i]);
+
+  printf("\n");
+}

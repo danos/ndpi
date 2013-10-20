@@ -31,6 +31,8 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <string.h>
+#include <pthread.h>
+#include <ctype.h>
 #endif
 
 #ifndef WIN32
@@ -38,7 +40,7 @@
 #include <sys/time.h>
 #endif
 
-#if 1 && !defined __APPLE__ && !defined __FreeBSD__ && !defined __NetBSD__
+#if !defined __APPLE__ && !defined __FreeBSD__ && !defined __NetBSD__
 
 #ifndef __KERNEL__
 #include <endian.h>
@@ -192,6 +194,9 @@ extern void ndpi_int_change_protocol(struct ndpi_detection_module_struct *ndpi_s
 				     struct ndpi_flow_struct *flow,
 				     u_int16_t detected_protocol,
 				     ndpi_protocol_type_t protocol_type);
+extern void ndpi_set_proto_defaults(struct ndpi_detection_module_struct *ndpi_mod,
+				    u_int16_t protoId, char *protoName,
+				    ndpi_port_range *tcpDefPorts, ndpi_port_range *udpDefPorts);
 extern void ndpi_int_reset_packet_protocol(struct ndpi_packet_struct *packet);
 extern void ndpi_int_reset_protocol(struct ndpi_flow_struct *flow);
 extern void ndpi_ip_clear(ndpi_ip_addr_t * ip);
