@@ -1,4 +1,7 @@
 libndpi.so.1 libndpi1 #MINVER#
+ NDPI_BITMASK_COMPARE@Base 1.4.0+svn6880
+ NDPI_BITMASK_IS_EMPTY@Base 1.4.0+svn6880
+ NDPI_DUMP_BITMASK@Base 1.4.0+svn6880
  ac_automata_add@Base 1.4.0+svn6712
  ac_automata_display@Base 1.4.0+svn6712
  ac_automata_finalize@Base 1.4.0+svn6712
