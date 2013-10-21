@@ -1,8 +1,10 @@
-ndpi (1.4.0+svn6880-1) UNRELEASED; urgency=low
+ndpi (1.4.0+svn6880-1) unstable; urgency=low
 
   * New upstream release (synced with pre-release of ntopng 1.0.9).
+  * Update symbols file.
+  * Remove unused substitution variable in control file.
 
- -- Ludovico Cavedon <cavedon@debian.org>  Sun, 20 Oct 2013 16:41:23 -0700
+ -- Ludovico Cavedon <cavedon@debian.org>  Sun, 20 Oct 2013 17:07:06 -0700
 
 ndpi (1.4.0+svn6712-1) unstable; urgency=low
 
