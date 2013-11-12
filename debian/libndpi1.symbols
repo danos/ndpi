@@ -171,6 +171,7 @@ libndpi.so.1 libndpi1 #MINVER#
  ndpi_search_stun@Base 1.4.0+svn6712
  ndpi_search_syslog@Base 1.4.0+svn6712
  ndpi_search_tcp_or_udp@Base 1.4.0+svn6712
+ ndpi_search_tcp_or_udp_raw@Base 1.4.0+svn6932
  ndpi_search_tds_tcp@Base 1.4.0+svn6712
  ndpi_search_teamspeak@Base 1.4.0+svn6712
  ndpi_search_teamview@Base 1.4.0+svn6712
