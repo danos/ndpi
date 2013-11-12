@@ -56,7 +56,9 @@ typedef struct {
 
 #ifdef WIN32
 /* http://social.msdn.microsoft.com/Forums/uk/vcgeneral/thread/963aac07-da1a-4612-be4a-faac3f1d65ca */
+#ifndef strtok_r
 #define strtok_r(a,b,c) strtok(a,b)
+#endif
 #endif
 
 #ifdef __KERNEL__
@@ -1107,6 +1109,9 @@ static void ndpi_init_protocol_defaults(struct ndpi_detection_module_struct *ndp
 			  ndpi_build_default_ports(ports_a, 0, 0, 0, 0, 0) /* TCP */,
 			  ndpi_build_default_ports(ports_b, 0, 0, 0, 0, 0) /* UDP */);
   ndpi_set_proto_defaults(ndpi_mod, NDPI_PROTOCOL_TWITTER, "Twitter",
+			  ndpi_build_default_ports(ports_a, 0, 0, 0, 0, 0) /* TCP */,
+			  ndpi_build_default_ports(ports_b, 0, 0, 0, 0, 0) /* UDP */);
+  ndpi_set_proto_defaults(ndpi_mod, NDPI_PROTOCOL_DROPBOX, "DropBox",
 			  ndpi_build_default_ports(ports_a, 0, 0, 0, 0, 0) /* TCP */,
 			  ndpi_build_default_ports(ports_b, 0, 0, 0, 0, 0) /* UDP */);
   ndpi_set_proto_defaults(ndpi_mod, NDPI_PROTOCOL_SKYPE, "Skype",
@@ -5159,29 +5164,33 @@ unsigned int ndpi_guess_undetected_protocol(struct ndpi_detection_module_struct 
   const void *ret;
   ndpi_default_ports_tree_node_t node;
 
+  if(sport && dport) {
+    node.default_port = sport;
+    ret = ndpi_tfind(&node, (proto == IPPROTO_TCP) ? (void*)&ndpi_struct->tcpRoot : (void*)&ndpi_struct->udpRoot, ndpi_default_ports_tree_node_t_cmp);
+
+    if(ret == NULL) {
+      node.default_port = dport;
+      ret = ndpi_tfind(&node, (proto == IPPROTO_TCP) ? (void*)&ndpi_struct->tcpRoot : (void*)&ndpi_struct->udpRoot, ndpi_default_ports_tree_node_t_cmp);
+    }
+
+    if(ret != NULL) {
+      ndpi_default_ports_tree_node_t *found = *(ndpi_default_ports_tree_node_t**)ret;
+
+      return(found->proto->protoId);
+    }
+  }
+
+  /* Use skype as last resort */
   if(shost && dhost && is_skype_connection(ndpi_struct, shost, dhost))
     return(NDPI_PROTOCOL_SKYPE);
 
-  node.default_port = sport;
-  ret = ndpi_tfind(&node, (proto == IPPROTO_TCP) ? (void*)&ndpi_struct->tcpRoot : (void*)&ndpi_struct->udpRoot, ndpi_default_ports_tree_node_t_cmp);
-
-  if(ret == NULL) {
-    node.default_port = dport;
-    ret = ndpi_tfind(&node, (proto == IPPROTO_TCP) ? (void*)&ndpi_struct->tcpRoot : (void*)&ndpi_struct->udpRoot, ndpi_default_ports_tree_node_t_cmp);
-  }
-
-  if(ret != NULL) {
-    ndpi_default_ports_tree_node_t *found = *(ndpi_default_ports_tree_node_t**)ret;
-    return(found->proto->protoId);
-  }
-
-  return(NDPI_PROTOCOL_UNKNOWN);
+  return(ndpi_search_tcp_or_udp_raw(ndpi_struct, proto, shost, dhost, sport, dport));
 }
 
 /* ****************************************************** */
 
 char* ndpi_get_proto_name(struct ndpi_detection_module_struct *ndpi_mod, u_int16_t proto_id) {
-  if((proto_id >= ndpi_mod->ndpi_num_supported_protocols) 
+  if((proto_id >= ndpi_mod->ndpi_num_supported_protocols)
      && ((proto_id < NDPI_MAX_SUPPORTED_PROTOCOLS+NDPI_MAX_NUM_CUSTOM_PROTOCOLS)
 	 && (ndpi_mod->proto_defaults[proto_id].protoName == NULL)))
     proto_id = NDPI_PROTOCOL_UNKNOWN;
@@ -5351,7 +5360,7 @@ void ndpi_set_automa(struct ndpi_detection_module_struct *ndpi_struct, void* aut
 /* ****************************************************** */
 
 char* ndpi_revision() {
-  return("$Revision: 6880 $");
+  return("$Revision: 6926 $");
 }
 
 /* ****************************************************** */
@@ -5427,3 +5436,44 @@ void NDPI_DUMP_BITMASK(NDPI_PROTOCOL_BITMASK a) {
 
   printf("\n");
 }
+
+
+#ifdef WIN32
+/* http://www.opensource.apple.com/source/xnu/xnu-1456.1.26/bsd/libkern/strsep.c */
+
+/*
+ * Get next token from string *stringp, where tokens are possibly-empty
+ * strings separated by characters from delim.
+ *
+ * Writes NULs into the string at *stringp to end tokens.
+ * delim need not remain constant from call to call.
+ * On return, *stringp points past the last NUL written (if there might
+ * be further tokens), or is NULL (if there are definitely no more tokens).
+ *
+ * If *stringp is NULL, strsep returns NULL.
+ */
+char* strsep(char **stringp, const char *delim) {
+  char *s;
+  const char *spanp;
+  int c, sc;
+  char *tok;
+
+  if ((s = *stringp) == NULL)
+    return (NULL);
+  for (tok = s;;) {
+    c = *s++;
+    spanp = delim;
+    do {
+      if ((sc = *spanp++) == c) {
+	if (c == 0)
+	  s = NULL;
+	else
+	  s[-1] = 0;
+	*stringp = s;
+	return (tok);
+      }
+    } while (sc != 0);
+  }
+  /* NOTREACHED */
+}
+#endif
