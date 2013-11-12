@@ -4,7 +4,7 @@ ndpi (1.4.0+svn6932-1) unstable; urgency=low
   * Update symbols file.
   * Remove unused substitution variable in control file.
 
- -- Ludovico Cavedon <cavedon@debian.org>  Sun, 20 Oct 2013 17:07:06 -0700
+ -- Ludovico Cavedon <cavedon@debian.org>  Mon, 11 Nov 2013 23:20:11 -0800
 
 ndpi (1.4.0+svn6712-1) unstable; urgency=low
 
