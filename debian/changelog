@@ -1,6 +1,6 @@
-ndpi (1.4.0+svn6880-1) unstable; urgency=low
+ndpi (1.4.0+svn6932-1) unstable; urgency=low
 
-  * New upstream release (synced with pre-release of ntopng 1.0.9).
+  * New upstream release (synced with ntopng 1.1).
   * Update symbols file.
   * Remove unused substitution variable in control file.
 
