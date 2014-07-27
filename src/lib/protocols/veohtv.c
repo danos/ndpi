@@ -51,9 +51,9 @@ void ndpi_search_veohtv_tcp(struct ndpi_detection_module_struct *ndpi_struct, st
 			 packet->payload[NDPI_STATICSTRING_LEN("HTTP/1.1 ")] == '3' ||
 			 packet->payload[NDPI_STATICSTRING_LEN("HTTP/1.1 ")] == '4' ||
 			 packet->payload[NDPI_STATICSTRING_LEN("HTTP/1.1 ")] == '5')) {
-#ifdef NDPI_PROTOCOL_FLASH
+#ifdef NDPI_CONTENT_FLASH
 			ndpi_parse_packet_line_info(ndpi_struct, flow);
-			if (packet->detected_protocol_stack[0] == NDPI_PROTOCOL_FLASH &&
+			if (packet->detected_protocol_stack[0] == NDPI_CONTENT_FLASH &&
 				packet->server_line.ptr != NULL &&
 				packet->server_line.len > NDPI_STATICSTRING_LEN("Veoh-") &&
 				memcmp(packet->server_line.ptr, "Veoh-", NDPI_STATICSTRING_LEN("Veoh-")) == 0) {

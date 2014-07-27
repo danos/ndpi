@@ -23,6 +23,7 @@
 
 #ifdef NDPI_PROTOCOL_SKYPE
 
+#if 0
 static u_int is_private_addr(u_int32_t addr) {
   addr = ntohl(addr);
 
@@ -49,7 +50,9 @@ static u_int64_t get_skype_key(u_int32_t src_host, u_int32_t dst_host) {
 
   return(key);
 }
+#endif
 
+#ifdef USE_SKYPE_HEURISTICS
 u_int8_t is_skype_connection(struct ndpi_detection_module_struct *ndpi_struct,
 			     u_int32_t src_host, u_int32_t dst_host) {
   u_int64_t key = get_skype_key(src_host, dst_host);
@@ -93,6 +96,7 @@ void add_skype_connection(struct ndpi_detection_module_struct *ndpi_struct,
   spin_unlock_bh(&ndpi_struct->skypeCacheLock);
 #endif
 }
+#endif /* USE_SKYPE_HEURISTICS */
 
 static void ndpi_check_skype(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 {
@@ -114,7 +118,8 @@ static void ndpi_check_skype(struct ndpi_detection_module_struct *ndpi_struct, s
   */
   if(((ntohl(packet->iph->saddr) & 0xFFFFFF00 /* 255.255.255.0 */) == 0xD4A10800 /* 212.161.8.0 */)
      || ((ntohl(packet->iph->daddr) & 0xFFFFFF00 /* 255.255.255.0 */) == 0xD4A10800 /* 212.161.8.0 */)
-     || is_skype_connection(ndpi_struct, packet->iph->saddr, packet->iph->daddr)) {
+     /* || is_skype_connection(ndpi_struct, packet->iph->saddr, packet->iph->daddr) */
+     ) {
     ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_SKYPE, NDPI_REAL_PROTOCOL);
     return;
   }
@@ -130,7 +135,9 @@ static void ndpi_check_skype(struct ndpi_detection_module_struct *ndpi_struct, s
 	     && (packet->payload[2] == 0x02))) {
 	NDPI_LOG(NDPI_PROTOCOL_SKYPE, ndpi_struct, NDPI_LOG_DEBUG, "Found skype.\n");
 	ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_SKYPE, NDPI_REAL_PROTOCOL);
+#ifdef USE_SKYPE_HEURISTICS
 	add_skype_connection(ndpi_struct, packet->iph->saddr, packet->iph->daddr);
+#endif
       }
 
       return;
@@ -149,9 +156,13 @@ static void ndpi_check_skype(struct ndpi_detection_module_struct *ndpi_struct, s
 	      && flow->l4.tcp.seen_syn_ack
 	      && flow->l4.tcp.seen_ack) {
       if((payload_len == 8) || (payload_len == 3)) {
+	//printf("[SKYPE] %u/%u\n", ntohs(packet->tcp->source), ntohs(packet->tcp->dest));
+
 	NDPI_LOG(NDPI_PROTOCOL_SKYPE, ndpi_struct, NDPI_LOG_DEBUG, "Found skype.\n");
 	ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_SKYPE, NDPI_REAL_PROTOCOL);
+#ifdef USE_SKYPE_HEURISTICS
 	add_skype_connection(ndpi_struct, packet->iph->saddr, packet->iph->daddr);
+#endif
       }
 
       /* printf("[SKYPE] [id: %u][len: %d]\n", flow->l4.tcp.skype_packet_id, payload_len);  */

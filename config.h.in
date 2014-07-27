@@ -37,6 +37,12 @@
    */
 #undef LT_OBJDIR
 
+/* Last SVN change */
+#undef NDPI_SVN_DATE
+
+/* SVN Release */
+#undef NDPI_SVN_RELEASE
+
 /* Name of package */
 #undef PACKAGE
 
@@ -51,9 +57,6 @@
 
 /* Define to the one symbol short name of this package. */
 #undef PACKAGE_TARNAME
-
-/* Define to the home page for this package. */
-#undef PACKAGE_URL
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION

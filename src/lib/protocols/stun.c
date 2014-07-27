@@ -37,9 +37,9 @@ static void ndpi_int_stun_add_connection(struct ndpi_detection_module_struct *nd
 typedef enum {
 	NDPI_IS_STUN,
 	NDPI_IS_NOT_STUN
-} ndpi_int_stun_result_t;
+} ndpi_int_stun_t;
 
-static ndpi_int_stun_result_t ndpi_int_check_stun(struct ndpi_detection_module_struct *ndpi_struct,
+static ndpi_int_stun_t ndpi_int_check_stun(struct ndpi_detection_module_struct *ndpi_struct,
 													  const u_int8_t * payload, const u_int16_t payload_length)
 {
 	u_int16_t a;

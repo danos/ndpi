@@ -65,7 +65,7 @@ u_int ndpi_search_tcp_or_udp_raw(struct ndpi_detection_module_struct *ndpi_struc
     */
     if(((saddr & 0xFF000000 /* 255.0.0.0 */) == 0x11000000 /* 17.0.0.0 */)
        || ((daddr & 0xFF000000 /* 255.0.0.0 */) == 0x11000000 /* 17.0.0.0 */)) {
-      return(NDPI_PROTOCOL_APPLE);
+      return(NDPI_SERVICE_APPLE);
     }
 
     /*
@@ -92,6 +92,7 @@ u_int ndpi_search_tcp_or_udp_raw(struct ndpi_detection_module_struct *ndpi_struc
        (((saddr & 0xFF3F0000 /* 255.63.0.0 */) == 0x9D380000 /* 157.56.0.0/ */) || ((daddr & 0xFF3F0000 /* 255.63.0.0 */) == 0x9D380000))
        || (((saddr & 0xFFFF0000 /* 255.255.0.0 */) == 0x9D3C0000 /* 157.60.0.0/ */) || ((daddr & 0xFFFF0000 /* 255.255.0.0 */) == 0x9D3D0000))
        || (((saddr & 0xFF7F0000 /* 255.255.0.0 */) == 0x9D360000 /* 157.54.0.0/ */) || ((daddr & 0xFF7F0000 /* 255.127.0.0 */) == 0x9D360000))
+       || (((saddr & 0xFFFE0000 /* 255.254.0.0 */) == 0x9D360000 /* 157.54.0.0/ */) || ((daddr & 0xFFFE0000 /* 255.254.0.0 */) == 0x9D360000))
        ) {
       return(NDPI_PROTOCOL_SKYPE);
     }
@@ -101,15 +102,15 @@ u_int ndpi_search_tcp_or_udp_raw(struct ndpi_detection_module_struct *ndpi_struc
       173.194.0.0/16
     */
     if(((saddr & 0xFFFF0000 /* 255.255.0.0 */) == 0xADC20000  /* 173.194.0.0 */)
-       || ((daddr & 0xFFFF0000 /* 255.255.0.0 */) ==0xDC20000 /* 173.194.0.0 */)) {
-      return(NDPI_PROTOCOL_GOOGLE);
+       || ((daddr & 0xFFFF0000 /* 255.255.0.0 */) ==0xADC20000 /* 173.194.0.0 */)) {      
+      return(NDPI_SERVICE_GOOGLE);
     }
 
     /*
       Ubuntu One
       91.189.89.0/21 (255.255.248.0)
     */
-    if(((saddr & 0xFFFFF800 /* 255.255.248.0 */) == 0x5BBD5900 /* 91.189.89.0*/)
+    if(((saddr & 0xFFFFF800 /* 255.255.248.0 */) == 0x5BBD5900 /* 91.189.89.0 */)
        || ((daddr & 0xFFFFF800 /* 255.255.248.0 */) == 0x5BBD5900 /* 91.189.89.0 */)) {
       return(NDPI_PROTOCOL_UBUNTUONE);
     }    
@@ -129,7 +130,7 @@ void ndpi_search_tcp_or_udp(struct ndpi_detection_module_struct *ndpi_struct, st
   
   if(packet->iph /* IPv4 Only: we need to support packet->iphv6 at some point */) {
     proto = ndpi_search_tcp_or_udp_raw(ndpi_struct,
-				       packet->iph->protocol,
+				       flow->packet.iph ? flow->packet.iph->protocol : flow->packet.iphv6->nexthdr,
 				       ntohl(packet->iph->saddr), 
 				       ntohl(packet->iph->daddr),
 				       sport, dport);

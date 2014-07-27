@@ -28,6 +28,7 @@ libndpi_la_SOURCES = \
 			protocols/aimini.c \
 			protocols/applejuice.c \
 			protocols/armagetron.c \
+			protocols/ayiya.c \
 			protocols/battlefield.c \
 			protocols/bgp.c \
 			protocols/bittorrent.c \
@@ -42,9 +43,10 @@ libndpi_la_SOURCES = \
 			protocols/fasttrack.c \
 			protocols/fiesta.c \
 			protocols/filetopia.c \
-			protocols/flash.c \
+			protocols/rtmp.c \
 			protocols/florensia.c \
-			protocols/ftp.c \
+			protocols/ftp_control.c \
+			protocols/ftp_data.c \
 			protocols/gnutella.c \
 			protocols/guildwars.c \
 			protocols/halflife2_and_mods.c \
@@ -79,7 +81,6 @@ libndpi_la_SOURCES = \
 			protocols/openft.c \
 			protocols/oscar.c \
 			protocols/pcanywhere.c \
-			protocols/popo.c \
 			protocols/postgres.c \
 			protocols/pplive.c \
 			protocols/ppstream.c \
@@ -143,6 +144,14 @@ libndpi_la_SOURCES = \
 			protocols/rtcp.c \
 			protocols/skinny.c \
 			protocols/tor.c \
-			protocols/whoisdas.c
+			protocols/whoisdas.c \
+			protocols/collectd.c \
+			protocols/socks5.c \
+			protocols/socks4.c \
+			protocols/pando.c \
+			protocols/megaco.c \
+			protocols/redis.c \
+			protocols/zmq.c \
+			protocols/twitter.c
 
 # NTOP protocols are at the end

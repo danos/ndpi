@@ -27,7 +27,7 @@
 
 #ifdef NDPI_PROTOCOL_HTTP
 
-static void ndpi_int_http_add_connection(struct ndpi_detection_module_struct *ndpi_struct, 
+static void ndpi_int_http_add_connection(struct ndpi_detection_module_struct *ndpi_struct,
 					 struct ndpi_flow_struct *flow,
 					 u_int32_t protocol)
 {
@@ -42,304 +42,12 @@ static void ndpi_int_http_add_connection(struct ndpi_detection_module_struct *nd
       ndpi_int_reset_protocol(flow);
       ndpi_int_add_connection(ndpi_struct, flow, protocol, NDPI_REAL_PROTOCOL);
     }
-    
+
     flow->http_detected = 1;
   }
 }
 
-#ifdef NDPI_PROTOCOL_QQ
-static void qq_parse_packet_URL_and_hostname(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
-{
-  struct ndpi_packet_struct *packet = &flow->packet;
-  u_int32_t a;
-
-  if (packet->payload_packet_len < 100 ||
-      /*memcmp(&packet->payload[4], "/qzone", 6) != 0 || packet->host_line.len < 7 || */
-      memcmp(&packet->host_line.ptr[packet->host_line.len - 6], "qq.com", 6) != 0) {
-
-    NDPI_LOG(NDPI_PROTOCOL_QQ, ndpi_struct, NDPI_LOG_DEBUG, "did not find QQ.\n");
-    return;
-  }
-  for (a = 0; a < packet->parsed_lines; a++) {
-    if ((packet->line[a].len > 22 && memcmp(packet->line[a].ptr, "QzoneAuth: zzpaneluin=", 22) == 0) ||
-	(packet->line[a].len > 19 && memcmp(packet->line[a].ptr, "Cookie: zzpanelkey=", 19) == 0) ||
-	(packet->line[a].len > 13 && memcmp(packet->line[a].ptr, "Cookie: adid=", 13) == 0)) {
-      NDPI_LOG(NDPI_PROTOCOL_QQ, ndpi_struct, NDPI_LOG_DEBUG, "found QQ.\n");
-      ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_QQ);
-      return;
-    }
-  }
-
-}
-#endif
-
-
-#ifdef NDPI_PROTOCOL_MPEG
-static void mpeg_parse_packet_contentline(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
-{
-  struct ndpi_packet_struct *packet = &flow->packet;
-
-  if (packet->content_line.len >= 10 && memcmp(packet->content_line.ptr, "audio/mpeg", 10) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_MPEG, ndpi_struct, NDPI_LOG_DEBUG, "MPEG: Content-Type: audio/mpeg found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_MPEG);
-    return;
-  }
-  if (packet->content_line.len >= 12 && memcmp(packet->content_line.ptr, "audio/x-mpeg", 12) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_MPEG, ndpi_struct, NDPI_LOG_DEBUG, "MPEG: Content-Type: audio/x-mpeg found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_MPEG);
-    return;
-  }
-  if (packet->content_line.len >= 11 && memcmp(packet->content_line.ptr, "audio/mpeg3", 11) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_MPEG, ndpi_struct, NDPI_LOG_DEBUG, "MPEG: Content-Type: audio/mpeg3 found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_MPEG);
-    return;
-  }
-  if (packet->content_line.len >= 11 && memcmp(packet->content_line.ptr, "audio/mp4a", 10) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_MPEG, ndpi_struct, NDPI_LOG_DEBUG, "MPEG: Content-Type: audio/mp4a found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_MPEG);
-    return;
-  }
-  if (packet->content_line.len >= 10 && memcmp(packet->content_line.ptr, "video/mpeg", 10) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_MPEG, ndpi_struct, NDPI_LOG_DEBUG, "MPEG: Content-Type: video/mpeg found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_MPEG);
-    return;
-  }
-  if (packet->content_line.len >= 9 && memcmp(packet->content_line.ptr, "video/nsv", 9) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_MPEG, ndpi_struct, NDPI_LOG_DEBUG, "MPEG: content-type:video/nsv found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_MPEG);
-    return;
-  }
-  /* Ultravox */
-  if (packet->content_line.len >= 13 && memcmp(packet->content_line.ptr, "misc/ultravox", 13) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_MPEG, ndpi_struct, NDPI_LOG_DEBUG, "MPEG: Content-Type: misc/ultravox found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_MPEG);
-    return;
-  }
-
-}
-#endif
-
-
-#ifdef NDPI_PROTOCOL_OGG
-static void ogg_parse_packet_contentline(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
-{
-  struct ndpi_packet_struct *packet = &flow->packet;
-
-  if (packet->content_line.len >= 9 && memcmp(packet->content_line.ptr, "audio/ogg", 9) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_OGG, ndpi_struct, NDPI_LOG_DEBUG, "OGG: Content-Type: audio/ogg found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_OGG);
-    return;
-  }
-  if (packet->content_line.len >= 9 && memcmp(packet->content_line.ptr, "video/ogg", 9) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_OGG, ndpi_struct, NDPI_LOG_DEBUG, "OGG: Content-Type: video/ogg found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_OGG);
-    return;
-  }
-  if (packet->content_line.len >= 15 && memcmp(packet->content_line.ptr, "application/ogg", 15) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_OGG, ndpi_struct, NDPI_LOG_DEBUG, "OGG: content-type: application/ogg found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_OGG);
-    return;
-  }
-}
-#endif
-
-#ifdef NDPI_PROTOCOL_FLASH
-static void flash_parse_packet_contentline(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
-{
-  struct ndpi_packet_struct *packet = &flow->packet;
-
-  if (packet->content_line.len >= 9 && memcmp(packet->content_line.ptr, "video/flv", 9) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_FLASH, ndpi_struct, NDPI_LOG_DEBUG, "FLASH: Content-Type: video/flv found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_FLASH);
-    return;
-  }
-  if (packet->content_line.len >= 11 && memcmp(packet->content_line.ptr, "video/x-flv", 11) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_FLASH, ndpi_struct, NDPI_LOG_DEBUG, "FLASH: Content-Type: video/x-flv found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_FLASH);
-    return;
-  }
-  if (packet->content_line.len >= 17 && memcmp(packet->content_line.ptr, "application/x-fcs", 17) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_FLASH, ndpi_struct, NDPI_LOG_DEBUG, "FLASH: Content-Type: application/x-fcs found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_FLASH);
-    return;
-  }
-  if (packet->content_line.len >= 29 && memcmp(packet->content_line.ptr, "application/x-shockwave-flash", 29) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_FLASH, ndpi_struct, NDPI_LOG_DEBUG,
-	    "FLASH: Content-Type: application/x-shockwave-flash found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_FLASH);
-    return;
-  }
-  if (packet->content_line.len >= 11 && memcmp(packet->content_line.ptr, "video/flash", 11) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_FLASH, ndpi_struct, NDPI_LOG_DEBUG, "FLASH: Content-Type: video/flash found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_FLASH);
-    return;
-  }
-  if (packet->content_line.len >= 15 && memcmp(packet->content_line.ptr, "application/flv", 15) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_FLASH, ndpi_struct, NDPI_LOG_DEBUG, "FLASH: Content-Type: application/flv found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_FLASH);
-    return;
-  }
-  if (packet->content_line.len >= 28 && memcmp(packet->content_line.ptr, "flv-application/octet-stream", 28) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_FLASH, ndpi_struct, NDPI_LOG_DEBUG,
-	    "FLASH: Content-Type: flv-application/octet-stream.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_FLASH);
-    return;
-  }  
-  if (packet->content_line.len >= 24 && memcmp(packet->content_line.ptr, "application/futuresplash", 24) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_FLASH, ndpi_struct, NDPI_LOG_DEBUG,
-	     "FLASH: Content-Type: application/futuresplash.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_FLASH);
-    return;
-  }
-}
-#endif
-
-#ifdef NDPI_PROTOCOL_QUICKTIME
-static void qt_parse_packet_contentline(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
-{
-  struct ndpi_packet_struct *packet = &flow->packet;
-
-  if (packet->content_line.len >= 15 && memcmp(packet->content_line.ptr, "video/quicktime", 15) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_QUICKTIME, ndpi_struct, NDPI_LOG_DEBUG,
-	    "QUICKTIME: Content-Type: video/quicktime found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_QUICKTIME);
-    return;
-  }
-  if (packet->content_line.len >= 9 && memcmp(packet->content_line.ptr, "video/mp4", 9) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_QUICKTIME, ndpi_struct, NDPI_LOG_DEBUG, "QUICKTIME: Content-Type: video/mp4 found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_QUICKTIME);
-    return;
-  }
-  if (packet->content_line.len >= 11 && memcmp(packet->content_line.ptr, "video/x-m4v", 11) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_QUICKTIME, ndpi_struct, NDPI_LOG_DEBUG,
-	    "QUICKTIME: Content-Type: video/x-m4v found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_QUICKTIME);
-    return;
-  }
-}
-#endif
-
-#ifdef NDPI_PROTOCOL_REALMEDIA
-static void realmedia_parse_packet_contentline(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
-{
-  struct ndpi_packet_struct *packet = &flow->packet;
-
-  if (packet->content_line.len >= 20 && memcmp(packet->content_line.ptr, "audio/x-pn-realaudio", 20) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_REALMEDIA, ndpi_struct, NDPI_LOG_DEBUG,
-	    "REALMEDIA: Content-Type: audio/x-pn-realaudio found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_REALMEDIA);
-    return;
-  }
-  if (packet->content_line.len >= 28 && memcmp(packet->content_line.ptr, "application/vnd.rn-realmedia", 28) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_REALMEDIA, ndpi_struct, NDPI_LOG_DEBUG,
-	    "REALMEDIA: Content-Type: application/vnd.rn-realmedia found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_REALMEDIA);
-    return;
-  }
-}
-#endif
-
-#ifdef NDPI_PROTOCOL_WINDOWSMEDIA
-static void windowsmedia_parse_packet_contentline(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
-{
-  struct ndpi_packet_struct *packet = &flow->packet;
-
-  if (packet->content_line.len >= 14 && ndpi_mem_cmp(packet->content_line.ptr, "video/x-ms-", 11) == 0) {
-    if (ndpi_mem_cmp(&packet->content_line.ptr[11], "wmv", 3) == 0) {
-      NDPI_LOG(NDPI_PROTOCOL_WINDOWSMEDIA, ndpi_struct, NDPI_LOG_DEBUG,
-	      "WINDOWSMEDIA: Content-Type: video/x-ms-wmv found.\n");
-      ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_WINDOWSMEDIA);
-      return;
-    }
-    if (ndpi_mem_cmp(&packet->content_line.ptr[11], "asf", 3) == 0) {
-      NDPI_LOG(NDPI_PROTOCOL_WINDOWSMEDIA, ndpi_struct, NDPI_LOG_DEBUG,
-	      "WINDOWSMEDIA: Content-Type: video/x-ms-asf found.\n");
-      ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_WINDOWSMEDIA);
-      return;
-    }
-    if (ndpi_mem_cmp(&packet->content_line.ptr[11], "asx", 3) == 0) {
-      NDPI_LOG(NDPI_PROTOCOL_WINDOWSMEDIA, ndpi_struct, NDPI_LOG_DEBUG,
-	      "WINDOWSMEDIA: Content-Type: video/x-ms-asx found.\n");
-      ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_WINDOWSMEDIA);
-      return;
-    }
-  }
-  if (packet->content_line.len >= 24 && ndpi_mem_cmp(packet->content_line.ptr, "video/x-msvideo", 15) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_WINDOWSMEDIA, ndpi_struct, NDPI_LOG_DEBUG,
-	    "WINDOWSMEDIA: Content-Type: video/x-msvideo found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_WINDOWSMEDIA);
-    return;
-  }
-  if (packet->content_line.len >= 24 && ndpi_mem_cmp(packet->content_line.ptr, "audio/x-wav", 11) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_WINDOWSMEDIA, ndpi_struct, NDPI_LOG_DEBUG,
-	    "WINDOWSMEDIA: Content-Type: audio/x-wav found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_WINDOWSMEDIA);
-    return;
-  }
-  if (packet->content_line.len >= 32
-      && ndpi_mem_cmp(packet->content_line.ptr, "application/vnd.ms.wms-hdr.asfv1", 32) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_WINDOWSMEDIA, ndpi_struct, NDPI_LOG_DEBUG,
-	    "WINDOWSMEDIA: Content-Type: application/vnd.ms.wms-hdr.asfv1 found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_WINDOWSMEDIA);
-    return;
-  }
-}
-
-static void winmedia_parse_packet_useragentline(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
-{
-  struct ndpi_packet_struct *packet = &flow->packet;
-
-  if (packet->user_agent_line.len >= 9
-      && memcmp(packet->user_agent_line.ptr, "NSPlayer/", 9) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_WINDOWSMEDIA, ndpi_struct, NDPI_LOG_DEBUG, "username NSPlayer found\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_WINDOWSMEDIA);
-  }
-}
-#endif
-
-#ifdef NDPI_PROTOCOL_MMS
-static void mms_parse_packet_contentline(struct ndpi_detection_module_struct
-					 *ndpi_struct, struct ndpi_flow_struct *flow)
-{
-  struct ndpi_packet_struct *packet = &flow->packet;
-
-  if (packet->content_line.len >= 24 && ndpi_mem_cmp(packet->content_line.ptr, "application/x-mms-framed", 24) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_MMS, ndpi_struct, NDPI_LOG_DEBUG,
-	    "MMS: Content-Type: application/x-mms-framed found\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_MMS);
-  }
-}
-#endif
-
-
-#ifdef NDPI_PROTOCOL_XBOX
-static void xbox_parse_packet_useragentline(struct ndpi_detection_module_struct
-					    *ndpi_struct, struct ndpi_flow_struct *flow)
-{
-  struct ndpi_packet_struct *packet = &flow->packet;
-
-  if (packet->user_agent_line.len >= 17 && memcmp(packet->user_agent_line.ptr, "Xbox Live Client/", 17) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_XBOX, ndpi_struct, NDPI_LOG_DEBUG, "XBOX: User Agent: Xbox Live Client found\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_XBOX);
-  }
-}
-#endif
-
-#ifdef NDPI_PROTOCOL_WINDOWS_UPDATE
-
-static void windows_update_packet_useragentline(struct ndpi_detection_module_struct						
-						*ndpi_struct, struct ndpi_flow_struct *flow)
-{  
-  struct ndpi_packet_struct *packet = &flow->packet;
-
-  if(packet->user_agent_line.len >= 20 && memcmp(packet->user_agent_line.ptr, "Windows-Update-Agent", 20) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_WINDOWS_UPDATE, ndpi_struct, NDPI_LOG_DEBUG, "WSUS: User Agent: Windows-Update-Agent\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_WINDOWS_UPDATE);
-  }
-}
-#endif
-
-#ifdef NDPI_PROTOCOL_FLASH
+#ifdef NDPI_CONTENT_FLASH
 static void flash_check_http_payload(struct ndpi_detection_module_struct
 				     *ndpi_struct, struct ndpi_flow_struct *flow)
 {
@@ -355,19 +63,19 @@ static void flash_check_http_payload(struct ndpi_detection_module_struct
   if (memcmp(pos, "FLV", 3) == 0 && pos[3] == 0x01 && (pos[4] == 0x01 || pos[4] == 0x04 || pos[4] == 0x05)
       && pos[5] == 0x00 && pos[6] == 0x00 && pos[7] == 0x00 && pos[8] == 0x09) {
 
-    NDPI_LOG(NDPI_PROTOCOL_FLASH, ndpi_struct, NDPI_LOG_DEBUG, "Flash content in http detected\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_FLASH);
+    NDPI_LOG(NDPI_CONTENT_FLASH, ndpi_struct, NDPI_LOG_DEBUG, "Flash content in http detected\n");
+    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_CONTENT_FLASH);
   }
 }
 #endif
 
-#ifdef NDPI_PROTOCOL_AVI
+#ifdef NDPI_CONTENT_AVI
 static void avi_check_http_payload(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 {
   struct ndpi_packet_struct *packet = &flow->packet;
-  
 
-  NDPI_LOG(NDPI_PROTOCOL_AVI, ndpi_struct, NDPI_LOG_DEBUG, "called avi_check_http_payload: %u %u %u\n",
+
+  NDPI_LOG(NDPI_CONTENT_AVI, ndpi_struct, NDPI_LOG_DEBUG, "called avi_check_http_payload: %u %u %u\n",
 	  packet->empty_line_position_set, flow->l4.tcp.http_empty_line_seen, packet->empty_line_position);
 
   if (packet->empty_line_position_set == 0 && flow->l4.tcp.http_empty_line_seen == 0)
@@ -382,8 +90,8 @@ static void avi_check_http_payload(struct ndpi_detection_module_struct *ndpi_str
   if (flow->l4.tcp.http_empty_line_seen == 1) {
     if (packet->payload_packet_len > 20 && memcmp(packet->payload, "RIFF", 4) == 0
 	&& memcmp(packet->payload + 8, "AVI LIST", 8) == 0) {
-      NDPI_LOG(NDPI_PROTOCOL_AVI, ndpi_struct, NDPI_LOG_DEBUG, "Avi content in http detected\n");
-      ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_AVI);
+      NDPI_LOG(NDPI_CONTENT_AVI, ndpi_struct, NDPI_LOG_DEBUG, "Avi content in http detected\n");
+      ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_CONTENT_AVI);
     }
     flow->l4.tcp.http_empty_line_seen = 0;
     return;
@@ -394,12 +102,12 @@ static void avi_check_http_payload(struct ndpi_detection_module_struct *ndpi_str
     // for reference see http://msdn.microsoft.com/archive/default.asp?url=/archive/en-us/directx9_c/directx/htm/avirifffilereference.asp
     u_int32_t p = packet->empty_line_position + 2;
 
-    NDPI_LOG(NDPI_PROTOCOL_AVI, ndpi_struct, NDPI_LOG_DEBUG, "p = %u\n", p);
+    NDPI_LOG(NDPI_CONTENT_AVI, ndpi_struct, NDPI_LOG_DEBUG, "p = %u\n", p);
 
     if ((p + 16) <= packet->payload_packet_len && memcmp(&packet->payload[p], "RIFF", 4) == 0
 	&& memcmp(&packet->payload[p + 8], "AVI LIST", 8) == 0) {
-      NDPI_LOG(NDPI_PROTOCOL_AVI, ndpi_struct, NDPI_LOG_DEBUG, "Avi content in http detected\n");
-      ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_AVI);
+      NDPI_LOG(NDPI_CONTENT_AVI, ndpi_struct, NDPI_LOG_DEBUG, "Avi content in http detected\n");
+      ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_CONTENT_AVI);
     }
   }
 }
@@ -410,8 +118,8 @@ static void teamviewer_check_http_payload(struct ndpi_detection_module_struct *n
 {
     struct ndpi_packet_struct *packet = &flow->packet;
     const u_int8_t *pos;
-    
-    NDPI_LOG(NDPI_PROTOCOL_TEAMVIEWER, ndpi_struct, NDPI_LOG_DEBUG, "called teamviewer_check_http_payload: %u %u %u\n", 
+
+    NDPI_LOG(NDPI_PROTOCOL_TEAMVIEWER, ndpi_struct, NDPI_LOG_DEBUG, "called teamviewer_check_http_payload: %u %u %u\n",
             packet->empty_line_position_set, flow->l4.tcp.http_empty_line_seen, packet->empty_line_position);
 
     if (packet->empty_line_position_set == 0 || (packet->empty_line_position + 5) > (packet->payload_packet_len))
@@ -426,51 +134,6 @@ static void teamviewer_check_http_payload(struct ndpi_detection_module_struct *n
 }
 #endif
 
-#ifdef NDPI_PROTOCOL_OFF
-static void off_parse_packet_contentline(struct ndpi_detection_module_struct
-					 *ndpi_struct, struct ndpi_flow_struct *flow)
-{
-  struct ndpi_packet_struct *packet = &flow->packet;
-
-  if (packet->content_line.len >= 4 && memcmp(packet->content_line.ptr, "off/", 4) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_OFF, ndpi_struct, NDPI_LOG_DEBUG, "off: Content-Type: off/ found\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_OFF);
-  }
-}
-#endif
-
-#ifdef NDPI_PROTOCOL_MOVE
-static void move_parse_packet_contentline(struct ndpi_detection_module_struct
-					  *ndpi_struct, struct ndpi_flow_struct *flow)
-{
-  struct ndpi_packet_struct *packet = &flow->packet;
-
-  if (packet->content_line.len == 15
-      && (memcmp(packet->content_line.ptr, "application/qmx", 15) == 0
-	  || memcmp(packet->content_line.ptr, "application/qss", 15) == 0)) {
-    NDPI_LOG(NDPI_PROTOCOL_MOVE, ndpi_struct, NDPI_LOG_DEBUG, "MOVE application qmx or qss detected\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_MOVE);
-  }
-}
-#endif
-
-#ifdef NDPI_PROTOCOL_WEBM
-static void webm_parse_packet_contentline(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
-{
-  struct ndpi_packet_struct *packet = &flow->packet;
-
-  if (packet->content_line.len >= 10 && memcmp(packet->content_line.ptr, "audio/webm", 10) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_OGG, ndpi_struct, NDPI_LOG_DEBUG, "OGG: Content-Type: audio/webm found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_WEBM);
-    return;
-  }
-  if (packet->content_line.len >= 10 && memcmp(packet->content_line.ptr, "video/webm", 10) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_OGG, ndpi_struct, NDPI_LOG_DEBUG, "OGG: Content-Type: video/webm found.\n");
-    ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_WEBM);
-    return;
-  }
-}
-#endif
 
 #ifdef NDPI_PROTOCOL_RTSP
 static void rtsp_parse_packet_acceptline(struct ndpi_detection_module_struct
@@ -490,13 +153,13 @@ static void setHttpUserAgent(struct ndpi_flow_struct *flow, char *ua) {
   else if(!strcmp(ua, "Windows NT 5.1")) ua = "Windows XP";
   else if(!strcmp(ua, "Windows NT 5.2")) ua = "Windows Server 2003";
   else if(!strcmp(ua, "Windows NT 6.0")) ua = "Windows Vista";
-  else if(!strcmp(ua, "Windows NT 7.0")) ua = "Windows 7";
+  // else if(!strcmp(ua, "Windows NT 7.0")) ua = "Windows 7";
   else if(!strcmp(ua, "Windows NT 6.1")) ua = "Windows 7";
   else if(!strcmp(ua, "Windows NT 6.2")) ua = "Windows 8";
   else if(!strcmp(ua, "Windows NT 6.3")) ua = "Windows 8.1";
-  
+
   //printf("==> %s\n", ua);
-  snprintf((char*)flow->detected_os, sizeof(flow->detected_os), "%s", ua);  
+  snprintf((char*)flow->detected_os, sizeof(flow->detected_os), "%s", ua);
 }
 
 static void parseHttpSubprotocol(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow) {
@@ -504,29 +167,31 @@ static void parseHttpSubprotocol(struct ndpi_detection_module_struct *ndpi_struc
   struct ndpi_packet_struct *packet = &flow->packet;
 
   if(packet->iph /* IPv4 only */) {
-    /* 
+    /*
        Twitter Inc. TWITTER-NETWORK (NET-199-59-148-0-1) 199.59.148.0 - 199.59.151.255
        199.59.148.0/22
     */
     if(((ntohl(packet->iph->saddr) & 0xFFFFFC00 /* 255.255.252.0 */) == 0xC73B9400 /* 199.59.148.0 */)
        || ((ntohl(packet->iph->daddr) & 0xFFFFFC00 /* 255.255.252.0 */) == 0xC73B9400 /* 199.59.148.0 */)) {
-      packet->detected_protocol_stack[0] = NDPI_PROTOCOL_TWITTER;
+      packet->detected_protocol_stack[0] = NDPI_SERVICE_TWITTER;
       return;
     }
 
-    /* 
+    /*
        CIDR:           69.53.224.0/19
        OriginAS:       AS2906
        NetName:        NETFLIX-INC
     */
     if(((ntohl(packet->iph->saddr) & 0xFFFFE000 /* 255.255.224.0 */) == 0x4535E000 /* 69.53.224.0 */)
        || ((ntohl(packet->iph->daddr) & 0xFFFFE000 /* 255.255.224.0 */) == 0x4535E000 /* 69.53.224.0 */)) {
-      packet->detected_protocol_stack[0] = NDPI_PROTOCOL_NETFLIX;
+      packet->detected_protocol_stack[0] = NDPI_SERVICE_NETFLIX;
       return;
     }
   }
-    
-  if(packet->detected_protocol_stack[0] == NDPI_PROTOCOL_HTTP) {
+
+  if((packet->detected_protocol_stack[0] == NDPI_PROTOCOL_HTTP)
+     || (packet->detected_protocol_stack[0] == NDPI_PROTOCOL_HTTP_PROXY))
+    {
     /* Try matching subprotocols */
     // ndpi_match_string_subprotocol(ndpi_struct, flow, (char*)packet->host_line.ptr, packet->host_line.len);
     ndpi_match_string_subprotocol(ndpi_struct, flow, (char *)flow->host_server_name, strlen((const char *)flow->host_server_name));
@@ -542,10 +207,10 @@ static void parseHttpSubprotocol(struct ndpi_detection_module_struct *ndpi_struc
 static void check_content_type_and_change_protocol(struct ndpi_detection_module_struct
 						   *ndpi_struct, struct ndpi_flow_struct *flow)
 {
-#ifdef NDPI_PROTOCOL_MPEG
+#ifdef NDPI_CONTENT_MPEG
   struct ndpi_packet_struct *packet = &flow->packet;
 #endif
-#ifdef NDPI_PROTOCOL_AVI
+#ifdef NDPI_CONTENT_AVI
 #endif
   //      struct ndpi_id_struct         *src=ndpi_struct->src;
   //      struct ndpi_id_struct         *dst=ndpi_struct->dst;
@@ -555,50 +220,13 @@ static void check_content_type_and_change_protocol(struct ndpi_detection_module_
   if (packet->content_line.ptr != NULL && packet->content_line.len != 0) {
     NDPI_LOG(NDPI_PROTOCOL_HTTP, ndpi_struct, NDPI_LOG_DEBUG, "Content Type Line found %.*s\n",
 	    packet->content_line.len, packet->content_line.ptr);
-#ifdef NDPI_PROTOCOL_MPEG
-    if (NDPI_COMPARE_PROTOCOL_TO_BITMASK(ndpi_struct->detection_bitmask, NDPI_PROTOCOL_MPEG) != 0)
-      mpeg_parse_packet_contentline(ndpi_struct, flow);
-#endif
-#ifdef NDPI_PROTOCOL_FLASH
-    if (NDPI_COMPARE_PROTOCOL_TO_BITMASK(ndpi_struct->detection_bitmask, NDPI_PROTOCOL_FLASH) != 0)
-      flash_parse_packet_contentline(ndpi_struct, flow);
-#endif
-#ifdef NDPI_PROTOCOL_QUICKTIME
-    if (NDPI_COMPARE_PROTOCOL_TO_BITMASK(ndpi_struct->detection_bitmask, NDPI_PROTOCOL_QUICKTIME) != 0)
-      qt_parse_packet_contentline(ndpi_struct, flow);
-#endif
-#ifdef NDPI_PROTOCOL_REALMEDIA
-    if (NDPI_COMPARE_PROTOCOL_TO_BITMASK(ndpi_struct->detection_bitmask, NDPI_PROTOCOL_REALMEDIA) != 0)
-      realmedia_parse_packet_contentline(ndpi_struct, flow);
-#endif
-#ifdef NDPI_PROTOCOL_WINDOWSMEDIA
-    if (NDPI_COMPARE_PROTOCOL_TO_BITMASK(ndpi_struct->detection_bitmask, NDPI_PROTOCOL_WINDOWSMEDIA) != 0)
-      windowsmedia_parse_packet_contentline(ndpi_struct, flow);
-#endif
-#ifdef NDPI_PROTOCOL_MMS
-    if (NDPI_COMPARE_PROTOCOL_TO_BITMASK(ndpi_struct->detection_bitmask, NDPI_PROTOCOL_MMS) != 0)
-      mms_parse_packet_contentline(ndpi_struct, flow);
-#endif
-#ifdef NDPI_PROTOCOL_OFF
-    if (NDPI_COMPARE_PROTOCOL_TO_BITMASK(ndpi_struct->detection_bitmask, NDPI_PROTOCOL_OFF) != 0)
-      off_parse_packet_contentline(ndpi_struct, flow);
-#endif
-#ifdef NDPI_PROTOCOL_OGG
-    if (NDPI_COMPARE_PROTOCOL_TO_BITMASK(ndpi_struct->detection_bitmask, NDPI_PROTOCOL_OGG) != 0)
-      ogg_parse_packet_contentline(ndpi_struct, flow);
-#endif
-#ifdef NDPI_PROTOCOL_MOVE
-    if (NDPI_COMPARE_PROTOCOL_TO_BITMASK(ndpi_struct->detection_bitmask, NDPI_PROTOCOL_MOVE) != 0)
-      move_parse_packet_contentline(ndpi_struct, flow);
-#endif
-#ifdef NDPI_PROTOCOL_WEBM
-    if (NDPI_COMPARE_PROTOCOL_TO_BITMASK(ndpi_struct->detection_bitmask, NDPI_PROTOCOL_WEBM) != 0)
-      webm_parse_packet_contentline(ndpi_struct, flow);
-#endif
+
+    ndpi_match_content_subprotocol(ndpi_struct, flow, (char*)packet->content_line.ptr, packet->content_line.len);
   }
+
   /* check user agent here too */
   if (packet->user_agent_line.ptr != NULL && packet->user_agent_line.len != 0) {
-    /* Format: 
+    /* Format:
        Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) ....
     */
     if(packet->user_agent_line.len > 7) {
@@ -607,17 +235,17 @@ static void check_content_type_and_change_protocol(struct ndpi_detection_module_
 
       strncpy(ua, (const char *)packet->user_agent_line.ptr, mlen);
       ua[mlen] = '\0';
-      
+
       if(strncmp(ua, "Mozilla", 7) == 0) {
 	char *parent = strchr(ua, '(');
-	
+
 	if(parent) {
 	  char *token, *end;
 
 	  parent++;
 	  end = strchr(parent, ')');
 	  if(end) end[0] = '\0';
-	  
+
 	  token = strsep(&parent, ";");
 	  if(token) {
 	    if((strcmp(token, "X11") == 0)
@@ -627,8 +255,8 @@ static void check_content_type_and_change_protocol(struct ndpi_detection_module_
 	       ) {
 	      token = strsep(&parent, ";");
 	      if(token && (token[0] == ' ')) token++; /* Skip space */
-	      
-	      if(token 
+
+	      if(token
 		 && ((strcmp(token, "U") == 0)
 		     || (strncmp(token, "MSIE", 4) == 0))) {
 		token = strsep(&parent, ";");
@@ -638,7 +266,7 @@ static void check_content_type_and_change_protocol(struct ndpi_detection_module_
 		  token = strsep(&parent, ";");
 
 		  if(token && (token[0] == ' ')) token++; /* Skip space */
-		  
+
 		  if(token && (strncmp(token, "AOL", 3)  == 0)) {
 		    token = strsep(&parent, ";");
 
@@ -658,45 +286,35 @@ static void check_content_type_and_change_protocol(struct ndpi_detection_module_
 
     NDPI_LOG(NDPI_PROTOCOL_HTTP, ndpi_struct, NDPI_LOG_DEBUG, "User Agent Type Line found %.*s\n",
 	    packet->user_agent_line.len, packet->user_agent_line.ptr);
-#ifdef NDPI_PROTOCOL_XBOX
-    if (NDPI_COMPARE_PROTOCOL_TO_BITMASK(ndpi_struct->detection_bitmask, NDPI_PROTOCOL_XBOX) != 0)
-      xbox_parse_packet_useragentline(ndpi_struct, flow);
-#endif
-#ifdef NDPI_PROTOCOL_WINDOWS_UPDATE    
-    if (NDPI_COMPARE_PROTOCOL_TO_BITMASK(ndpi_struct->detection_bitmask, NDPI_PROTOCOL_WINDOWS_UPDATE) != 0)
-      windows_update_packet_useragentline(ndpi_struct, flow);
-#endif
-#ifdef NDPI_PROTOCOL_WINDOWSMEDIA
-    if (NDPI_COMPARE_PROTOCOL_TO_BITMASK(ndpi_struct->detection_bitmask, NDPI_PROTOCOL_WINDOWSMEDIA) != 0)
-      winmedia_parse_packet_useragentline(ndpi_struct, flow);
-#endif
 
+    ndpi_match_content_subprotocol(ndpi_struct, flow, (char*)packet->user_agent_line.ptr, packet->user_agent_line.len);
   }
+
   /* check for host line */
   if (packet->host_line.ptr != NULL) {
     u_int len;
 
     NDPI_LOG(NDPI_PROTOCOL_HTTP, ndpi_struct, NDPI_LOG_DEBUG, "HOST Line found %.*s\n",
 	    packet->host_line.len, packet->host_line.ptr);
-#ifdef NDPI_PROTOCOL_QQ
-    if (NDPI_COMPARE_PROTOCOL_TO_BITMASK(ndpi_struct->detection_bitmask, NDPI_PROTOCOL_QQ) != 0) {
-      qq_parse_packet_URL_and_hostname(ndpi_struct, flow);
-    }
-#endif
+    ndpi_match_content_subprotocol(ndpi_struct, flow, (char*)packet->host_line.ptr, packet->host_line.len);
 
     /* Copy result for nDPI apps */
     len = ndpi_min(packet->host_line.len, sizeof(flow->host_server_name)-1);
     strncpy((char*)flow->host_server_name, (char*)packet->host_line.ptr, len);
     flow->host_server_name[len] = '\0';
 
+    len = ndpi_min(packet->forwarded_line.len, sizeof(flow->nat_ip)-1);
+    strncpy((char*)flow->nat_ip, (char*)packet->forwarded_line.ptr, len);
+    flow->nat_ip[len] = '\0';
+
     parseHttpSubprotocol(ndpi_struct, flow);
-    
+
     if(packet->detected_protocol_stack[0] != NDPI_PROTOCOL_HTTP) {
       ndpi_int_http_add_connection(ndpi_struct, flow, packet->detected_protocol_stack[0]);
       return; /* We have identified a sub-protocol so we're done */
     }
   }
-   
+
   /* check for accept line */
   if (packet->accept_line.ptr != NULL) {
     NDPI_LOG(NDPI_PROTOCOL_HTTP, ndpi_struct, NDPI_LOG_DEBUG, "Accept Line found %.*s\n",
@@ -708,15 +326,15 @@ static void check_content_type_and_change_protocol(struct ndpi_detection_module_
 #endif
   }
   /* search for line startin with "Icy-MetaData" */
-#ifdef NDPI_PROTOCOL_MPEG
+#ifdef NDPI_CONTENT_MPEG
   for (a = 0; a < packet->parsed_lines; a++) {
     if (packet->line[a].len > 11 && memcmp(packet->line[a].ptr, "Icy-MetaData", 12) == 0) {
-      NDPI_LOG(NDPI_PROTOCOL_MPEG, ndpi_struct, NDPI_LOG_DEBUG, "MPEG: Icy-MetaData found.\n");
-      ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_MPEG);
+      NDPI_LOG(NDPI_CONTENT_MPEG, ndpi_struct, NDPI_LOG_DEBUG, "MPEG: Icy-MetaData found.\n");
+      ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_CONTENT_MPEG);
       return;
     }
   }
-#ifdef NDPI_PROTOCOL_AVI
+#ifdef NDPI_CONTENT_AVI
 #endif
 #endif
 
@@ -726,12 +344,12 @@ static void check_http_payload(struct ndpi_detection_module_struct *ndpi_struct,
 {
   NDPI_LOG(NDPI_PROTOCOL_HTTP, ndpi_struct, NDPI_LOG_DEBUG, "called check_http_payload.\n");
 
-#ifdef NDPI_PROTOCOL_FLASH
-  if (NDPI_COMPARE_PROTOCOL_TO_BITMASK(ndpi_struct->detection_bitmask, NDPI_PROTOCOL_FLASH) != 0)
+#ifdef NDPI_CONTENT_FLASH
+  if (NDPI_COMPARE_PROTOCOL_TO_BITMASK(ndpi_struct->detection_bitmask, NDPI_CONTENT_FLASH) != 0)
     flash_check_http_payload(ndpi_struct, flow);
 #endif
-#ifdef NDPI_PROTOCOL_AVI
-  if (NDPI_COMPARE_PROTOCOL_TO_BITMASK(ndpi_struct->detection_bitmask, NDPI_PROTOCOL_AVI) != 0)
+#ifdef NDPI_CONTENT_AVI
+  if (NDPI_COMPARE_PROTOCOL_TO_BITMASK(ndpi_struct->detection_bitmask, NDPI_CONTENT_AVI) != 0)
     avi_check_http_payload(ndpi_struct, flow);
 #endif
 #ifdef NDPI_PROTOCOL_TEAMVIEWER
@@ -794,29 +412,26 @@ static void http_bitmask_exclude(struct ndpi_flow_struct *flow)
 #ifdef NDPI_PROTOCOL_WINDOWS_UPDATE
   NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_WINDOWS_UPDATE);
 #endif
-#ifdef NDPI_PROTOCOL_MPEG
-  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_MPEG);
+#ifdef NDPI_CONTENT_MPEG
+  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_CONTENT_MPEG);
 #endif
-#ifdef NDPI_PROTOCOL_QUICKTIME
-  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_QUICKTIME);
+#ifdef NDPI_CONTENT_QUICKTIME
+  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_CONTENT_QUICKTIME);
 #endif
-#ifdef NDPI_PROTOCOL_WINDOWSMEDIA
-  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_WINDOWSMEDIA);
+#ifdef NDPI_CONTENT_WINDOWSMEDIA
+  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_CONTENT_WINDOWSMEDIA);
 #endif
-#ifdef NDPI_PROTOCOL_REALMEDIA
-  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_REALMEDIA);
+#ifdef NDPI_CONTENT_REALMEDIA
+  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_CONTENT_REALMEDIA);
 #endif
-#ifdef NDPI_PROTOCOL_AVI
-  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_AVI);
+#ifdef NDPI_CONTENT_AVI
+  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_CONTENT_AVI);
 #endif
-#ifdef NDPI_PROTOCOL_OGG
-  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_OGG);
+#ifdef NDPI_CONTENT_OGG
+  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_CONTENT_OGG);
 #endif
 #ifdef NDPI_PROTOCOL_MOVE
   NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_MOVE);
-#endif
-#ifdef NDPI_PROTOCOL_OFF
-  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_OFF);
 #endif
 #ifdef NDPI_PROTOCOL_XBOX
   NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_XBOX);
@@ -826,7 +441,7 @@ static void http_bitmask_exclude(struct ndpi_flow_struct *flow)
 void ndpi_search_http_tcp(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 {
   struct ndpi_packet_struct *packet = &flow->packet;
-  
+
   //      struct ndpi_id_struct         *src=ndpi_struct->src;
   //      struct ndpi_id_struct         *dst=ndpi_struct->dst;
 
@@ -891,6 +506,8 @@ void ndpi_search_http_tcp(struct ndpi_detection_module_struct *ndpi_struct, stru
       // parsed_lines > 1 here
       if (packet->line[0].len >= (9 + filename_start)
 	  && memcmp(&packet->line[0].ptr[packet->line[0].len - 9], " HTTP/1.", 8) == 0) {
+	u_int16_t proto_id;
+
 	packet->http_url_name.ptr = &packet->payload[filename_start];
 	packet->http_url_name.len = packet->line[0].len - (filename_start + 9);
 
@@ -899,7 +516,16 @@ void ndpi_search_http_tcp(struct ndpi_detection_module_struct *ndpi_struct, stru
 
 	NDPI_LOG(NDPI_PROTOCOL_HTTP, ndpi_struct, NDPI_LOG_DEBUG, "http structure detected, adding\n");
 
-	ndpi_int_http_add_connection(ndpi_struct, flow, (filename_start == 8) ? NDPI_PROTOCOL_HTTP_CONNECT : NDPI_PROTOCOL_HTTP);
+	if(filename_start == 8 && (memcmp(packet->payload, "CONNECT ", 8) == 0)) /* nathan@getoffmalawn.com */
+	  proto_id = NDPI_PROTOCOL_HTTP_CONNECT;
+	else {
+	  if((packet->http_url_name.len > 7) && (!strncmp((const char*)packet->http_url_name.ptr, "http://", 7)))
+	    proto_id = NDPI_PROTOCOL_HTTP_PROXY;
+	  else
+	    proto_id = NDPI_PROTOCOL_HTTP;
+	}
+
+	ndpi_int_http_add_connection(ndpi_struct, flow, proto_id);
 	check_content_type_and_change_protocol(ndpi_struct, flow);
 	/* HTTP found, look for host... */
 	if (packet->host_line.ptr != NULL) {
@@ -934,7 +560,7 @@ void ndpi_search_http_tcp(struct ndpi_detection_module_struct *ndpi_struct, stru
 	  return;
 	}
       }
-
+// http://www.slideshare.net/DSPIP/rtsp-analysis-wireshark
       if (packet->line[0].len >= 9 && memcmp(&packet->line[0].ptr[packet->line[0].len - 9], " HTTP/1.", 8) == 0) {
 	ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_HTTP);
 	check_content_type_and_change_protocol(ndpi_struct, flow);
@@ -948,15 +574,16 @@ void ndpi_search_http_tcp(struct ndpi_detection_module_struct *ndpi_struct, stru
     }
   } else {
     /* We have received a response for a previously identified partial HTTP request */
-    
+
     if((packet->parsed_lines == 1) && (packet->packet_direction == 1 /* server -> client */)) {
-      /* 
+      /*
 	 In apache if you do "GET /\n\n" the response comes without any header so we can assume that
 	 this can be the case
       */
       ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_HTTP);
       return;
     }
+
   }
 
   NDPI_LOG(NDPI_PROTOCOL_HTTP, ndpi_struct, NDPI_LOG_DEBUG, "HTTP: REQUEST NOT HTTP CONFORM\n");

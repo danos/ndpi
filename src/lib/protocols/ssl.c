@@ -25,6 +25,8 @@
 
 #include "ndpi_utils.h"
 
+// #define CERTIFICATE_DEBUG 1
+
 #ifdef NDPI_PROTOCOL_SSL
 
 #define NDPI_MAX_SSL_REQUEST_SIZE 10000
@@ -86,6 +88,7 @@ static void stripCertificateTrailer(char *buffer, int buffer_len) {
        && (!ndpi_isalpha(buffer[i]))
        && (!ndpi_isdigit(buffer[i]))) {
       buffer[i] = '\0';
+      buffer_len = i;
       break;
     }
   }
@@ -95,9 +98,16 @@ static void stripCertificateTrailer(char *buffer, int buffer_len) {
   while(i > 0) {    
     if(!ndpi_isalpha(buffer[i])) {
       buffer[i] = '\0';
+      buffer_len = i;
       i--;
     } else
       break;
+  }
+
+  for(i=buffer_len; i>0; i--) {
+    if(buffer[i] == '.') break;
+    else if(ndpi_isdigit(buffer[i]))
+      buffer[i] = '\0', buffer_len = i;    
   }
 }
 
@@ -107,22 +117,32 @@ int getSSLcertificate(struct ndpi_detection_module_struct *ndpi_struct,
 		      char *buffer, int buffer_len) {
   struct ndpi_packet_struct *packet = &flow->packet;
 
-  /* Nothing matched so far: let's decode the certificate with some heuristics */
+  /*
+    Nothing matched so far: let's decode the certificate with some heuristics 
+    Patches courtesy of Denys Fedoryshchenko <nuclearcat@nuclearcat.com>
+   */
   if(packet->payload[0] == 0x16 /* Handshake */) {
     u_int16_t total_len  = (packet->payload[3] << 8) + packet->payload[4] + 5 /* SSL Header */;
-    u_int8_t handshake_protocol = packet->payload[5];
+    u_int8_t handshake_protocol = packet->payload[5]; /* handshake protocol a bit misleading, it is message type according TLS specs */
 
     memset(buffer, 0, buffer_len);
 
-    if(total_len <= packet->payload_packet_len) {
+
+    /* Truncate total len, search at least in incomplete packet */
+    if (total_len > packet->payload_packet_len)
+	total_len = packet->payload_packet_len;
+
+    /* At least "magic" 3 bytes, null for string end, otherwise no need to waste cpu cycles */
+    if(total_len > 4) {
       int i;
 
-      if(handshake_protocol == 0x02 /* Server Hello */) {
+      if(handshake_protocol == 0x02 || handshake_protocol == 0xb /* Server Hello and Certificate message types are interesting for us */) {
 	u_int num_found = 0;
 	
 	flow->l4.tcp.ssl_seen_server_cert = 1;
 
-	for(i=total_len; i < packet->payload_packet_len-3; i++) {
+	/* Check after handshake protocol header (5 bytes) and message header (4 bytes) */
+	for(i = 9; i < packet->payload_packet_len-3; i++) {
 	  if(((packet->payload[i] == 0x04) && (packet->payload[i+1] == 0x03) && (packet->payload[i+2] == 0x0c))
 	     || ((packet->payload[i] == 0x55) && (packet->payload[i+1] == 0x04) && (packet->payload[i+2] == 0x03))) {
 	    u_int8_t server_len = packet->payload[i+3];
@@ -245,13 +265,17 @@ int sslDetectProtocolFromCertificate(struct ndpi_detection_module_struct *ndpi_s
   if((packet->detected_protocol_stack[0] == NDPI_PROTOCOL_UNKNOWN)
      || (packet->detected_protocol_stack[0] == NDPI_PROTOCOL_SSL)) {
     char certificate[64];
-    int rc = getSSLcertificate(ndpi_struct, flow, certificate, sizeof(certificate));
-
+    int rc;
+    
+    certificate[0] = '\0';
+    rc = getSSLcertificate(ndpi_struct, flow, certificate, sizeof(certificate));
     packet->ssl_certificate_num_checks++;
 
     if(rc > 0) {
       packet->ssl_certificate_detected = 1;
-      //printf("***** [SSL] %s\n", certificate);
+#ifdef CERTIFICATE_DEBUG
+      printf("***** [SSL] %s\n", certificate);
+#endif
       if(ndpi_match_string_subprotocol(ndpi_struct, flow, certificate, strlen(certificate)) != NDPI_PROTOCOL_UNKNOWN)
 	return(rc); /* Fix courtesy of Gianluca Costa <g.costa@xplico.org> */
     } 
@@ -259,7 +283,7 @@ int sslDetectProtocolFromCertificate(struct ndpi_detection_module_struct *ndpi_s
     if((packet->ssl_certificate_num_checks >= 2)
        && (certificate[0] != '\0')
        && flow->l4.tcp.seen_syn && flow->l4.tcp.seen_syn_ack && flow->l4.tcp.seen_ack) /* We have seen the 3-way handshake */
-      ndpi_int_ssl_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_SSL_NO_CERT);
+      ndpi_int_ssl_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_SSL);
   }
 
   return(0);
@@ -269,7 +293,7 @@ static void ssl_mark_and_payload_search_for_other_protocols(struct
 							    ndpi_detection_module_struct
 							    *ndpi_struct, struct ndpi_flow_struct *flow)
 {
-#if defined(NDPI_PROTOCOL_SOFTETHER) || defined(NDPI_PROTOCOL_MEEBO)|| defined(NDPI_PROTOCOL_TOR) || defined(NDPI_PROTOCOL_VPN_X) || defined(NDPI_PROTOCOL_UNENCRYPED_JABBER) || defined (NDPI_PROTOCOL_OOVOO) || defined (NDPI_PROTOCOL_ISKOOT) || defined (NDPI_PROTOCOL_OSCAR) || defined (NDPI_PROTOCOL_ITUNES) || defined (NDPI_PROTOCOL_GMAIL)
+#if defined(NDPI_PROTOCOL_SOFTETHER) || defined(NDPI_PROTOCOL_MEEBO)|| defined(NDPI_PROTOCOL_TOR) || defined(NDPI_PROTOCOL_VPN_X) || defined(NDPI_PROTOCOL_UNENCRYPED_JABBER) || defined (NDPI_PROTOCOL_OOVOO) || defined (NDPI_PROTOCOL_ISKOOT) || defined (NDPI_PROTOCOL_OSCAR) || defined (NDPI_PROTOCOL_ITUNES) || defined (NDPI_SERVICE_GMAIL)
 
   struct ndpi_packet_struct *packet = &flow->packet;
 #ifdef NDPI_PROTOCOL_ISKOOT
@@ -359,8 +383,10 @@ static void ssl_mark_and_payload_search_for_other_protocols(struct
       ndpi_int_ssl_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_SSL_NO_CERT);
 #ifdef NDPI_PROTOCOL_SKYPE
       //printf("[SSL] %08X -> %08X\n", packet->iph->saddr, packet->iph->daddr);
+#ifdef USE_SKYPE_HEURISTICS
       if(packet->iph)
 	add_skype_connection(ndpi_struct, packet->iph->saddr, packet->iph->daddr);
+#endif
 #endif
     } else
       ndpi_int_ssl_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_SSL);
@@ -368,8 +394,8 @@ static void ssl_mark_and_payload_search_for_other_protocols(struct
 }
 
 
-static u_int8_t ndpi_search_sslv3_direction1(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
-{
+static u_int8_t ndpi_search_sslv3_direction1(struct ndpi_detection_module_struct *ndpi_struct, 
+					     struct ndpi_flow_struct *flow) {
 
   struct ndpi_packet_struct *packet = &flow->packet;
   //
@@ -377,8 +403,14 @@ static u_int8_t ndpi_search_sslv3_direction1(struct ndpi_detection_module_struct
   //      struct ndpi_id_struct         *dst=flow->dst;
 
 
-  if (packet->payload_packet_len >= 5 && packet->payload[0] == 0x16 && packet->payload[1] == 0x03
-      && (packet->payload[2] == 0x00 || packet->payload[2] == 0x01 || packet->payload[2] == 0x02)) {
+  if ((packet->payload_packet_len >= 5)
+      && (packet->payload[0] == 0x16)
+      && (packet->payload[1] == 0x03)
+      && ((packet->payload[2] == 0x00)
+	  || (packet->payload[2] == 0x01)
+	  || (packet->payload[2] == 0x02)
+	  || (packet->payload[2] == 0x03)
+	  )) {
     u_int32_t temp;
     NDPI_LOG(NDPI_PROTOCOL_SSL, ndpi_struct, NDPI_LOG_DEBUG, "search sslv3\n");
     // SSLv3 Record
@@ -509,11 +541,13 @@ void ndpi_search_ssl_tcp(struct ndpi_detection_module_struct *ndpi_struct, struc
 
   {
     /* Check if this is whatsapp first (this proto runs over port 443) */
-    char whatsapp_pattern[] = { 0x57, 0x41, 0x01, 0x01, 0x00 };
-
     if((packet->payload_packet_len > 5)
-       && (memcmp(packet->payload, whatsapp_pattern, sizeof(whatsapp_pattern)) == 0)) {
-      ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_WHATSAPP, NDPI_REAL_PROTOCOL);
+       && ((packet->payload[0] == 'W')
+	   && (packet->payload[1] == 'A')
+	   && (packet->payload[4] == 0)
+	   && (packet->payload[2] <= 9)
+	   && (packet->payload[3] <= 9))) {
+      ndpi_int_add_connection(ndpi_struct, flow, NDPI_SERVICE_WHATSAPP, NDPI_REAL_PROTOCOL);
       return;
     } else {
       /* No whatsapp, let's try SSL */
