@@ -40,7 +40,7 @@
 #include <sys/time.h>
 #endif
 
-#if !defined __APPLE__ && !defined __FreeBSD__ && !defined __NetBSD__
+#if !defined __APPLE__ && !defined __FreeBSD__ && !defined __NetBSD__ && !defined __OpenBSD__
 
 #ifndef __KERNEL__
 #include <endian.h>
@@ -92,10 +92,13 @@ typedef unsigned __int64 u_int64_t;
 
 #include "linux_compat.h"
 
-#if defined(__FreeBSD__) || defined(__NetBSD__)
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
 #include <netinet/in.h>
-#if defined(__NetBSD__)
+#if defined(__NetBSD__) || defined(__OpenBSD__)
 #include <netinet/in_systm.h>
+#if defined(__OpenBSD__)
+#include <pthread.h>
+#endif
 #endif
 #endif
 
@@ -136,11 +139,20 @@ typedef struct node_t {
   struct node_t *left, *right;
 } ndpi_node;
 
-/* Least recently used cache */
+extern u_int8_t ndpi_net_match(u_int32_t ip_to_check,
+			       u_int32_t net,
+			       u_int32_t num_bits);
 
+extern u_int8_t ndpi_ips_match(u_int32_t src, u_int32_t dst,
+			       u_int32_t net, u_int32_t num_bits);
+
+extern char* ndpi_strnstr(const char *s, const char *find, size_t slen);
+
+#ifdef HAVE_NDPI_CACHE
+/* Least recently used cache */
 struct ndpi_LruCacheNumEntry {
-  u_int32_t key;
-  u_int32_t value;
+  u_int64_t key;
+  u_int64_t value;
 };
 
 struct ndpi_LruCacheStrEntry {
@@ -168,8 +180,9 @@ struct ndpi_LruCache {
 };
 
 
-u_int32_t ndpi_find_lru_cache_num(struct ndpi_LruCache *cache, u_int32_t key);
-int ndpi_add_to_lru_cache_num(struct ndpi_LruCache *cache, u_int32_t key, u_int32_t value);
+u_int32_t ndpi_find_lru_cache_num(struct ndpi_LruCache *cache, u_int64_t key);
+int ndpi_add_to_lru_cache_num(struct ndpi_LruCache *cache, u_int64_t key, u_int64_t value);
+#endif /* HAVE_NDPI_CACHE */
 
 u_int16_t ntohs_ndpi_bytestream_to_number(const u_int8_t * str, u_int16_t max_chars_to_read, u_int16_t * bytes_read);
 

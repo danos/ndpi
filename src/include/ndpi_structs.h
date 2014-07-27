@@ -90,14 +90,8 @@ typedef struct ndpi_id_struct {
    * }
    */
   NDPI_PROTOCOL_BITMASK detected_protocol_bitmask;
-#ifdef NDPI_PROTOCOL_FTP
-  ndpi_ip_addr_t ftp_ip;
-#endif
 #ifdef NDPI_PROTOCOL_RTSP
   ndpi_ip_addr_t rtsp_ip_address;
-#endif
-#ifdef NDPI_PROTOCOL_PPLIVE
-  u_int32_t pplive_last_packet_time;
 #endif
 #ifdef NDPI_PROTOCOL_SIP
 #ifdef NDPI_PROTOCOL_YAHOO
@@ -106,9 +100,6 @@ typedef struct ndpi_id_struct {
 #endif
 #ifdef NDPI_PROTOCOL_IRC
   u_int32_t last_time_port_used[16];
-#endif
-#ifdef NDPI_PROTOCOL_FTP
-  u_int32_t ftp_timer;
 #endif
 #ifdef NDPI_PROTOCOL_IRC
   u_int32_t irc_ts;
@@ -148,9 +139,6 @@ typedef struct ndpi_id_struct {
   u_int16_t detected_directconnect_port;
   u_int16_t detected_directconnect_udp_port;
   u_int16_t detected_directconnect_ssl_port;
-#endif
-#ifdef NDPI_PROTOCOL_PPLIVE
-  u_int16_t pplive_vod_cli_port;
 #endif
 #ifdef NDPI_PROTOCOL_IRC
   u_int16_t irc_port[16];
@@ -195,23 +183,14 @@ typedef struct ndpi_id_struct {
   u_int32_t yahoo_conf_logged_in:1;
   u_int32_t yahoo_voice_conf_logged_in:1;
 #endif
-#ifdef NDPI_PROTOCOL_FTP
-  u_int32_t ftp_timer_set:1;
-#endif
 #ifdef NDPI_PROTOCOL_RTSP
   u_int32_t rtsp_ts_set:1;
 #endif
-#ifdef NDPI_PROTOCOL_PPLIVE
-  u_int32_t pplive_last_packet_time_set:1;
-#endif
 } ndpi_id_struct;
 
-/* ************************************************** */ 
+/* ************************************************** */
 
 struct ndpi_flow_tcp_struct {
-#ifdef NDPI_PROTOCOL_FLASH
-  u_int16_t flash_bytes;
-#endif
 #ifdef NDPI_PROTOCOL_MAIL_SMTP
   u_int16_t smtp_command_bitmask;
 #endif
@@ -224,18 +203,12 @@ struct ndpi_flow_tcp_struct {
 #ifdef NDPI_PROTOCOL_TDS
   u_int8_t tds_login_version;
 #endif
-#ifdef NDPI_PROTOCOL_PPLIVE
-  u_int8_t pplive_next_packet_size[2];
-#endif
 #ifdef NDPI_PROTOCOL_IRC
   u_int8_t irc_stage;
   u_int8_t irc_port;
 #endif
 #ifdef NDPI_PROTOCOL_GNUTELLA
   u_int8_t gnutella_msg_id[3];
-#endif
-#ifdef NDPI_PROTOCOL_EDONKEY
-  u_int32_t edk_ext:1;
 #endif
 #ifdef NDPI_PROTOCOL_IRC
   u_int32_t irc_3a_counter:3;
@@ -261,23 +234,16 @@ struct ndpi_flow_tcp_struct {
 #ifdef NDPI_PROTOCOL_IMESH
   u_int32_t imesh_stage:4;
 #endif
-#ifdef NDPI_PROTOCOL_FTP
-  u_int32_t ftp_codes_seen:5;
-  u_int32_t ftp_client_direction:1;
-#endif
 #ifdef NDPI_PROTOCOL_HTTP
   u_int32_t http_setup_dir:2;
   u_int32_t http_stage:2;
   u_int32_t http_empty_line_seen:1;
   u_int32_t http_wait_for_retransmission:1;
 #endif							// NDPI_PROTOCOL_HTTP
-#ifdef NDPI_PROTOCOL_FLASH
-  u_int32_t flash_stage:3;
-#endif
 #ifdef NDPI_PROTOCOL_GNUTELLA
   u_int32_t gnutella_stage:2;		//0-2
 #endif
-#ifdef NDPI_PROTOCOL_MMS
+#ifdef NDPI_CONTENT_MMS
   u_int32_t mms_stage:2;
 #endif
 #ifdef NDPI_PROTOCOL_YAHOO
@@ -293,9 +259,6 @@ struct ndpi_flow_tcp_struct {
 #endif
 #ifdef NDPI_PROTOCOL_VNC
   u_int32_t vnc_stage:2;			// 0 - 3
-#endif
-#ifdef NDPI_PROTOCOL_STEAM
-  u_int32_t steam_stage:2;			// 0 - 3
 #endif
 #ifdef NDPI_PROTOCOL_TELNET
   u_int32_t telnet_stage:2;			// 0 - 2
@@ -355,9 +318,14 @@ struct ndpi_flow_tcp_struct {
 #ifdef NDPI_PROTOCOL_TEAMVIEWER
   u_int8_t teamviewer_stage;
 #endif
+
+#ifdef NDPI_PROTOCOL_ZMQ
+  u_int8_t prev_zmq_pkt_len;
+  u_char prev_zmq_pkt[10];
+#endif
 }
 
-/* ************************************************** */ 
+/* ************************************************** */
 
 #if !defined(WIN32)
   __attribute__ ((__packed__))
@@ -409,7 +377,7 @@ struct ndpi_flow_udp_struct {
 #endif
 }
 
-/* ************************************************** */ 
+/* ************************************************** */
 
 #if !defined(WIN32)
   __attribute__ ((__packed__))
@@ -451,7 +419,7 @@ typedef struct ndpi_packet_struct {
   u_int16_t detected_protocol_stack[NDPI_PROTOCOL_HISTORY_SIZE];
   u_int8_t detected_subprotocol_stack[NDPI_PROTOCOL_HISTORY_SIZE];
 
-  /* this is for simple read-only access to the real protocol 
+  /* this is for simple read-only access to the real protocol
    * used for the main loop */
   u_int16_t real_protocol_read_only;
 
@@ -463,7 +431,7 @@ typedef struct ndpi_packet_struct {
   struct {
     u_int8_t entry_is_real_protocol:5;
     u_int8_t current_stack_size_minus_one:3;
-  } 
+  }
 #if !defined(WIN32)
     __attribute__ ((__packed__))
 #endif
@@ -473,6 +441,7 @@ typedef struct ndpi_packet_struct {
   struct ndpi_int_one_line_struct line[NDPI_MAX_PARSE_LINES_PER_PACKET];
   struct ndpi_int_one_line_struct unix_line[NDPI_MAX_PARSE_LINES_PER_PACKET];
   struct ndpi_int_one_line_struct host_line;
+  struct ndpi_int_one_line_struct forwarded_line;
   struct ndpi_int_one_line_struct referer_line;
   struct ndpi_int_one_line_struct content_line;
   struct ndpi_int_one_line_struct accept_line;
@@ -530,7 +499,8 @@ typedef struct {
 /* ntop extensions */
 typedef struct ndpi_proto_defaults {
   char *protoName;
-  u_int16_t protoId;
+  u_int16_t protoId, protoIdx;
+  void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow);
 } ndpi_proto_defaults_t;
 
 typedef struct ndpi_default_ports_tree_node {
@@ -538,10 +508,15 @@ typedef struct ndpi_default_ports_tree_node {
   u_int16_t default_port;
 } ndpi_default_ports_tree_node_t;
 
+typedef struct _ndpi_automa {
+  void *ac_automa; /* Real type is AC_AUTOMATA_t */
+  u_int8_t ac_automa_finalized;
+} ndpi_automa;
+
 typedef struct ndpi_detection_module_struct {
   NDPI_PROTOCOL_BITMASK detection_bitmask;
   NDPI_PROTOCOL_BITMASK generic_http_packet_bitmask;
-  
+
   u_int32_t current_ts;
   u_int32_t ticks_per_second;
 
@@ -576,8 +551,6 @@ typedef struct ndpi_detection_module_struct {
   /* misc parameters */
   u_int32_t tcp_max_retransmission_window_size;
 
-  u_int32_t edonkey_upper_ports_only:1;
-  u_int32_t edonkey_safe_mode:1;
   u_int32_t directconnect_connection_ip_tick_timeout;
 
   /* subprotocol registration handler */
@@ -587,13 +560,8 @@ typedef struct ndpi_detection_module_struct {
   u_int ndpi_num_custom_protocols;
 
   /* HTTP (and soon DNS) host matching */
-  void *ac_automa; /* Real type is AC_AUTOMATA_t */
-  u_int8_t ac_automa_finalized;
+  ndpi_automa host_automa, content_automa;
 
-  /* pplive params */
-  u_int32_t pplive_connection_timeout;
-  /* ftp parameters */
-  u_int32_t ftp_connection_timeout;
   /* irc parameters */
   u_int32_t irc_timeout;
   /* gnutella parameters */
@@ -625,12 +593,14 @@ typedef struct ndpi_detection_module_struct {
   /* Cache */
   NDPI_REDIS redis;
 
+#ifdef USE_SKYPE_HEURISTICS
   /* Skype (we need a lock as this cache can be accessed concurrently) */
   struct ndpi_LruCache skypeCache;
 #ifndef __KERNEL__
   pthread_mutex_t skypeCacheLock;
 #else
   spinlock_t skypeCacheLock;
+#endif
 #endif
 
   /* ********************* */
@@ -645,18 +615,18 @@ typedef struct ndpi_flow_struct {
 #  if NDPI_PROTOCOL_HISTORY_SIZE > 5
 #    error protocol stack size not supported
 #  endif
-  
+
   struct {
     u_int8_t entry_is_real_protocol:5;
     u_int8_t current_stack_size_minus_one:3;
-  } 
-    
+  }
+
 #if !defined(WIN32)
     __attribute__ ((__packed__))
 #endif
     protocol_stack_info;
-#endif  
-  
+#endif
+
   /* init parameter, internal used to set up timestamp,... */
   u_int8_t init_finished:1;
   u_int8_t setup_packet_direction:1;
@@ -671,13 +641,17 @@ typedef struct ndpi_flow_struct {
     struct ndpi_flow_udp_struct udp;
   } l4;
 
-  u_char host_server_name[256]; /* HTTP host or DNS query */
-  u_char detected_os[32];       /* Via HTTP User-Agent    */
+  u_int8_t protocol_id_already_guessed;
+  u_int16_t guessed_protocol_id;
+  u_char host_server_name[256]; /* HTTP host or DNS query   */
+  u_char detected_os[32];       /* Via HTTP User-Agent      */
+  u_char nat_ip[24];            /* Via HTTP X-Forwarded-For */
 
   union {
     struct {
-      u_int8_t num_queries, num_answer_rrs;
-      u_int16_t query_type, query_class;
+      u_int8_t num_queries, num_answers, ret_code;
+      u_int8_t bad_packet /* the received packet looks bad */;
+      u_int16_t query_type, query_class, rsp_type;
     } dns;
   } protos;
   /* ALL protocol specific 64 bit variables here */
@@ -696,15 +670,16 @@ typedef struct ndpi_flow_struct {
 #endif
 #endif
 
+#ifdef NDPI_PROTOCOL_REDIS
+  u_int8_t redis_s2d_first_char, redis_d2s_first_char;
+#endif
+
   u_int16_t packet_counter;			// can be 0-65000
   u_int16_t packet_direction_counter[2];
   u_int16_t byte_counter[2];
 
 #ifdef NDPI_PROTOCOL_BITTORRENT
   u_int8_t bittorrent_stage;		// can be 0-255
-#endif
-#ifdef NDPI_PROTOCOL_EDONKEY
-  u_int32_t edk_stage:5;			// 0-17
 #endif
 #ifdef NDPI_PROTOCOL_DIRECTCONNECT
   u_int32_t directconnect_stage:2;	// 0-1
@@ -725,10 +700,6 @@ typedef struct ndpi_flow_struct {
 #ifdef NDPI_PROTOCOL_YAHOO
   u_int32_t yahoo_detection_finished:2;
 #endif
-#ifdef NDPI_PROTOCOL_PPLIVE
-  u_int32_t pplive_stage:3;			// 0-7
-#endif
-
 #ifdef NDPI_PROTOCOL_ZATTOO
   u_int32_t zattoo_stage:3;
 #endif
@@ -745,6 +716,38 @@ typedef struct ndpi_flow_struct {
 #ifdef NDPI_PROTOCOL_FLORENSIA
   u_int32_t florensia_stage:1;
 #endif
+#ifdef NDPI_PROTOCOL_SOCKS5
+  u_int32_t socks5_stage:2;	// 0-3
+#endif
+#ifdef NDPI_PROTOCOL_SOCKS4
+  u_int32_t socks4_stage:2;	// 0-3
+#endif
+#ifdef NDPI_PROTOCOL_EDONKEY
+  u_int32_t edonkey_stage:2;	// 0-3
+#endif
+#ifdef NDPI_PROTOCOL_FTP_CONTROL
+  u_int32_t ftp_control_stage:2;
+#endif
+#ifdef NDPI_PROTOCOL_FTP_DATA
+  u_int32_t ftp_data_stage:2;
+#endif
+#ifdef NDPI_PROTOCOL_RTMP
+  u_int32_t rtmp_stage:2;
+#endif
+#ifdef NDPI_PROTOCOL_PANDO
+  u_int32_t pando_stage:3;
+#endif
+#ifdef NDPI_PROTOCOL_STEAM
+  u_int32_t steam_stage:3;
+  u_int32_t steam_stage1:3;			// 0 - 4
+  u_int32_t steam_stage2:2;			// 0 - 2
+  u_int32_t steam_stage3:2;			// 0 - 2
+#endif
+#ifdef NDPI_PROTOCOL_PPLIVE
+  u_int32_t pplive_stage1:3;			// 0-6
+  u_int32_t pplive_stage2:2;			// 0-2
+  u_int32_t pplive_stage3:2;			// 0-2
+#endif
 
   /* internal structures to save functions calls */
   struct ndpi_packet_struct packet;
@@ -752,5 +755,5 @@ typedef struct ndpi_flow_struct {
   struct ndpi_id_struct *src;
   struct ndpi_id_struct *dst;
 } ndpi_flow_struct_t;
-		     
+
 #endif							/* __NDPI_STRUCTS_INCLUDE_FILE__ */
