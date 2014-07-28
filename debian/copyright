@@ -3,7 +3,8 @@ Upstream-Name: nDPI
 Source: https://svn.ntop.org/svn/ntop/trunk/nDPI/
 
 Files: *
-Copyright: 2011-2013 ntop.org
+Copyright: 2011-2014 ntop.org
+           2014 Tomasz Bujlow <tomasz@skatnet.dk>
            2013 Remy Mudingay <mudingay@ill.fr>
 	   2012 Gianluca Costa xplico.org
 	   2009-2011 ipoque GmbH
