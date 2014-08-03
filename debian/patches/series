@@ -1,1 +1,3 @@
+svn-version.patch
 include-install-dir.patch
+soname.patch
