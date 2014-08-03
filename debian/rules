@@ -14,6 +14,9 @@ get-orig-source:
 	rm -rf get-orig-source ../$(TARBALL)
 	mkdir get-orig-source
 	svn export -r $(SVN_REVISION) $(UPSTREAM_SVN_REPO) get-orig-source/$(PACKAGE)-$(SRC_VERSION)
+	# Remove binaries without source.
+	rm -fr get-orig-source/$(PACKAGE)-$(SRC_VERSION)/docs/nDPI_QuickStartGuide.p*
+	rm -fr get-orig-source/$(PACKAGE)-$(SRC_VERSION)/example/third-party/json-c
 	GZIP='--best --no-name' tar czf ../$(TARBALL) -C get-orig-source $(PACKAGE)-$(SRC_VERSION)
 	rm -rf get-orig-source
 
