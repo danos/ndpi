@@ -1,7 +1,9 @@
-libndpi.so.1 libndpi1 #MINVER#
+libndpi-1.4.0.8032.so libndpi-1.4.0.8032 #MINVER#
  NDPI_BITMASK_COMPARE@Base 1.4.0+svn6880
  NDPI_BITMASK_IS_EMPTY@Base 1.4.0+svn6880
  NDPI_DUMP_BITMASK@Base 1.4.0+svn6880
+ NDPI_PROTOCOL_IP_clear@Base 1.4.0+svn8032
+ NDPI_PROTOCOL_IP_is_set@Base 1.4.0+svn8032
  ac_automata_add@Base 1.4.0+svn6712
  ac_automata_display@Base 1.4.0+svn6712
  ac_automata_finalize@Base 1.4.0+svn6712
@@ -9,16 +11,14 @@ libndpi.so.1 libndpi1 #MINVER#
  ac_automata_release@Base 1.4.0+svn6712
  ac_automata_reset@Base 1.4.0+svn6712
  ac_automata_search@Base 1.4.0+svn6712
- add_skype_connection@Base 1.4.0+svn6712
+ check_ndpi_flow_func@Base 1.4.0+svn8032
+ check_ndpi_other_flow_func@Base 1.4.0+svn8032
+ check_ndpi_tcp_flow_func@Base 1.4.0+svn8032
+ check_ndpi_udp_flow_func@Base 1.4.0+svn8032
+ content_match@Base 1.4.0+svn8032
  getSSLcertificate@Base 1.4.0+svn6712
  host_match@Base 1.4.0+svn6712
- is_skype_connection@Base 1.4.0+svn6712
- lru_allocCacheNumericNode@Base 1.4.0+svn6712
- lru_allocCacheStringNode@Base 1.4.0+svn6712
- ndpi_add_host_url_subprotocol_to_automa@Base 1.4.0+svn6712
- ndpi_add_to_lru_cache_num@Base 1.4.0+svn6712
- ndpi_add_to_lru_cache_str@Base 1.4.0+svn6712
- ndpi_add_to_lru_cache_str_timeout@Base 1.4.0+svn6712
+ ndpi_add_content_subprotocol@Base 1.4.0+svn8032
  ndpi_apply_flow_protocol_to_packet@Base 1.4.0+svn6712
  ndpi_build_default_ports@Base 1.4.0+svn6712
  ndpi_build_default_ports_range@Base 1.4.0+svn6712
@@ -29,7 +29,6 @@ libndpi.so.1 libndpi1 #MINVER#
  ndpi_bytestream_to_number@Base 1.4.0+svn6712
  ndpi_calloc@Base 1.4.0+svn6712
  ndpi_check_for_email_address@Base 1.4.0+svn6712
- ndpi_create_empty_automa@Base 1.4.0+svn6712
  ndpi_default_ports_tree_node_t_walker@Base 1.4.0+svn6712
  ndpi_detection_build_key@Base 1.4.0+svn6712
  ndpi_detection_flow_protocol_history_contains_protocol@Base 1.4.0+svn6712
@@ -39,13 +38,9 @@ libndpi.so.1 libndpi1 #MINVER#
  ndpi_detection_get_sizeof_ndpi_id_struct@Base 1.4.0+svn6712
  ndpi_detection_process_packet@Base 1.4.0+svn6712
  ndpi_dump_protocols@Base 1.4.0+svn6712
- ndpi_enable_cache@Base 1.4.0+svn6712
  ndpi_exit_detection_module@Base 1.4.0+svn6712
- ndpi_find_lru_cache_num@Base 1.4.0+svn6712
- ndpi_find_lru_cache_str@Base 1.4.0+svn6712
  ndpi_find_port_based_protocol@Base 1.4.0+svn6712
  ndpi_free@Base 1.4.0+svn6712
- ndpi_free_lru_cache@Base 1.4.0+svn6712
  ndpi_get_num_supported_protocols@Base 1.4.0+svn6712
  ndpi_get_proto_by_id@Base 1.4.0+svn6712
  ndpi_get_proto_name@Base 1.4.0+svn6712
@@ -53,18 +48,18 @@ libndpi.so.1 libndpi1 #MINVER#
  ndpi_guess_undetected_protocol@Base 1.4.0+svn6712
  ndpi_handle_rule@Base 1.4.0+svn6712
  ndpi_init_detection_module@Base 1.4.0+svn6712
- ndpi_init_lru_cache@Base 1.4.0+svn6712
  ndpi_int_add_connection@Base 1.4.0+svn6712
  ndpi_int_change_flow_protocol@Base 1.4.0+svn6712
  ndpi_int_change_packet_protocol@Base 1.4.0+svn6712
  ndpi_int_change_protocol@Base 1.4.0+svn6712
  ndpi_int_reset_packet_protocol@Base 1.4.0+svn6712
  ndpi_int_reset_protocol@Base 1.4.0+svn6712
- ndpi_ip_clear@Base 1.4.0+svn6712
- ndpi_ip_is_set@Base 1.4.0+svn6712
+ ndpi_ips_match@Base 1.4.0+svn8032
  ndpi_load_protocols_file@Base 1.4.0+svn6712
  ndpi_malloc@Base 1.4.0+svn6712
+ ndpi_match_content_subprotocol@Base 1.4.0+svn8032
  ndpi_match_string_subprotocol@Base 1.4.0+svn6712
+ ndpi_net_match@Base 1.4.0+svn8032
  ndpi_packet_dst_ip_eql@Base 1.4.0+svn6712
  ndpi_packet_dst_ip_get@Base 1.4.0+svn6712
  ndpi_packet_src_ip_eql@Base 1.4.0+svn6712
@@ -78,11 +73,13 @@ libndpi.so.1 libndpi1 #MINVER#
  ndpi_search_aimini@Base 1.4.0+svn6712
  ndpi_search_applejuice_tcp@Base 1.4.0+svn6712
  ndpi_search_armagetron_udp@Base 1.4.0+svn6712
+ ndpi_search_ayiya@Base 1.4.0+svn8032
  ndpi_search_battlefield@Base 1.4.0+svn6712
  ndpi_search_bgp@Base 1.4.0+svn6712
  ndpi_search_bittorrent@Base 1.4.0+svn6712
  ndpi_search_ciscovpn@Base 1.4.0+svn6712
  ndpi_search_citrix@Base 1.4.0+svn6712
+ ndpi_search_collectd@Base 1.4.0+svn8032
  ndpi_search_corba@Base 1.4.0+svn6712
  ndpi_search_crossfire_tcp_udp@Base 1.4.0+svn6712
  ndpi_search_dcerpc@Base 1.4.0+svn6712
@@ -97,9 +94,9 @@ libndpi.so.1 libndpi1 #MINVER#
  ndpi_search_fasttrack_tcp@Base 1.4.0+svn6712
  ndpi_search_fiesta@Base 1.4.0+svn6712
  ndpi_search_filetopia_tcp@Base 1.4.0+svn6712
- ndpi_search_flash@Base 1.4.0+svn6712
  ndpi_search_florensia@Base 1.4.0+svn6712
- ndpi_search_ftp_tcp@Base 1.4.0+svn6712
+ ndpi_search_ftp_control@Base 1.4.0+svn8032
+ ndpi_search_ftp_data@Base 1.4.0+svn8032
  ndpi_search_gnutella@Base 1.4.0+svn6712
  ndpi_search_gtp@Base 1.4.0+svn6712
  ndpi_search_guildwars_tcp@Base 1.4.0+svn6712
@@ -124,6 +121,7 @@ libndpi.so.1 libndpi1 #MINVER#
  ndpi_search_maplestory@Base 1.4.0+svn6712
  ndpi_search_mdns@Base 1.4.0+svn6712
  ndpi_search_meebo@Base 1.4.0+svn6712
+ ndpi_search_megaco@Base 1.4.0+svn8032
  ndpi_search_mgcp@Base 1.4.0+svn6712
  ndpi_search_mms_tcp@Base 1.4.0+svn6712
  ndpi_search_msn@Base 1.4.0+svn6712
@@ -138,18 +136,20 @@ libndpi.so.1 libndpi1 #MINVER#
  ndpi_search_openvpn@Base 1.4.0+svn6712
  ndpi_search_oracle@Base 1.4.0+svn6712
  ndpi_search_oscar@Base 1.4.0+svn6712
+ ndpi_search_pando@Base 1.4.0+svn8032
  ndpi_search_pcanywhere@Base 1.4.0+svn6712
- ndpi_search_popo_tcp_udp@Base 1.4.0+svn6712
  ndpi_search_postgres_tcp@Base 1.4.0+svn6712
- ndpi_search_pplive_tcp_udp@Base 1.4.0+svn6712
+ ndpi_search_pplive@Base 1.4.0+svn8032
  ndpi_search_ppstream@Base 1.4.0+svn6712
  ndpi_search_pptp@Base 1.4.0+svn6712
  ndpi_search_qq@Base 1.4.0+svn6712
  ndpi_search_quake@Base 1.4.0+svn6712
  ndpi_search_radius@Base 1.4.0+svn6712
  ndpi_search_rdp@Base 1.4.0+svn6712
+ ndpi_search_redis@Base 1.4.0+svn8032
  ndpi_search_rsync@Base 1.4.0+svn6712
  ndpi_search_rtcp@Base 1.4.0+svn6712
+ ndpi_search_rtmp@Base 1.4.0+svn8032
  ndpi_search_rtp@Base 1.4.0+svn6712
  ndpi_search_rtsp_tcp_udp@Base 1.4.0+svn6712
  ndpi_search_sflow@Base 1.4.0+svn6712
@@ -159,6 +159,8 @@ libndpi.so.1 libndpi1 #MINVER#
  ndpi_search_skype@Base 1.4.0+svn6712
  ndpi_search_smb_tcp@Base 1.4.0+svn6712
  ndpi_search_snmp@Base 1.4.0+svn6712
+ ndpi_search_socks4@Base 1.4.0+svn8032
+ ndpi_search_socks5@Base 1.4.0+svn8032
  ndpi_search_socrates@Base 1.4.0+svn6712
  ndpi_search_sopcast@Base 1.4.0+svn6712
  ndpi_search_soulseek_tcp@Base 1.4.0+svn6712
@@ -181,6 +183,7 @@ libndpi.so.1 libndpi1 #MINVER#
  ndpi_search_tor@Base 1.4.0+svn6712
  ndpi_search_tvants_udp@Base 1.4.0+svn6712
  ndpi_search_tvuplayer@Base 1.4.0+svn6712
+ ndpi_search_twitter@Base 1.4.0+svn8032
  ndpi_search_usenet_tcp@Base 1.4.0+svn6712
  ndpi_search_veohtv_tcp@Base 1.4.0+svn6712
  ndpi_search_viber@Base 1.4.0+svn6712
@@ -195,7 +198,8 @@ libndpi.so.1 libndpi1 #MINVER#
  ndpi_search_xdmcp@Base 1.4.0+svn6712
  ndpi_search_yahoo@Base 1.4.0+svn6712
  ndpi_search_zattoo@Base 1.4.0+svn6712
- ndpi_set_automa@Base 1.4.0+svn6712
+ ndpi_search_zmq@Base 1.4.0+svn8032
+ ndpi_set_bitmask_protocol_detection@Base 1.4.0+svn8032
  ndpi_set_proto_defaults@Base 1.4.0+svn6712
  ndpi_set_protocol_detection_bitmask2@Base 1.4.0+svn6712
  ndpi_strdup@Base 1.4.0+svn6712
