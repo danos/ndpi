@@ -11,7 +11,7 @@ Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/ndpi.git
 Package: libndpi-dev
 Section: libdevel
 Architecture: any
-Depends: libndpi-1.4.0.8032 (= ${binary:Version}), ${misc:Depends}
+Depends: libndpi-1.4.0.8053 (= ${binary:Version}), ${misc:Depends}
 Description: extensible deep packet inspection library - development files
  nDPI is a ntop-maintained superset of the popular OpenDPI library. Released
  under the LGPL license, its goal is to extend the original library by adding
@@ -27,7 +27,7 @@ Description: extensible deep packet inspection library - development files
  .
  This package contains the static library and compilation headers.
 
-Package: libndpi-1.4.0.8032
+Package: libndpi-1.4.0.8053
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
