@@ -1,3 +1,4 @@
-svn-version.patch
+#svn-version.patch
 include-install-dir.patch
-soname.patch
+#soname.patch
+ndpi-reader-build.patch
