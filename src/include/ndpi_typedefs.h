@@ -1,8 +1,8 @@
 /*
- * ndpi_structs.h
+ * ndpi_typedefs.h
  *
- * Copyright (C) 2009-2011 by ipoque GmbH
- * Copyright (C) 2011-13 - ntop.org
+ * Copyright (C) 2011-14 - ntop.org
+ * Copyright (C) 2009-11 - ipoque GmbH
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -22,13 +22,26 @@
  *
  */
 
+#ifndef __NDPI_TYPEDEFS_FILE__
+#define __NDPI_TYPEDEFS_FILE__
 
-#ifndef __NDPI_STRUCTS_INCLUDE_FILE__
-#define __NDPI_STRUCTS_INCLUDE_FILE__
+typedef enum {
+  ndpi_preorder,
+  ndpi_postorder,
+  ndpi_endorder,
+  ndpi_leaf
+} ndpi_VISIT;
 
-#include "linux_compat.h"
+typedef struct node_t {
+  char	  *key;
+  struct node_t *left, *right;
+} ndpi_node;
 
-#include "ndpi_define.h"
+typedef u_int32_t ndpi_ndpi_mask;
+
+typedef struct ndpi_protocol_bitmask_struct {
+  ndpi_ndpi_mask  fds_bits[NDPI_NUM_FDS_BITS];
+} ndpi_protocol_bitmask_struct_t;
 
 #ifdef NDPI_DETECTION_SUPPORT_IPV6
 struct ndpi_ip6_addr {
@@ -74,8 +87,6 @@ typedef union {
 #endif
 } ndpi_ip_addr_t;
 
-
-# define MAX_PACKET_COUNTER 65000
 
 typedef struct ndpi_id_struct {
   /* detected_protocol_bitmask:
@@ -323,19 +334,12 @@ struct ndpi_flow_tcp_struct {
   u_char prev_zmq_pkt[10];
 #endif
 }
-
-/* ************************************************** */
-
 #if !defined(WIN32)
   __attribute__ ((__packed__))
 #endif
   ;
 
-#if defined(WIN32)
-#define pthread_t              HANDLE
-#define pthread_mutex_t        HANDLE
-#define pthread_rwlock_t       pthread_mutex_t
-#endif
+/* ************************************************** */
 
 struct ndpi_flow_udp_struct {
 #ifdef NDPI_PROTOCOL_BATTLEFIELD
@@ -375,28 +379,12 @@ struct ndpi_flow_udp_struct {
   u_int8_t teamviewer_stage;
 #endif
 }
-
-/* ************************************************** */
-
 #if !defined(WIN32)
   __attribute__ ((__packed__))
 #endif
   ;
 
-#if defined(WIN32)
-#define pthread_t              HANDLE
-#define pthread_mutex_t        HANDLE
-#define pthread_rwlock_t       pthread_mutex_t
-
-extern unsigned long waitForNextEvent(unsigned long ulDelay /* ms */);
-#define sleep(a /* sec */) waitForNextEvent(1000*a /* ms */)
-
-#define pthread_rwlock_init                     pthread_mutex_init
-#define pthread_rwlock_wrlock                   pthread_mutex_lock
-#define pthread_rwlock_rdlock                   pthread_mutex_lock
-#define pthread_rwlock_unlock                   pthread_mutex_unlock
-#define pthread_rwlock_destroy					pthread_mutex_destroy
-#endif
+/* ************************************************** */
 
 typedef struct ndpi_int_one_line_struct {
   const u_int8_t *ptr;
@@ -455,7 +443,6 @@ typedef struct ndpi_packet_struct {
   struct ndpi_int_one_line_struct http_method;
   struct ndpi_int_one_line_struct http_response;
 
-
   u_int16_t l3_packet_len;
   u_int16_t l4_packet_len;
   u_int16_t payload_packet_len;
@@ -489,7 +476,6 @@ typedef struct ndpi_subprotocol_conf_struct {
   void (*func) (struct ndpi_detection_module_struct *, char *attr, char *value, int protocol_id);
 } ndpi_subprotocol_conf_struct_t;
 
-#define MAX_DEFAULT_PORTS        5
 
 typedef struct {
   u_int16_t port_low, port_high;
@@ -741,4 +727,16 @@ typedef struct ndpi_flow_struct {
   struct ndpi_id_struct *dst;
 } ndpi_flow_struct_t;
 
-#endif							/* __NDPI_STRUCTS_INCLUDE_FILE__ */
+typedef enum {
+  NDPI_REAL_PROTOCOL = 0,
+  NDPI_CORRELATED_PROTOCOL = 1
+} ndpi_protocol_type_t;
+
+
+typedef enum {
+  NDPI_LOG_ERROR,
+  NDPI_LOG_TRACE,
+  NDPI_LOG_DEBUG
+} ndpi_log_level_t;
+
+#endif/* __NDPI_TYPEDEFS_FILE__ */
