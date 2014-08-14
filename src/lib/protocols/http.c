@@ -29,20 +29,21 @@
 static void ndpi_int_http_add_connection(struct ndpi_detection_module_struct *ndpi_struct,
 					 struct ndpi_flow_struct *flow,
 					 u_int32_t protocol) {
-  ndpi_search_tcp_or_udp(ndpi_struct, flow);
 
   if(flow->detected_protocol_stack[0] == NDPI_PROTOCOL_UNKNOWN) {
     /* This is HTTP and it is not a sub protocol (e.g. skype or dropbox) */
 
     if(protocol != NDPI_PROTOCOL_HTTP) {
+      ndpi_search_tcp_or_udp(ndpi_struct, flow);
       ndpi_int_add_connection(ndpi_struct, flow, protocol, NDPI_CORRELATED_PROTOCOL);
-    } else {
+    }else {
       ndpi_int_reset_protocol(flow);
       ndpi_int_add_connection(ndpi_struct, flow, protocol, NDPI_REAL_PROTOCOL);
-    }
 
+    }
     flow->http_detected = 1;
   }
+
 }
 
 #ifdef NDPI_CONTENT_FLASH
@@ -187,8 +188,7 @@ static void parseHttpSubprotocol(struct ndpi_detection_module_struct *ndpi_struc
     }
   }
 
-  if((packet->detected_protocol_stack[0] == NDPI_PROTOCOL_HTTP)
-     || (packet->detected_protocol_stack[0] == NDPI_PROTOCOL_HTTP_PROXY))
+  if(flow->l4.tcp.http_stage == 0)
     {
       /* Try matching subprotocols */
       // ndpi_match_string_subprotocol(ndpi_struct, flow, (char*)packet->host_line.ptr, packet->host_line.len);
@@ -215,14 +215,6 @@ static void check_content_type_and_change_protocol(struct ndpi_detection_module_
 
   u_int8_t a;
 
-  if(packet->content_line.ptr != NULL && packet->content_line.len != 0) {
-    NDPI_LOG(NDPI_PROTOCOL_HTTP, ndpi_struct, NDPI_LOG_DEBUG, "Content Type Line found %.*s\n",
-	     packet->content_line.len, packet->content_line.ptr);
-
-    ndpi_match_content_subprotocol(ndpi_struct, flow, (char*)packet->content_line.ptr, packet->content_line.len);
-  }
-
-  /* check user agent here too */
   if(packet->user_agent_line.ptr != NULL && packet->user_agent_line.len != 0) {
     /* Format:
        Mozilla/5.0 (iPad; U; CPU OS 3_2 like Mac OS X; en-us) AppleWebKit/531.21.10 (KHTML, like Gecko) ....
@@ -307,9 +299,14 @@ static void check_content_type_and_change_protocol(struct ndpi_detection_module_
 
     parseHttpSubprotocol(ndpi_struct, flow);
 
-    if(packet->detected_protocol_stack[0] != NDPI_PROTOCOL_HTTP) {
-      ndpi_int_http_add_connection(ndpi_struct, flow, packet->detected_protocol_stack[0]);
-      return; /* We have identified a sub-protocol so we're done */
+    if(flow->detected_protocol_stack[0] == NDPI_PROTOCOL_UNKNOWN)
+      ndpi_match_string_subprotocol(ndpi_struct, flow, (char *)flow->host_server_name, strlen((const char *)flow->host_server_name));
+
+    if(flow->detected_protocol_stack[0] != NDPI_PROTOCOL_UNKNOWN) {
+      if(packet->detected_protocol_stack[0] != NDPI_PROTOCOL_HTTP) {
+	ndpi_int_http_add_connection(ndpi_struct, flow, packet->detected_protocol_stack[0]);
+	return; /* We have identified a sub-protocol so we're done */
+      }
     }
   }
 
@@ -323,6 +320,7 @@ static void check_content_type_and_change_protocol(struct ndpi_detection_module_
     }
 #endif
   }
+
   /* search for line startin with "Icy-MetaData" */
 #ifdef NDPI_CONTENT_MPEG
   for (a = 0; a < packet->parsed_lines; a++) {
@@ -336,6 +334,14 @@ static void check_content_type_and_change_protocol(struct ndpi_detection_module_
 #endif
 #endif
 
+  if(packet->content_line.ptr != NULL && packet->content_line.len != 0) {
+    NDPI_LOG(NDPI_PROTOCOL_HTTP, ndpi_struct, NDPI_LOG_DEBUG, "Content Type Line found %.*s\n",
+	     packet->content_line.len, packet->content_line.ptr);
+    
+    ndpi_match_content_subprotocol(ndpi_struct, flow, (char*)packet->content_line.ptr, packet->content_line.len);
+  }
+
+  /* check user agent here too */
 }
 
 static void check_http_payload(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
@@ -667,7 +673,6 @@ static void ndpi_check_http_tcp(struct ndpi_detection_module_struct *ndpi_struct
 
   /* Check if we so far detected the protocol in the request or not. */
   if (flow->l4.tcp.http_stage == 0) {
-
     flow->http_detected = 0;
 
     NDPI_LOG(NDPI_PROTOCOL_HTTP, ndpi_struct, NDPI_LOG_DEBUG, "HTTP stage %d: \n",
@@ -675,11 +680,6 @@ static void ndpi_check_http_tcp(struct ndpi_detection_module_struct *ndpi_struct
 
     filename_start = http_request_url_offset(ndpi_struct, flow);
 
-    /* FOUND HTTP CONNECT PROTOCOL */
-    if (packet->detected_protocol_stack[0] != NDPI_PROTOCOL_UNKNOWN) {
-      check_content_type_and_change_protocol(ndpi_struct, flow);
-      return;
-    }
 
     if (filename_start == 0) {
       NDPI_LOG(NDPI_PROTOCOL_HTTP, ndpi_struct, NDPI_LOG_DEBUG,
@@ -717,29 +717,42 @@ static void ndpi_check_http_tcp(struct ndpi_detection_module_struct *ndpi_struct
     NDPI_LOG(NDPI_PROTOCOL_HTTP, ndpi_struct, NDPI_LOG_DEBUG,
 	     "Found more than one line, we look further for the next packet...\n");
 
-    if ((packet->http_url_name.len > 7)
-        && (!strncmp((const char*) packet->http_url_name.ptr, "http://", 7))) {
-      NDPI_LOG(NDPI_PROTOCOL_HTTP, ndpi_struct, NDPI_LOG_DEBUG, "HTTP_PROXY Found.\n");
-      ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_HTTP_PROXY);
-      check_content_type_and_change_protocol(ndpi_struct, flow);
-    }
+    if(packet->line[0].len >= (9 + filename_start)
+        && memcmp(&packet->line[0].ptr[packet->line[0].len - 9], " HTTP/1.", 8) == 0) {
 
-    if(filename_start == 8 && (memcmp(packet->payload, "CONNECT ", 8) == 0)) /* nathan@getoffmalawn.com */
-    {
-      NDPI_LOG(NDPI_PROTOCOL_HTTP, ndpi_struct, NDPI_LOG_DEBUG, "HTTP_CONNECT Found.\n");
-      ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_HTTP_CONNECT);
-      check_content_type_and_change_protocol(ndpi_struct, flow);
-    }
+      packet->http_url_name.ptr = &packet->payload[filename_start];
+      packet->http_url_name.len = packet->line[0].len - (filename_start + 9);
 
-    NDPI_LOG(NDPI_PROTOCOL_HTTP, ndpi_struct, NDPI_LOG_DEBUG,
-	     "HTTP START Found, we will look further for the response...\n");
+      packet->http_method.ptr = packet->line[0].ptr;
+      packet->http_method.len = filename_start - 1;
 
-    if (packet->host_line.ptr != NULL) {
-      flow->http_detected = 1;
+      if((packet->http_url_name.len > 7)
+          && (!strncmp((const char*) packet->http_url_name.ptr, "http://", 7))) {
+        NDPI_LOG(NDPI_PROTOCOL_HTTP, ndpi_struct, NDPI_LOG_DEBUG, "HTTP_PROXY Found.\n");
+        ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_HTTP_PROXY);
+        check_content_type_and_change_protocol(ndpi_struct, flow);
+      }
+
+      if(filename_start == 8 && (memcmp(packet->payload, "CONNECT ", 8) == 0)) /* nathan@getoffmalawn.com */
+      {
+        NDPI_LOG(NDPI_PROTOCOL_HTTP, ndpi_struct, NDPI_LOG_DEBUG, "HTTP_CONNECT Found.\n");
+        ndpi_int_http_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_HTTP_CONNECT);
+        check_content_type_and_change_protocol(ndpi_struct, flow);
+      }
+
+
       NDPI_LOG(NDPI_PROTOCOL_HTTP, ndpi_struct, NDPI_LOG_DEBUG,
-	       "HTTP START Found, we will look further for the response...\n");
-      flow->l4.tcp.http_stage = packet->packet_direction + 1; // packet_direction 0: stage 1, packet_direction 1: stage 2
-      return;
+          "HTTP START Found, we will look for sub-protocols (content and host)...\n");
+
+      check_content_type_and_change_protocol(ndpi_struct, flow);
+
+      if(packet->host_line.ptr != NULL) {
+        flow->http_detected = 1;
+        NDPI_LOG(NDPI_PROTOCOL_HTTP, ndpi_struct, NDPI_LOG_DEBUG,
+            "HTTP START Found, we will look further for the response...\n");
+        flow->l4.tcp.http_stage = packet->packet_direction + 1; // packet_direction 0: stage 1, packet_direction 1: stage 2
+        return;
+      }
     }
 
     NDPI_LOG(NDPI_PROTOCOL_HTTP, ndpi_struct, NDPI_LOG_DEBUG, "HTTP: REQUEST NOT HTTP CONFORM\n");
@@ -760,7 +773,7 @@ static void ndpi_check_http_tcp(struct ndpi_detection_module_struct *ndpi_struct
 	       " SECOND PAYLOAD TRAFFIC FROM CLIENT, FIRST PACKET MIGHT HAVE BEEN HTTP...UNKNOWN TRAFFIC, HERE FOR HTTP again.. \n");
 
       ndpi_parse_packet_line_info(ndpi_struct, flow);
-
+      
       if (packet->parsed_lines <= 1) {
         /* wait some packets in case request is split over more than 2 packets */
         if (flow->packet_counter < 5) {
@@ -835,8 +848,11 @@ void ndpi_search_http_tcp(struct ndpi_detection_module_struct *ndpi_struct,
     return;
   }
 
+  if(packet->detected_protocol_stack[0] != NDPI_PROTOCOL_UNKNOWN) {
+     return;
+   }
+
   NDPI_LOG(NDPI_PROTOCOL_HTTP, ndpi_struct, NDPI_LOG_DEBUG, "HTTP detection...\n");
   ndpi_check_http_tcp(ndpi_struct, flow);
-
 }
 #endif
