@@ -1,4 +1,4 @@
-libndpi-1.4.0.8053.so libndpi-1.4.0.8053 #MINVER#
+libndpi1a.so libndpi1 #MINVER#
  NDPI_BITMASK_COMPARE@Base 1.4.0+svn6880
  NDPI_BITMASK_IS_EMPTY@Base 1.4.0+svn6880
  NDPI_DUMP_BITMASK@Base 1.4.0+svn6880
