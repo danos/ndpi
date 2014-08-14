@@ -1,0 +1,60 @@
+Description: Add --with-system-json-c flag to build against system libjson-c.
+Author: Ludovico Cavedon <cavedon@debian.org>
+
+Index: ndpi/configure.ac
+===================================================================
+--- ndpi.orig/configure.ac
++++ ndpi/configure.ac
+@@ -34,8 +34,23 @@ else
+   PCAP_LIB="-lpcap"
+ fi
+ 
++AC_ARG_WITH([system-json-c],
++            [AS_HELP_STRING([--with-system-json-c],
++                            [use system libjson-c (default is no)])])
++if test "x$with_system_json_c" = "xyes"; then
++    PKG_CHECK_MODULES([JSON_C], [json-c])
++else
++    JSON_C_CFLAGS=-Ithird-party/json-c
++    JSON_C_LIBS=third-party/json-c/libjson-c.la
++fi
++
++AM_CONDITIONAL(JSON_C_SYSTEM, [test "x$with_system_json_c" = "xyes"])
++
+ AC_CONFIG_FILES([Makefile src/lib/Makefile example/Makefile libndpi.pc])
+ AC_CONFIG_HEADERS(config.h)
++AC_SUBST(JSON_C_CFLAGS)
++AC_SUBST(JSON_C_LIBS)
++AC_SUBST(JSON_C_SYSTEM)
+ AC_SUBST(SVN_RELEASE)
+ AC_SUBST(SVN_DATE)
+ AC_SUBST(PCAP_INC)
+Index: ndpi/example/Makefile.am
+===================================================================
+--- ndpi.orig/example/Makefile.am
++++ ndpi/example/Makefile.am
+@@ -1,13 +1,15 @@
+ bin_PROGRAMS = ndpiReader
+ 
+-AM_CPPFLAGS = -I$(top_srcdir)/src/include -I third-party/json-c
++AM_CPPFLAGS = -I$(top_srcdir)/src/include @JSON_C_CFLAGS@
+ AM_CFLAGS = @PTHREAD_CFLAGS@
+ 
+-LDADD = $(top_builddir)/src/lib/libndpi.la third-party/json-c/libjson-c.la @PTHREAD_LIBS@
++LDADD = $(top_builddir)/src/lib/libndpi.la @JSON_C_LIBS@ @PTHREAD_LIBS@
+ LDFLAGS = -static
+ 
+ ndpiReader_SOURCES = ndpiReader.c
+ 
++if !JSON_C_SYSTEM
++
+ # Explictely state that to build ndpiReader.o we first need json_config.h.
+ ndpiReader.o: third-party/json-c/libjson-c.la
+ 
+@@ -21,4 +23,6 @@ clean-local:
+ distclean-local:
+ 	cd third-party/json-c && make distclean
+ 
++endif
++
+ EXTRA_DIST = third-party

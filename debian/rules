@@ -3,6 +3,9 @@
 %:
 	dh $@ --with autoreconf
 
+override_dh_auto_configure:
+	dh_auto_configure -- --with-system-json-c --enable-examples-dynamic-linking
+
 # Adapted from http://wiki.debian.org/SandroTosi/Svn_get-orig-source
 DEB_UPSTREAM_VERSION=$(shell dpkg-parsechangelog \
 		     | sed -rne 's/^Version: ([^-]+).*/\1/p')
