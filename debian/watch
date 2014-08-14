@@ -1,1 +1,4 @@
-# Nothing to watch, there's no tarball release, only SVN without tags
+version=3
+opts="uversionmangle=s/_r?[0-9]*//,dversionmangle=s/\+(dfsg|repack)\d*$//" \
+      http://sf.net/ntop/libndpi-([0-9].*)\.(?:tar\.gz|tgz)
+
