@@ -49,6 +49,29 @@ Description: extensible deep packet inspection library - shared library
  .
  This package contains the shared library.
 
+Package: libndpi-dbg
+Architecture: any
+Section: debug
+Priority: extra
+Pre-Depends: ${misc:Pre-Depends}
+Depends: libndpi1a (= ${binary:Version}),
+         libndpi-bin (= ${binary:Version}),
+         ${misc:Depends}
+Description: extensible deep packet inspection library - debug symbols
+ nDPI is a ntop-maintained superset of the popular OpenDPI library. Released
+ under the LGPL license, its goal is to extend the original library by adding
+ new protocols that are otherwise available only on the paid version of
+ OpenDPI.
+ .
+ nDPI has also been modified to be suitable for traffic monitoring
+ applications, by disabling specific features that slow down the DPI engine
+ while being them un-necessary for network traffic monitoring.
+ .
+ With nDPI, it is possible to both detect known protocols on non-standard ports
+ (e.g. detect http non ports other than 80), and also the opposite.
+ .
+ This package contains the debug symbols for the shared library.
+
 Package: libndpi-bin
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
