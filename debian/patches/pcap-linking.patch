@@ -1,0 +1,38 @@
+Description: Avoid linking libndpi against libpcap.
+Author: Ludovico Cavedon <cavedon@debian.org>
+
+Index: ndpi/configure.ac
+===================================================================
+--- ndpi.orig/configure.ac
++++ ndpi/configure.ac
+@@ -16,7 +16,7 @@ AC_DEFINE_UNQUOTED(NDPI_SVN_DATE, "${SVN
+ 
+ AC_CHECK_HEADERS([netinet/in.h stdint.h stdlib.h string.h unistd.h])
+ 
+-AC_CHECK_LIB([pcap], [pcap_open_live])
++AC_CHECK_LIB([pcap], [pcap_open_live], [PCAP_LIB="-lpcap"])
+ 
+ if test $ac_cv_lib_pcap_pcap_open_live = "no"; then :
+    PCAP_HOME=$HOME/PF_RING/userland/libpcap
+@@ -30,8 +30,6 @@ if test $ac_cv_lib_pcap_pcap_open_live =
+      echo "ERROR: Please install it and try again"
+      exit
+    fi
+-else
+-  PCAP_LIB="-lpcap"
+ fi
+ 
+ AC_ARG_WITH([system-json-c],
+Index: ndpi/example/Makefile.am
+===================================================================
+--- ndpi.orig/example/Makefile.am
++++ ndpi/example/Makefile.am
+@@ -3,7 +3,7 @@ bin_PROGRAMS = ndpiReader
+ AM_CPPFLAGS = -I$(top_srcdir)/src/include @JSON_C_CFLAGS@
+ AM_CFLAGS = @PTHREAD_CFLAGS@
+ 
+-LDADD = $(top_builddir)/src/lib/libndpi.la @JSON_C_LIBS@ @PTHREAD_LIBS@
++LDADD = $(top_builddir)/src/lib/libndpi.la @JSON_C_LIBS@ @PTHREAD_LIBS@ @PCAP_LIB@
+ if !EXAMPLES_DYNAMIC_LINK
+ AM_LDFLAGS = -static
+ endif
