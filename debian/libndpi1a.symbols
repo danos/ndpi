@@ -11,6 +11,7 @@ libndpi.so.1 libndpi1a #MINVER#
  ndpi_init_detection_module@Base 1.4.0+svn6712
  ndpi_load_protocols_file@Base 1.4.0+svn6712
  ndpi_revision@Base 1.4.0+svn6712
+ ndpi_set_proto_defaults@Base 1.4.0+svn6712
  ndpi_set_protocol_detection_bitmask2@Base 1.4.0+svn6712
  ndpi_tdelete@Base 1.4.0+svn6712
  ndpi_tdestroy@Base 1.4.0+svn6712

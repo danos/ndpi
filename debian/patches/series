@@ -1,3 +1,4 @@
 json-c-use-system.patch
 example-link-dynamic.patch
 pcap-linking.patch
+export-additional-symbols.patch
