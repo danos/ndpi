@@ -2,7 +2,8 @@ Source: ndpi
 Section: libs
 Priority: optional
 Maintainer: Ludovico Cavedon <cavedon@debian.org>
-Build-Depends: debhelper (>= 9), autotools-dev, dh-autoreconf, libjson-c-dev
+Build-Depends: debhelper (>= 9), autotools-dev, dh-autoreconf, libjson-c-dev,
+ libpcap-dev
 Standards-Version: 3.9.5
 Homepage: http://www.ntop.org/products/ndpi/
 Vcs-Git: git://anonscm.debian.org/collab-maint/ndpi.git
