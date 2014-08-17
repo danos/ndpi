@@ -1,6 +1,26 @@
-ndpi (1.5.0-1) UNRELEASED; urgency=medium
+ndpi (1.5.0-1) unstable; urgency=medium
 
-  * 
+  * Imported Upstream version 1.5.0
+  * Update copyright.
+  * Add README.Debian to point to upstream documentation.
+  * Update library symbols.
+  * Update Standards-Version to 3.9.5.
+  * Add ndpiReader.c example.
+  * Build ndpiReader into separate package libndpi-bin
+  * Update watch file for new stable release.
+  * Update debian/rules get-orig-source to support invoking uscan.
+  * Rename library package to libndpi1a.
+  * Remove all previous patches.
+  * Add example-link-dynamic.patch for dynamically linking examples against
+    libndpi.
+  * Add json-c-use-system.patch for using system libjson-c.
+  * Add pcap-linking.patch to avoid linking libndpi against libpcap.
+  * Include ndpiReader in libndpi-bin package.
+  * Add man page for ndpiReader.
+  * Add export-additional-symbols.patch to export ndpi_set_proto_defaults
+    symbol.
+  * Add Build-Depends on libpcap-dev and pkg-config.
+  * Add libndpi-dbg package with debug symbols.
 
  -- Ludovico Cavedon <cavedon@debian.org>  Thu, 14 Aug 2014 00:12:37 -0700
 
