@@ -6,8 +6,8 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
-/* Define to 1 if you have the `pcap' library (-lpcap). */
-#undef HAVE_LIBPCAP
+/* The JSON-C library is present */
+#undef HAVE_JSON_C
 
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
