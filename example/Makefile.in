@@ -98,8 +98,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am_ndpiReader_OBJECTS = ndpiReader.$(OBJEXT)
 ndpiReader_OBJECTS = $(am_ndpiReader_OBJECTS)
 ndpiReader_LDADD = $(LDADD)
-ndpiReader_DEPENDENCIES = $(top_builddir)/src/lib/libndpi.la \
-	third-party/json-c/libjson-c.la
+ndpiReader_DEPENDENCIES = $(top_builddir)/src/lib/libndpi.la
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -196,8 +195,9 @@ INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
+JSON_C_LIB = @JSON_C_LIB@
 LD = @LD@
-LDFLAGS = -static
+LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
 LIBS = @LIBS@
 LIBTOOL = @LIBTOOL@
@@ -287,11 +287,11 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-AM_CPPFLAGS = -I$(top_srcdir)/src/include -I third-party/json-c
+AM_CPPFLAGS = -I$(top_srcdir)/src/include @PCAP_INC@
 AM_CFLAGS = @PTHREAD_CFLAGS@
-LDADD = $(top_builddir)/src/lib/libndpi.la third-party/json-c/libjson-c.la @PTHREAD_LIBS@
+LDADD = $(top_builddir)/src/lib/libndpi.la @JSON_C_LIB@ @PTHREAD_LIBS@ @PCAP_LIB@
+AM_LDFLAGS = -static
 ndpiReader_SOURCES = ndpiReader.c
-EXTRA_DIST = third-party
 all: all-am
 
 .SUFFIXES:
@@ -539,14 +539,13 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic clean-libtool clean-local \
-	mostlyclean-am
+clean-am: clean-binPROGRAMS clean-generic clean-libtool mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
-	distclean-local distclean-tags
+	distclean-tags
 
 dvi: dvi-am
 
@@ -611,33 +610,21 @@ uninstall-am: uninstall-binPROGRAMS
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-am clean \
-	clean-binPROGRAMS clean-generic clean-libtool clean-local \
-	cscopelist-am ctags ctags-am distclean distclean-compile \
-	distclean-generic distclean-libtool distclean-local \
-	distclean-tags distdir dvi dvi-am html html-am info info-am \
-	install install-am install-binPROGRAMS install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
+	clean-binPROGRAMS clean-generic clean-libtool cscopelist-am \
+	ctags ctags-am distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-binPROGRAMS \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags tags-am uninstall uninstall-am uninstall-binPROGRAMS
 
 
-# Explictely state that to build ndpiReader.o we first need json_config.h.
-ndpiReader.o: third-party/json-c/libjson-c.la
-
-third-party/json-c/libjson-c.la:
-	cd third-party/json-c && ./configure
-	cd third-party/json-c && make libjson-c.la
-
-clean-local:
-	cd third-party/json-c && make clean
-
-distclean-local:
-	cd third-party/json-c && make distclean
+ndpiReader.o: ndpiReader.c
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
