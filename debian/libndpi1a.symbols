@@ -4,9 +4,11 @@ libndpi.so.1 libndpi1a #MINVER#
  ndpi_detection_process_packet@Base 1.4.0+svn6712
  ndpi_dump_protocols@Base 1.4.0+svn6712
  ndpi_exit_detection_module@Base 1.4.0+svn6712
+ ndpi_find_port_based_protocol@Base 1.5.1
  ndpi_free@Base 1.4.0+svn6712
  ndpi_get_num_supported_protocols@Base 1.4.0+svn6712
  ndpi_get_proto_name@Base 1.4.0+svn6712
+ ndpi_get_protocol_id@Base 1.5.1
  ndpi_guess_undetected_protocol@Base 1.4.0+svn6712
  ndpi_init_detection_module@Base 1.4.0+svn6712
  ndpi_load_protocols_file@Base 1.4.0+svn6712
