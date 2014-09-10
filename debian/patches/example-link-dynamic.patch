@@ -6,19 +6,18 @@ Index: ndpi/configure.ac
 ===================================================================
 --- ndpi.orig/configure.ac
 +++ ndpi/configure.ac
-@@ -44,7 +44,12 @@ else
-     JSON_C_LIBS=third-party/json-c/libjson-c.la
- fi
+@@ -50,6 +50,11 @@ fi
+ 
+ PKG_CHECK_MODULES([JSON_C], [json-c], [AC_DEFINE([HAVE_JSON_C], [1], [Use libjson-c])])
  
 +AC_ARG_ENABLE([examples-dynamic-linking],
 +             [AS_HELP_STRING([--enable-examples-dynamic-linking],
 +                             [dynamically link examples against libndpi (default is no)])])
-+
- AM_CONDITIONAL(JSON_C_SYSTEM, [test "x$with_system_json_c" = "xyes"])
 +AM_CONDITIONAL(EXAMPLES_DYNAMIC_LINK, [test "x$enable_examples_dynamic_linking" = "xyes"])
- 
++
  AC_CONFIG_FILES([Makefile src/lib/Makefile example/Makefile libndpi.pc])
  AC_CONFIG_HEADERS(config.h)
+ AC_SUBST(JSON_C_CFLAGS)
 Index: ndpi/example/Makefile.am
 ===================================================================
 --- ndpi.orig/example/Makefile.am
@@ -26,10 +25,9 @@ Index: ndpi/example/Makefile.am
 @@ -4,7 +4,9 @@ AM_CPPFLAGS = -I$(top_srcdir)/src/includ
  AM_CFLAGS = @PTHREAD_CFLAGS@
  
- LDADD = $(top_builddir)/src/lib/libndpi.la @JSON_C_LIBS@ @PTHREAD_LIBS@
--LDFLAGS = -static
+ LDADD = $(top_builddir)/src/lib/libndpi.la @JSON_C_LIBS@ @PTHREAD_LIBS@ @PCAP_LIB@
 +if !EXAMPLES_DYNAMIC_LINK
-+AM_LDFLAGS = -static
+ AM_LDFLAGS = -static
 +endif
  
  ndpiReader_SOURCES = ndpiReader.c

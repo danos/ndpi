@@ -5,56 +5,44 @@ Index: ndpi/configure.ac
 ===================================================================
 --- ndpi.orig/configure.ac
 +++ ndpi/configure.ac
-@@ -34,8 +34,23 @@ else
-   PCAP_LIB="-lpcap"
+@@ -48,21 +48,14 @@ else
+    fi
  fi
  
-+AC_ARG_WITH([system-json-c],
-+            [AS_HELP_STRING([--with-system-json-c],
-+                            [use system libjson-c (default is no)])])
-+if test "x$with_system_json_c" = "xyes"; then
-+    PKG_CHECK_MODULES([JSON_C], [json-c])
-+else
-+    JSON_C_CFLAGS=-Ithird-party/json-c
-+    JSON_C_LIBS=third-party/json-c/libjson-c.la
-+fi
-+
-+AM_CONDITIONAL(JSON_C_SYSTEM, [test "x$with_system_json_c" = "xyes"])
-+
+-if test -d /usr/local/include/json-c/; then :
+-   CFLAGS="$CFLAGS -I/usr/local/include/json-c/"
+-   LDFLAGS="$LDFLAGS -L/usr/local/lib -ljson-c"
+-else
+-  CFLAGS="$CFLAGS $(pkg-config --cflags json-c)"
+-  LDFLAGS="$LDFLAGS $(pkg-config --libs json-c)"
+-fi
+-
+-AC_CHECK_LIB(json-c, json_object_new_object, AC_DEFINE_UNQUOTED(HAVE_JSON_C, 1, [The JSON-C library is present]))
++PKG_CHECK_MODULES([JSON_C], [json-c], [AC_DEFINE([HAVE_JSON_C], [1], [Use libjson-c])])
+ 
  AC_CONFIG_FILES([Makefile src/lib/Makefile example/Makefile libndpi.pc])
  AC_CONFIG_HEADERS(config.h)
 +AC_SUBST(JSON_C_CFLAGS)
 +AC_SUBST(JSON_C_LIBS)
-+AC_SUBST(JSON_C_SYSTEM)
  AC_SUBST(SVN_RELEASE)
  AC_SUBST(SVN_DATE)
+-AC_SUBST(JSON_C_LIB)
  AC_SUBST(PCAP_INC)
+ AC_SUBST(PCAP_LIB)
+ 
 Index: ndpi/example/Makefile.am
 ===================================================================
 --- ndpi.orig/example/Makefile.am
 +++ ndpi/example/Makefile.am
-@@ -1,13 +1,15 @@
+@@ -1,9 +1,9 @@
  bin_PROGRAMS = ndpiReader
  
--AM_CPPFLAGS = -I$(top_srcdir)/src/include -I third-party/json-c
-+AM_CPPFLAGS = -I$(top_srcdir)/src/include @JSON_C_CFLAGS@
+-AM_CPPFLAGS = -I$(top_srcdir)/src/include @PCAP_INC@
++AM_CPPFLAGS = -I$(top_srcdir)/src/include @PCAP_INC@ @JSON_C_CFLAGS@
  AM_CFLAGS = @PTHREAD_CFLAGS@
  
--LDADD = $(top_builddir)/src/lib/libndpi.la third-party/json-c/libjson-c.la @PTHREAD_LIBS@
-+LDADD = $(top_builddir)/src/lib/libndpi.la @JSON_C_LIBS@ @PTHREAD_LIBS@
- LDFLAGS = -static
+-LDADD = $(top_builddir)/src/lib/libndpi.la @JSON_C_LIB@ @PTHREAD_LIBS@ @PCAP_LIB@
++LDADD = $(top_builddir)/src/lib/libndpi.la @JSON_C_LIBS@ @PTHREAD_LIBS@ @PCAP_LIB@
+ AM_LDFLAGS = -static
  
  ndpiReader_SOURCES = ndpiReader.c
- 
-+if !JSON_C_SYSTEM
-+
- # Explictely state that to build ndpiReader.o we first need json_config.h.
- ndpiReader.o: third-party/json-c/libjson-c.la
- 
-@@ -21,4 +23,6 @@ clean-local:
- distclean-local:
- 	cd third-party/json-c && make distclean
- 
-+endif
-+
- EXTRA_DIST = third-party
