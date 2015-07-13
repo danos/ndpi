@@ -1,5 +1,6 @@
 lib_LTLIBRARIES = libndpi.la
 
+CFLAGS += -fPIC -DPIC
 libndpi_la_CPPFLAGS = -I$(top_srcdir)/src/include/  -I$(top_srcdir)/src/lib/third_party/include/
 libndpi_la_LDFLAGS = -version-info 1:0:0 -export-symbols $(top_srcdir)/libndpi.sym
 
@@ -92,9 +93,10 @@ libndpi_la_SOURCES = ndpi_content_match.c.inc \
 		     protocols/pptp.c \
 		     protocols/qq.c \
 		     protocols/quake.c \
+		     protocols/quic.c \
 		     protocols/radius.c \
 		     protocols/rdp.c \
-		     protocols/redis.c \
+		     protocols/redis_net.c \
 		     protocols/rsync.c \
 		     protocols/rtcp.c \
 		     protocols/rtmp.c \
@@ -124,6 +126,7 @@ libndpi_la_SOURCES = ndpi_content_match.c.inc \
 		     protocols/tds.c \
 		     protocols/teamspeak.c \
 		     protocols/teamviewer.c \
+		     protocols/telegram.c \
 		     protocols/telnet.c \
 		     protocols/tftp.c \
 		     protocols/thunder.c \
@@ -134,6 +137,7 @@ libndpi_la_SOURCES = ndpi_content_match.c.inc \
 		     protocols/usenet.c \
 		     protocols/veohtv.c \
 		     protocols/viber.c \
+		     protocols/vhua.c \
 		     protocols/vmware.c \
 		     protocols/vnc.c \
 		     protocols/warcraft3.c \
@@ -145,7 +149,7 @@ libndpi_la_SOURCES = ndpi_content_match.c.inc \
 		     protocols/xdmcp.c \
 		     protocols/yahoo.c \
 		     protocols/zattoo.c \
-		     protocols/zmq.c \
+		     protocols/zeromq.c \
 		     third_party/include/actypes.h \
 		     third_party/include/ahocorasick.h \
 		     third_party/include/node.h \

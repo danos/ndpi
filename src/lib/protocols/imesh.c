@@ -2,7 +2,7 @@
  * imesh.c
  *
  * Copyright (C) 2009-2011 by ipoque GmbH
- * Copyright (C) 2011-13 - ntop.org
+ * Copyright (C) 2011-15 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -266,7 +266,7 @@ void ndpi_search_imesh_tcp_udp(struct ndpi_detection_module_struct *ndpi_struct,
 	  memcmp(packet->host_line.ptr, "login.bearshare.com",
 		 NDPI_STATICSTRING_LEN("login.bearshare.com")) == 0 &&
 	  memcmp(packet->line[4].ptr, "Accept-Encoding: identity",
-		 NDPI_STATICSTRING_LEN("Accept-Encoding: identity") == 0)) {
+		 NDPI_STATICSTRING_LEN("Accept-Encoding: identity")) == 0) {
 	NDPI_LOG(NDPI_PROTOCOL_IMESH, ndpi_struct, NDPI_LOG_DEBUG, "iMesh Login detected\n");
 	ndpi_int_imesh_add_connection(ndpi_struct, flow, NDPI_CORRELATED_PROTOCOL);
 	return;

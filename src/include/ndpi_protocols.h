@@ -1,7 +1,7 @@
 /*
  * ndpi_protocols.h
  *
- * Copyright (C) 2011-14 - ntop.org
+ * Copyright (C) 2011-15 - ntop.org
  * Copyright (C) 2009-2011 by ipoque GmbH
  *
  * This file is part of nDPI, an open source deep packet inspection
@@ -39,6 +39,10 @@ void ndpi_search_tcp_or_udp(struct ndpi_detection_module_struct *ndpi_struct, st
 
 /* Applications and other protocols. */
 void ndpi_search_bittorrent(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow);
+void ndpi_bittorrent_init(struct ndpi_detection_module_struct *ndpi_struct, u_int32_t size,u_int32_t timeout);
+void ndpi_bittorrent_done(struct ndpi_detection_module_struct *ndpi_struct);
+int ndpi_bittorrent_gc(struct hash_ip4p_table *ht,int key,time_t now);
+
 void ndpi_search_edonkey(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow);
 void ndpi_search_fasttrack_tcp(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow);
 void ndpi_search_gnutella(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow);
@@ -171,5 +175,8 @@ void ndpi_search_megaco(struct ndpi_detection_module_struct *ndpi_struct, struct
 void ndpi_search_redis(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow);
 void ndpi_search_zmq(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow);
 void ndpi_search_twitter(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow);
+void ndpi_search_vhua(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow);
+void ndpi_search_telegram(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow);
+void ndpi_search_quic(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow);
 
 #endif /* __NDPI_PROTOCOLS_INCLUDE_FILE__ */

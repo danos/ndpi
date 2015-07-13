@@ -1,7 +1,7 @@
 /*
  * skype.c
  *
- * Copyright (C) 2011-13 - ntop.org
+ * Copyright (C) 2011-15 - ntop.org
  *
  * nDPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -23,35 +23,32 @@
 
 #ifdef NDPI_PROTOCOL_SKYPE
 
-#if 0
-static u_int is_private_addr(u_int32_t addr) {
-  addr = ntohl(addr);
 
-  if(((addr & 0xFF000000) == 0x0A000000) /* 10.0.0.0/8  */
-     || ((addr & 0xFFF00000) == 0xAC100000) /* 172.16/12   */
-	|| ((addr & 0xFFFF0000) == 0xC0A80000) /* 192.168/16  */
-     || ((addr & 0xFF000000) == 0x7F000000) /* 127.0.0.0/8 */
-     )
-    return(1);
-  else
-    return(0);
+static u_int8_t is_skype_host(struct ndpi_detection_module_struct *ndpi_struct, u_int32_t host) {
+  struct in_addr pin;
+  
+  pin.s_addr = host;
+  
+  return((ndpi_network_ptree_match(ndpi_struct, &pin) == NDPI_PROTOCOL_SKYPE) ? 1 : 0);
 }
 
-static u_int64_t get_skype_key(u_int32_t src_host, u_int32_t dst_host) {
-  u_int64_t key;
-  
-  if(src_host < dst_host) {
-    key = src_host;
-    key = (key << 32)+dst_host;
-  } else {
-    key = dst_host;
-    key = (key << 32)+src_host;
+u_int8_t is_skype_flow(struct ndpi_detection_module_struct *ndpi_struct,
+		       struct ndpi_flow_struct *flow) {
+  struct ndpi_packet_struct *packet = &flow->packet;
+	
+  if(packet->iph) {
+    /*
+      Skype connections are identified by some SSL-like communications
+      without SSL certificate being exchanged
+    */	
+    if(is_skype_host(ndpi_struct, ntohl(packet->iph->saddr))
+       || is_skype_host(ndpi_struct, ntohl(packet->iph->daddr))) {
+      return(1);
+    }
   }
 
-  return(key);
+  return(0);
 }
-#endif
-
 
 static void ndpi_check_skype(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 {
@@ -59,22 +56,11 @@ static void ndpi_check_skype(struct ndpi_detection_module_struct *ndpi_struct, s
   // const u_int8_t *packet_payload = packet->payload;
   u_int32_t payload_len = packet->payload_packet_len;
 
-#if 0
-  printf("[len=%u][%02X %02X %02X %02X]\n", payload_len,
-	 packet->payload[0] & 0xFF,
-	 packet->payload[1] & 0xFF,
-	 packet->payload[2] & 0xFF,
-	 packet->payload[3] & 0xFF);
-#endif
-
   /*
     Skype AS8220
     212.161.8.0/24
   */
-  if(((ntohl(packet->iph->saddr) & 0xFFFFFF00 /* 255.255.255.0 */) == 0xD4A10800 /* 212.161.8.0 */)
-     || ((ntohl(packet->iph->daddr) & 0xFFFFFF00 /* 255.255.255.0 */) == 0xD4A10800 /* 212.161.8.0 */)
-     /* || is_skype_connection(ndpi_struct, packet->iph->saddr, packet->iph->daddr) */
-     ) {
+  if(is_skype_flow(ndpi_struct, flow)) {
     ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_SKYPE, NDPI_REAL_PROTOCOL);
     return;
   }

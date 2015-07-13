@@ -1,7 +1,7 @@
 /*
  * ndpi_protocol_ids.h
  *
- * Copyright (C) 2011-14 - ntop.org
+ * Copyright (C) 2011-15 - ntop.org
  * Copyright (C) 2009-11 - ipoque GmbH
  *
  * This file is part of nDPI, an open source deep packet inspection
@@ -34,6 +34,8 @@
 #define NDPI_PROTOCOL_HISTORY_SIZE				3
 
 #define NDPI_PROTOCOL_UNKNOWN					0
+
+#define NDPI_PROTOCOL_NO_MASTER_PROTO        NDPI_PROTOCOL_UNKNOWN
 
 #define NDPI_PROTOCOL_IP_VRRP 				        73
 #define NDPI_PROTOCOL_IP_IPSEC					79
@@ -193,7 +195,9 @@
 #define NDPI_PROTOCOL_MEGACO    				181 /* Gianluca Costa <g.costa@xplico.org> */
 #define NDPI_PROTOCOL_REDIS                                     182
 #define NDPI_PROTOCOL_PANDO					183 /* Tomasz Bujlow <tomasz@skatnet.dk> */
-
+#define NDPI_PROTOCOL_VHUA                                      184
+#define NDPI_PROTOCOL_TELEGRAM				        185 /* Gianluca Costa <g.costa@xplico.org> */
+#define NDPI_PROTOCOL_QUIC				        188 /* Andrea Buscarinu <andrea.buscarinu@gmail.com> - Michele Campus <michelecampus5@gmail.com> */
 
 
 #define NDPI_CONTENT_AVI				39
@@ -210,7 +214,8 @@
 #define NDPI_SERVICE_TWITTER				120
 #define NDPI_SERVICE_GMAIL				122
 #define NDPI_SERVICE_GOOGLE_MAPS			123
-#define NDPI_SERVICE_YOUTUBE				124
+#define NDPI_SERVICE_YOUTUBE			        124
+#define NDPI_SERVICE_VEVO			        186
 #define NDPI_SERVICE_GOOGLE				126
 #define NDPI_SERVICE_NETFLIX				133
 #define NDPI_SERVICE_LASTFM				134
@@ -229,9 +234,10 @@
 #define NDPI_SERVICE_SKYPE				NDPI_PROTOCOL_SKYPE /* Tomasz Bujlow <tomasz@skatnet.dk> */
 #define NDPI_SERVICE_VIBER				NDPI_PROTOCOL_VIBER /* Tomasz Bujlow <tomasz@skatnet.dk> */
 #define NDPI_SERVICE_YAHOO				NDPI_PROTOCOL_YAHOO /* Tomasz Bujlow <tomasz@skatnet.dk> */
+#define NDPI_SERVICE_PANDORA     			187
 
-/* UPDATE UPDATE UPDATE UPDATE UPDATE UPDATE UPDATE UPDATE UPDATE */
-#define NDPI_LAST_IMPLEMENTED_PROTOCOL			183
+/* UPDATE UPDATE UPDATE UPDATE UPDATE UPDATE UPDATE UPDATE UPDATE (NDPI_PROTOCOL_QUIC) */
+#define NDPI_LAST_IMPLEMENTED_PROTOCOL			188
 
 #define NDPI_MAX_SUPPORTED_PROTOCOLS (NDPI_LAST_IMPLEMENTED_PROTOCOL + 1)
 #define NDPI_MAX_NUM_CUSTOM_PROTOCOLS                   (NDPI_NUM_BITS-NDPI_LAST_IMPLEMENTED_PROTOCOL)

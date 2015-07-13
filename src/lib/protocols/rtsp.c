@@ -2,7 +2,7 @@
  * rtsp.c
  *
  * Copyright (C) 2009-2011 by ipoque GmbH
- * Copyright (C) 2011-14 - ntop.org
+ * Copyright (C) 2011-15 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -71,7 +71,7 @@ void ndpi_search_rtsp_tcp_udp(struct ndpi_detection_module_struct
   }
 
   if (packet->payload_packet_len > 20 && flow->rtsprdt_stage == 2 - packet->packet_direction) {
-    char buf[32];
+    char buf[32] = { 0 };
     u_int len = packet->payload_packet_len;
 
     if(len >= (sizeof(buf)-1)) len = sizeof(buf)-1;
