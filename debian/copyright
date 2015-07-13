@@ -18,11 +18,17 @@ Files: src/lib/third_party/include/sort.h src/lib/third_party/src/sort.c
 Copyright: 2005 Matt Mackall <mpm@selenic.com>
 License: LGPL-3.0+
 
-Files: examples/
+Files: example/*
 Copyright: 2011-14 ntop.org
            2009-2011 by ipoque GmbH
            2014 Matteo Bogo <matteo.bogo@gmail.com>
 License: LGPL-3.0+
+
+Files: src/lib/third_party/*/ndpi_patricia.*
+Copyright: 2005 Dave Plonka <plonka@doit.wisc.edu>
+           1999-2013 Regents of the University of Michigan
+           1999-2013 Merit Network, Inc.
+License: BSD-2-clause
 
 Files: debian/*
 Copyright: 2013 Raphaël Hertzog <hertzog@debian.org>
@@ -45,3 +51,23 @@ License: LGPL-3.0+
  .
  On Debian systems, the complete text of the GNU Lesser General
  Public License can be found in "/usr/share/common-licenses/LGPL-3".
+
+License: BSD-2-clause
+ Redistributions of source code must retain the above copyright notice,
+ this list of conditions and the following disclaimer.
+ .
+ Redistributions in binary form must reproduce the above copyright
+ notice, this list of conditions and the following disclaimer in the
+ documentation and/or other materials provided with the distribution.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
