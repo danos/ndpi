@@ -1,4 +1,4 @@
 version=3
 opts="uversionmangle=s/_r?[0-9]*//,dversionmangle=s/\+(dfsg|repack)\d*$//" \
-      http://sf.net/ntop/libndpi-([0-9].*)\.(?:tar\.gz|tgz)
+      http://sf.net/ntop/(?:libndpi|nDPI)-([0-9].*)\.(?:tar\.gz|tgz)
 
