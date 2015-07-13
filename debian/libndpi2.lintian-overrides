@@ -1,2 +1,2 @@
 # ABI compatibiliy is broken with libndpi1, but SONAME is the same.
-libndpi1a: package-name-doesnt-match-sonames libndpi1
+package-name-doesnt-match-sonames libndpi1

@@ -1,4 +1,4 @@
-libndpi.so.1 libndpi1a #MINVER#
+libndpi.so.2 libndpi2 #MINVER#
  ndpi_detection_get_sizeof_ndpi_flow_struct@Base 1.4.0+svn6712
  ndpi_detection_get_sizeof_ndpi_id_struct@Base 1.4.0+svn6712
  ndpi_detection_process_packet@Base 1.4.0+svn6712
@@ -6,7 +6,13 @@ libndpi.so.1 libndpi1a #MINVER#
  ndpi_exit_detection_module@Base 1.4.0+svn6712
  ndpi_find_port_based_protocol@Base 1.5.1
  ndpi_free@Base 1.4.0+svn6712
+ ndpi_free_flow@Base 1.6
+ ndpi_get_http_content_type@Base 1.6
+ ndpi_get_http_method@Base 1.6
+ ndpi_get_http_url@Base 1.6
  ndpi_get_num_supported_protocols@Base 1.4.0+svn6712
+ ndpi_get_proto_breed@Base 1.6
+ ndpi_get_proto_breed_name@Base 1.6
  ndpi_get_proto_name@Base 1.4.0+svn6712
  ndpi_get_protocol_id@Base 1.5.1
  ndpi_guess_undetected_protocol@Base 1.4.0+svn6712
