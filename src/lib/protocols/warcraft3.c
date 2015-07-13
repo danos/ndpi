@@ -2,7 +2,7 @@
  * warcraft3.c
  *
  * Copyright (C) 2009-2011 by ipoque GmbH
- * Copyright (C) 2011-13 - ntop.org
+ * Copyright (C) 2011-15 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -43,7 +43,7 @@ void ndpi_search_warcraft3(struct ndpi_detection_module_struct
   //      struct ndpi_id_struct         *src=ndpi_struct->src;
   //      struct ndpi_id_struct         *dst=ndpi_struct->dst;
 
-  u_int32_t l; /* 
+  u_int16_t l; /* 
 		  Leave it as u_int32_t because otherwise 'u_int16_t temp' 
 		  might overflood it and thus generate an infinite loop
 	       */

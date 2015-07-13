@@ -1,7 +1,7 @@
 /*
  * ndpi_typedefs.h
  *
- * Copyright (C) 2011-14 - ntop.org
+ * Copyright (C) 2011-15 - ntop.org
  * Copyright (C) 2009-11 - ipoque GmbH
  *
  * This file is part of nDPI, an open source deep packet inspection
@@ -24,6 +24,17 @@
 
 #ifndef __NDPI_TYPEDEFS_FILE__
 #define __NDPI_TYPEDEFS_FILE__
+
+typedef enum {
+  NDPI_LOG_ERROR,
+  NDPI_LOG_TRACE,
+  NDPI_LOG_DEBUG
+} ndpi_log_level_t;
+
+typedef void (*ndpi_debug_function_ptr) (u_int32_t protocol,
+					 void *module_struct, ndpi_log_level_t log_level,
+					 const char *format, ...);
+#define BT_ANNOUNCE
 
 typedef enum {
   ndpi_preorder,
@@ -88,6 +99,61 @@ typedef union {
 } ndpi_ip_addr_t;
 
 
+#ifdef NDPI_PROTOCOL_BITTORRENT
+#ifndef __KERNEL__
+typedef struct spinlock {
+  volatile int    val;
+} spinlock_t;
+typedef struct atomic {
+  volatile int counter;
+} atomic_t;
+
+#endif
+
+struct hash_ip4p_node {
+  struct hash_ip4p_node   *next,*prev;
+  time_t                  lchg;
+  u_int16_t               port,count:12,flag:4;
+  u_int32_t               ip;
+  // + 12 bytes for ipv6
+};
+
+struct hash_ip4p {
+  struct hash_ip4p_node   *top;
+  spinlock_t              lock;
+  size_t                  len;
+};
+
+struct hash_ip4p_table {
+  size_t                  size;
+  int			ipv6;
+  spinlock_t              lock;
+  atomic_t                count;
+  struct hash_ip4p        tbl;
+};
+
+struct bt_announce { // 192 bytes
+  u_int32_t		hash[5];
+  u_int32_t		ip[4];
+  u_int32_t		time;
+  u_int16_t		port;
+  u_int8_t		name_len,
+    name[192 - 4*10 - 2 - 1]; // 149 bytes
+};
+#endif
+
+typedef enum {
+  HTTP_METHOD_UNKNOWN = 0,
+  HTTP_METHOD_OPTIONS,
+  HTTP_METHOD_GET,
+  HTTP_METHOD_HEAD,
+  HTTP_METHOD_POST,
+  HTTP_METHOD_PUT,
+  HTTP_METHOD_DELETE,
+  HTTP_METHOD_TRACE,
+  HTTP_METHOD_CONNECT
+} ndpi_http_method;
+
 typedef struct ndpi_id_struct {
   /* detected_protocol_bitmask:
    * access this bitmask to find out whether an id has used skype or not
@@ -108,10 +174,11 @@ typedef struct ndpi_id_struct {
   u_int32_t yahoo_video_lan_timer;
 #endif
 #endif
+  /* NDPI_PROTOCOL_IRC_MAXPORT % 2 must be 0 */
 #ifdef NDPI_PROTOCOL_IRC
-  u_int32_t last_time_port_used[16];
-#endif
-#ifdef NDPI_PROTOCOL_IRC
+#define NDPI_PROTOCOL_IRC_MAXPORT 8
+  u_int16_t irc_port[NDPI_PROTOCOL_IRC_MAXPORT];
+  u_int32_t last_time_port_used[NDPI_PROTOCOL_IRC_MAXPORT];
   u_int32_t irc_ts;
 #endif
 #ifdef NDPI_PROTOCOL_GNUTELLA
@@ -128,10 +195,6 @@ typedef struct ndpi_id_struct {
 #endif
 #ifdef NDPI_PROTOCOL_OSCAR
   u_int32_t oscar_last_safe_access_time;
-#endif
-#ifdef NDPI_PROTOCOL_GADUGADU
-  u_int32_t gg_ft_ip_address;
-  u_int32_t gg_timeout;
 #endif
 #ifdef NDPI_PROTOCOL_ZATTOO
   u_int32_t zattoo_ts;
@@ -150,11 +213,10 @@ typedef struct ndpi_id_struct {
   u_int16_t detected_directconnect_udp_port;
   u_int16_t detected_directconnect_ssl_port;
 #endif
-#ifdef NDPI_PROTOCOL_IRC
-  u_int16_t irc_port[16];
-#endif
-#ifdef NDPI_PROTOCOL_GADUGADU
-  u_int16_t gg_ft_port;
+#ifdef NDPI_PROTOCOL_BITTORRENT
+#define NDPI_BT_PORTS 8
+  u_int16_t bt_port_t[NDPI_BT_PORTS];
+  u_int16_t bt_port_u[NDPI_BT_PORTS];
 #endif
 #ifdef NDPI_PROTOCOL_UNENCRYPED_JABBER
 #define JABBER_MAX_STUN_PORTS 6
@@ -176,10 +238,6 @@ typedef struct ndpi_id_struct {
 #endif
 #ifdef NDPI_PROTOCOL_OSCAR
   u_int8_t oscar_ssl_session_id[33];
-#endif
-#ifdef NDPI_PROTOCOL_GADUGADU
-  u_int8_t gg_call_id[2][7];
-  u_int8_t gg_fmnumber[8];
 #endif
 #ifdef NDPI_PROTOCOL_UNENCRYPED_JABBER
   u_int8_t jabber_voice_stun_used_ports;
@@ -216,6 +274,9 @@ struct ndpi_flow_tcp_struct {
 #ifdef NDPI_PROTOCOL_IRC
   u_int8_t irc_stage;
   u_int8_t irc_port;
+#endif
+#ifdef NDPI_PROTOCOL_H323
+  u_int8_t h323_valid_packets;
 #endif
 #ifdef NDPI_PROTOCOL_GNUTELLA
   u_int8_t gnutella_msg_id[3];
@@ -402,6 +463,7 @@ typedef struct ndpi_packet_struct {
   const u_int8_t *payload;
 
   u_int32_t tick_timestamp;
+  u_int64_t tick_timestamp_l;
 
   u_int16_t detected_protocol_stack[NDPI_PROTOCOL_HISTORY_SIZE];
   u_int8_t detected_subprotocol_stack[NDPI_PROTOCOL_HISTORY_SIZE];
@@ -426,7 +488,6 @@ typedef struct ndpi_packet_struct {
 #endif
 
   struct ndpi_int_one_line_struct line[NDPI_MAX_PARSE_LINES_PER_PACKET];
-  struct ndpi_int_one_line_struct unix_line[NDPI_MAX_PARSE_LINES_PER_PACKET];
   struct ndpi_int_one_line_struct host_line;
   struct ndpi_int_one_line_struct forwarded_line;
   struct ndpi_int_one_line_struct referer_line;
@@ -438,6 +499,7 @@ typedef struct ndpi_packet_struct {
   struct ndpi_int_one_line_struct http_transfer_encoding;
   struct ndpi_int_one_line_struct http_contentlen;
   struct ndpi_int_one_line_struct http_cookie;
+  struct ndpi_int_one_line_struct http_origin;
   struct ndpi_int_one_line_struct http_x_session_type;
   struct ndpi_int_one_line_struct server_line;
   struct ndpi_int_one_line_struct http_method;
@@ -454,11 +516,10 @@ typedef struct ndpi_packet_struct {
   u_int8_t tcp_retransmission;
   u_int8_t l4_protocol;
 
-  u_int8_t packet_lines_parsed_complete;
-  u_int8_t packet_unix_lines_parsed_complete;
-  u_int8_t empty_line_position_set;
-  u_int8_t packet_direction:1;
   u_int8_t ssl_certificate_detected:4, ssl_certificate_num_checks:4;
+  u_int8_t packet_lines_parsed_complete:1,
+    packet_direction:1,
+    empty_line_position_set:1;
 } ndpi_packet_struct_t;
 
 struct ndpi_detection_module_struct;
@@ -481,10 +542,23 @@ typedef struct {
   u_int16_t port_low, port_high;
 } ndpi_port_range;
 
+typedef enum {
+  NDPI_PROTOCOL_SAFE = 0, /* Safe protocol with encryption */
+  NDPI_PROTOCOL_ACCEPTABLE, /* Ok but not encrypted */
+  NDPI_PROTOCOL_FUN, /* Pure fun protocol */
+  NDPI_PROTOCOL_UNSAFE, /* Protocol with a safe version existing  what should be used instead */
+  NDPI_PROTOCOL_POTENTIALLY_DANGEROUS, /* Be prepared to troubles */
+  NDPI_PROTOCOL_UNRATED /* No idea */
+} ndpi_protocol_breed_t;
+
+#define NUM_BREEDS (NDPI_PROTOCOL_UNRATED+1)
+
 /* ntop extensions */
 typedef struct ndpi_proto_defaults {
   char *protoName;
   u_int16_t protoId, protoIdx;
+  u_int16_t master_tcp_protoId[2], master_udp_protoId[2]; /* The main protocols on which this sub-protocol sits on */
+  ndpi_protocol_breed_t protoBreed;
   void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow);
 } ndpi_proto_defaults_t;
 
@@ -544,8 +618,11 @@ typedef struct ndpi_detection_module_struct {
   u_int ndpi_num_supported_protocols;
   u_int ndpi_num_custom_protocols;
 
-  /* HTTP (and soon DNS) host matching */
-  ndpi_automa host_automa, content_automa;
+  /* HTTP/DNS/HTTPS host matching */
+  ndpi_automa host_automa, content_automa, bigrams_automa, impossible_bigrams_automa;
+
+  /* IP-based protocol detection */
+  void *protocols_ptree;
 
   /* irc parameters */
   u_int32_t irc_timeout;
@@ -575,9 +652,21 @@ typedef struct ndpi_detection_module_struct {
 #endif
   u_int8_t ip_version_limit;
   /* ********************* */
+#ifdef NDPI_PROTOCOL_BITTORRENT
+  struct hash_ip4p_table *bt_ht;
+#ifdef NDPI_DETECTION_SUPPORT_IPV6
+  struct hash_ip4p_table *bt6_ht;
+#endif
+#ifdef BT_ANNOUNCE
+  struct bt_announce *bt_ann;
+  int    bt_ann_len;
+#endif
+#endif
+
   ndpi_proto_defaults_t proto_defaults[NDPI_MAX_SUPPORTED_PROTOCOLS+NDPI_MAX_NUM_CUSTOM_PROTOCOLS];
 
-  u_int8_t match_dns_host_names:1;
+  u_int8_t match_dns_host_names:1, http_dissect_response:1;
+  u_int8_t direction_detect_disable:1; /* disable internal detection of packet direction */
 } ndpi_detection_module_struct_t;
 
 typedef struct ndpi_flow_struct {
@@ -599,8 +688,13 @@ typedef struct ndpi_flow_struct {
 #endif
 
   /* init parameter, internal used to set up timestamp,... */
+  u_int16_t guessed_protocol_id;
+
+  u_int8_t protocol_id_already_guessed:1;
+  u_int8_t no_cache_protocol:1;
   u_int8_t init_finished:1;
   u_int8_t setup_packet_direction:1;
+  u_int8_t packet_direction:1; /* if ndpi_struct->direction_detect_disable == 1 */
   /* tcp sequence number connection tracking */
   u_int32_t next_tcp_seq_nr[2];
 
@@ -612,11 +706,30 @@ typedef struct ndpi_flow_struct {
     struct ndpi_flow_udp_struct udp;
   } l4;
 
-  u_int8_t protocol_id_already_guessed;
-  u_int16_t guessed_protocol_id;
+  struct ndpi_id_struct *server_id; /* 
+				       Pointer to src or dst
+				       that identifies the 
+				       server of this connection
+				    */
+#ifndef __KERNEL__
   u_char host_server_name[256]; /* HTTP host or DNS query   */ 
+#else
+  u_char host_server_name[160];
+#endif
   u_char detected_os[32];       /* Via HTTP User-Agent      */
   u_char nat_ip[24];            /* Via HTTP X-Forwarded-For */
+
+  /* 
+     This structure below will not not stay inside the protos
+     structure below as HTTP is used by many subprotocols
+     such as FaceBook, Google... so it is hard to know
+     when to use it or not. Thus we leave it outside for the
+     time being.
+  */
+  struct {
+    ndpi_http_method method;      
+    char *url, *content_type;
+  } http;
 
   union {
     struct {
@@ -624,9 +737,9 @@ typedef struct ndpi_flow_struct {
       u_int8_t bad_packet /* the received packet looks bad */;
       u_int16_t query_type, query_class, rsp_type;
     } dns;
-
+    
     struct {
-      char client_certificate[32], server_certificate[32];
+      char client_certificate[48], server_certificate[48];
     } ssl;
   } protos;
   /* ALL protocol specific 64 bit variables here */
@@ -735,12 +848,5 @@ typedef enum {
   NDPI_REAL_PROTOCOL = 0,
   NDPI_CORRELATED_PROTOCOL = 1
 } ndpi_protocol_type_t;
-
-
-typedef enum {
-  NDPI_LOG_ERROR,
-  NDPI_LOG_TRACE,
-  NDPI_LOG_DEBUG
-} ndpi_log_level_t;
 
 #endif/* __NDPI_TYPEDEFS_FILE__ */

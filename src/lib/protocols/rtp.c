@@ -2,7 +2,7 @@
  * rtp.c
  *
  * Copyright (C) 2009-2011 by ipoque GmbH
- * Copyright (C) 2011-13 - ntop.org
+ * Copyright (C) 2011-15 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -39,7 +39,8 @@ static void ndpi_rtp_search(struct ndpi_detection_module_struct *ndpi_struct,
   /* Check whether this is an RTP flow */
   if((payload_len >= 12)
      && ((payload[0] & 0xFF) == 0x80) /* RTP magic byte[1] */
-     && ((payload_type < 128          /* http://anonsvn.wireshark.org/wireshark/trunk/epan/dissectors/packet-rtp.c */))
+     && ((payload_type < 72) || (payload_type > 76))
+     && (payload_type < 128          /* http://anonsvn.wireshark.org/wireshark/trunk/epan/dissectors/packet-rtp.c */)
      && (*ssid != 0)
      ) {
     NDPI_LOG(NDPI_PROTOCOL_RTP, ndpi_struct, NDPI_LOG_DEBUG, "Found rtp.\n");

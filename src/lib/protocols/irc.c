@@ -2,7 +2,7 @@
  * irc.c
  *
  * Copyright (C) 2009-2011 by ipoque GmbH
- * Copyright (C) 2011-13 - ntop.org
+ * Copyright (C) 2011-15 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -28,7 +28,7 @@
 #ifdef NDPI_PROTOCOL_IRC
 #define NDPI_IRC_FIND_LESS(time_err,less) {int t1 = 0;	\
     u_int32_t timestamp = time_err[0];			\
-    for(t1=0;t1 < 16;t1++) {				\
+    for(t1=0;t1 < NDPI_PROTOCOL_IRC_MAXPORT;t1++) {	\
       if(timestamp > time_err[t1]) {			\
 	timestamp = time_err[t1];			\
 	less = t1;}}}
@@ -486,13 +486,7 @@ void ndpi_search_irc_tcp(struct ndpi_detection_module_struct *ndpi_struct, struc
       if (memcmp(packet->payload, ":", 1) == 0) {
 	if (packet->payload[packet->payload_packet_len - 2] != 0x0d
 	    && packet->payload[packet->payload_packet_len - 1] == 0x0a) {
-	  ndpi_parse_packet_line_info_unix(ndpi_struct, flow);
-	  packet->parsed_lines = packet->parsed_unix_lines;
-	  for (i = 0; i < packet->parsed_lines; i++) {
-	    packet->line[i] = packet->unix_line[i];
-	    packet->line[i].ptr = packet->unix_line[i].ptr;
-	    packet->line[i].len = packet->unix_line[i].len;
-	  }
+	  ndpi_parse_packet_line_info_any(ndpi_struct, flow);
 	} else if (packet->payload[packet->payload_packet_len - 2] == 0x0d) {
 	  ndpi_parse_packet_line_info(ndpi_struct, flow);
 	} else {
@@ -559,13 +553,13 @@ void ndpi_search_irc_tcp(struct ndpi_detection_module_struct *ndpi_struct, struc
 	  }
 
 	} else if (packet->payload[packet->payload_packet_len - 1] == 0x0a) {
-	  ndpi_parse_packet_line_info_unix(ndpi_struct, flow);
-	  if (packet->parsed_unix_lines > 1) {
+	  ndpi_parse_packet_line_info_any(ndpi_struct, flow);
+	  if (packet->parsed_lines > 1) {
 	    NDPI_LOG(NDPI_PROTOCOL_IRC, ndpi_struct, NDPI_LOG_TRACE,
 		     "packet contains more than one line");
-	    for (c = 1; c < packet->parsed_unix_lines; c++) {
-	      if (packet->unix_line[c].len > 4 && (memcmp(packet->unix_line[c].ptr, "NICK ", 5) == 0
-						   || memcmp(packet->unix_line[c].ptr, "USER ",
+	    for (c = 1; c < packet->parsed_lines; c++) {
+	      if (packet->line[c].len > 4 && (memcmp(packet->line[c].ptr, "NICK ", 5) == 0
+						   || memcmp(packet->line[c].ptr, "USER ",
 							     5) == 0)) {
 		NDPI_LOG(NDPI_PROTOCOL_IRC, ndpi_struct, NDPI_LOG_TRACE,
 			 "two icq signal words in the same packet");
@@ -634,14 +628,8 @@ void ndpi_search_irc_tcp(struct ndpi_detection_module_struct *ndpi_struct, struc
     if (packet->payload[packet->payload_packet_len - 2] != 0x0d
 	&& packet->payload[packet->payload_packet_len - 1] == 0x0a) {
       NDPI_LOG(NDPI_PROTOCOL_IRC, ndpi_struct, NDPI_LOG_DEBUG,
-	       "ndpi_parse_packet_line_info_unix(ndpi_struct, flow);");
-      ndpi_parse_packet_line_info_unix(ndpi_struct, flow);
-      packet->parsed_lines = packet->parsed_unix_lines;
-      for (i = 0; i < packet->parsed_lines; i++) {
-	packet->line[i] = packet->unix_line[i];
-	packet->line[i].ptr = packet->unix_line[i].ptr;
-	packet->line[i].len = packet->unix_line[i].len;
-      }
+	       "ndpi_parse_packet_line_info_any(ndpi_struct, flow);");
+      ndpi_parse_packet_line_info_any(ndpi_struct, flow);
     } else if (packet->payload[packet->payload_packet_len - 2] == 0x0d) {
       ndpi_parse_packet_line_info(ndpi_struct, flow);
     } else {
@@ -722,10 +710,10 @@ void ndpi_search_irc_tcp(struct ndpi_detection_module_struct *ndpi_struct, struc
 			       port);
 		      j = k;
 		      // hier jetzt überlegen, wie die ports abgespeichert werden sollen
-		      if (src->irc_number_of_port < 16)
+		      if (src->irc_number_of_port < NDPI_PROTOCOL_IRC_MAXPORT)
 			NDPI_LOG(NDPI_PROTOCOL_IRC, ndpi_struct, NDPI_LOG_TRACE,
-				 "src->irc_number_of_port < 16.");
-		      if (src->irc_number_of_port < 16 && port != 0) {
+				 "src->irc_number_of_port < NDPI_PROTOCOL_IRC_MAXPORT.");
+		      if (src->irc_number_of_port < NDPI_PROTOCOL_IRC_MAXPORT && port != 0) {
 			if (!ndpi_is_duplicate(src, port)) {
 			  src->irc_port[src->irc_number_of_port]
 			    = port;
@@ -739,7 +727,7 @@ void ndpi_search_irc_tcp(struct ndpi_detection_module_struct *ndpi_struct, struc
 				   "jjeeeeeeeeeeeeeeeeeeeeeeeee");
 			}
 			src->irc_ts = packet->tick_timestamp;
-		      } else if (port != 0 && src->irc_number_of_port == 16) {
+		      } else if (port != 0 && src->irc_number_of_port == NDPI_PROTOCOL_IRC_MAXPORT) {
 			if (!ndpi_is_duplicate(src, port)) {
 			  less = 0;
 			  NDPI_IRC_FIND_LESS(src->last_time_port_used, less);
@@ -762,11 +750,11 @@ void ndpi_search_irc_tcp(struct ndpi_detection_module_struct *ndpi_struct, struc
 		      NDPI_LOG(NDPI_PROTOCOL_IRC, ndpi_struct, NDPI_LOG_TRACE, "port %u.",
 			       port);
 		      // hier das gleiche wie oben.
-		      /* hier werden 16 ports pro irc flows mitgespeichert. könnte man denn nicht ein-
+		      /* hier werden NDPI_PROTOCOL_IRC_MAXPORT ports pro irc flows mitgespeichert. könnte man denn nicht ein-
 		       * fach an die dst oder src einen flag setzten, dass dieser port für eine bestimmte
 		       * zeit ein irc-port bleibt?
 		       */
-		      if (dst->irc_number_of_port < 16 && port != 0) {
+		      if (dst->irc_number_of_port < NDPI_PROTOCOL_IRC_MAXPORT && port != 0) {
 			if (!ndpi_is_duplicate(dst, port)) {
 			  dst->irc_port[dst->irc_number_of_port]
 			    = port;
@@ -780,7 +768,7 @@ void ndpi_search_irc_tcp(struct ndpi_detection_module_struct *ndpi_struct, struc
 				   "juuuuuuuuuuuuuuuu");
 			}
 			dst->irc_ts = packet->tick_timestamp;
-		      } else if (port != 0 && dst->irc_number_of_port == 16) {
+		      } else if (port != 0 && dst->irc_number_of_port == NDPI_PROTOCOL_IRC_MAXPORT) {
 			if (!ndpi_is_duplicate(dst, port)) {
 			  less = 0;
 			  NDPI_IRC_FIND_LESS(dst->last_time_port_used, less);

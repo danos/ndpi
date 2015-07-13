@@ -1,7 +1,7 @@
 /*
  * dns.c
  *
- * Copyright (C) 2012-13 - ntop.org
+ * Copyright (C) 2012-15 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -145,6 +145,9 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
       }
     } else {
       /* DNS Reply */
+
+      flow->server_id = flow->dst;
+
       if((header.num_queries <= NDPI_MAX_DNS_REQUESTS) /* Don't assume that num_queries must be zero */
 	 && (((header.answer_rrs > 0) && (header.answer_rrs <= NDPI_MAX_DNS_REQUESTS))
 	     || ((header.authority_rrs > 0) && (header.authority_rrs <= NDPI_MAX_DNS_REQUESTS))
@@ -167,7 +170,7 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
 	i += 4;
 
 	if(header.answer_rrs > 0) {
-	  u_int16_t rsp_type, rsp_class;
+	  u_int16_t rsp_type /*, rsp_class */;
 	  u_int16_t num;
 
 	  for(num = 0; num < header.answer_rrs; num++) {
@@ -183,7 +186,7 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
 	      i += data_len;
 	
 	    rsp_type = get16(&i, packet->payload);
-	    rsp_class = get16(&i, packet->payload);
+	    // rsp_class = get16(&i, packet->payload);
 
 	    i += 4;
 	    data_len = get16(&i, packet->payload);
@@ -243,7 +246,7 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
 	j++, i++;
       }
 
-      if(a_record != 0) {
+      if(a_record[0] != 0) {
 	char a_buf[32];
 	int i;
 
@@ -262,7 +265,9 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
 #endif
 
 	if(ndpi_struct->match_dns_host_names)
-	  ndpi_match_string_subprotocol(ndpi_struct, flow, (char *)flow->host_server_name, strlen((const char*)flow->host_server_name));
+	  ndpi_match_string_subprotocol(ndpi_struct, flow, 
+					(char *)flow->host_server_name,
+					strlen((const char*)flow->host_server_name));
       }
 
       i++;

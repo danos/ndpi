@@ -1,7 +1,7 @@
 /*
  * ndpi_api.h
  *
- * Copyright (C) 2011-14 - ntop.org
+ * Copyright (C) 2011-15 - ntop.org
  * Copyright (C) 2009-2011 by ipoque GmbH
  *
  * This file is part of nDPI, an open source deep packet inspection
@@ -32,9 +32,6 @@
 extern "C" {
 #endif
 
-  typedef void (*ndpi_debug_function_ptr) (u_int32_t protocol,
-					   void *module_struct, ndpi_log_level_t log_level, const char *format, ...);
-
   /**
    * This function returns the size of the flow struct
    * @return the size of the flow struct
@@ -54,11 +51,21 @@ extern "C" {
   void  ndpi_free(void *ptr);
   void *ndpi_realloc(void *ptr, size_t old_size, size_t new_size);
   char *ndpi_strdup(const char *s);
- /*
- * Find the first occurrence of find in s, where the search is limited to the
- * first slen characters of s.
- */
+  /*
+   * Find the first occurrence of find in s, where the search is limited to the
+   * first slen characters of s.
+   */
   char* ndpi_strnstr(const char *s, const char *find, size_t slen);
+
+  /**
+   * This function returns the nDPI protocol id for IP-based protocol detection
+   */
+  u_int16_t ndpi_network_ptree_match(struct ndpi_detection_module_struct *ndpi_struct, struct in_addr *pin);
+
+  /**
+   * Same as ndpi_network_ptree_match
+   */
+  u_int16_t ndpi_host_ptree_match(struct ndpi_detection_module_struct *ndpi_struct, u_int32_t host);
 
   /**
    * This function returns a new initialized detection module.
@@ -71,6 +78,13 @@ extern "C" {
 								  void* (*__ndpi_malloc)(unsigned long size),
 								  void  (*__ndpi_free)(void *ptr),
 								  ndpi_debug_function_ptr ndpi_debug_printf);
+
+  
+  /**
+   * This function frees the memory allocated in the specified flow
+   * @param flow to free
+   */
+  void ndpi_free_flow(struct ndpi_flow_struct *flow);
 
   /**
    * This function enables cache support in nDPI used for some protocol such as Skype
@@ -114,7 +128,7 @@ extern "C" {
 				struct ndpi_flow_struct *flow,
 				const unsigned char *packet,
 				const unsigned short packetlen,
-				const u_int32_t current_tick,
+				const u_int64_t current_tick,
 				struct ndpi_id_struct *src,
 				struct ndpi_id_struct *dst);
 
@@ -162,7 +176,11 @@ extern "C" {
   int ndpi_match_content_subprotocol(struct ndpi_detection_module_struct *ndpi_struct,
 				     struct ndpi_flow_struct *flow,
 				     char *string_to_match, u_int string_to_match_len);
+  int ndpi_match_bigram(struct ndpi_detection_module_struct *ndpi_struct, 
+			ndpi_automa *automa, char *bigram_to_match);
   char* ndpi_get_proto_name(struct ndpi_detection_module_struct *mod, u_int16_t proto_id);
+  ndpi_protocol_breed_t ndpi_get_proto_breed(struct ndpi_detection_module_struct *ndpi_struct, u_int16_t proto);
+  char* ndpi_get_proto_breed_name(struct ndpi_detection_module_struct *ndpi_struct, ndpi_protocol_breed_t breed_id);
   int ndpi_get_protocol_id(struct ndpi_detection_module_struct *ndpi_mod, char *proto);
   void ndpi_dump_protocols(struct ndpi_detection_module_struct *mod);
   int matchStringProtocol(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow,
@@ -178,7 +196,7 @@ extern "C" {
 #define SAVE_DETECTION_BITMASK_AS_UNKNOWN    1
 #define NO_SAVE_DETECTION_BITMASK_AS_UNKNOWN 0
 
-/**
+  /**
    * This function sets a single protocol bitmask
    * @param label Protocol name
    * @param ndpi_struct the detection module
@@ -190,14 +208,33 @@ extern "C" {
    * @param b_add_detection_bitmask set true if you want add the protocol bitmask to the detection bitmask
    * NB: this function does not increment the index of the callback_buffer
    */
-   void ndpi_set_bitmask_protocol_detection(char * label, struct ndpi_detection_module_struct *ndpi_struct,
-    const NDPI_PROTOCOL_BITMASK * detection_bitmask,
-    const u_int32_t idx,
-    u_int16_t ndpi_protocol_id,
-    void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow),
-    const NDPI_SELECTION_BITMASK_PROTOCOL_SIZE ndpi_selection_bitmask,
-    u_int8_t b_save_bitmask_unknow,
-    u_int8_t b_add_detection_bitmask);
+  void ndpi_set_bitmask_protocol_detection(char * label, struct ndpi_detection_module_struct *ndpi_struct,
+					   const NDPI_PROTOCOL_BITMASK * detection_bitmask,
+					   const u_int32_t idx,
+					   u_int16_t ndpi_protocol_id,
+					   void (*func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow),
+					   const NDPI_SELECTION_BITMASK_PROTOCOL_SIZE ndpi_selection_bitmask,
+					   u_int8_t b_save_bitmask_unknow,
+					   u_int8_t b_add_detection_bitmask);
+
+#ifdef NDPI_PROTOCOL_HTTP
+  /*
+    API used to retrieve information for HTTP flows
+  */
+  ndpi_http_method ndpi_get_http_method(struct ndpi_detection_module_struct *ndpi_mod, 
+					struct ndpi_flow_struct *flow);
+  
+  char* ndpi_get_http_url(struct ndpi_detection_module_struct *ndpi_mod,
+			struct ndpi_flow_struct *flow);
+  
+  char* ndpi_get_http_content_type(struct ndpi_detection_module_struct *ndpi_mod, 
+				 struct ndpi_flow_struct *flow);
+#endif
+
+#ifdef NDPI_PROTOCOL_TOR
+  int ndpi_is_ssl_tor(struct ndpi_detection_module_struct *ndpi_struct,
+		      struct ndpi_flow_struct *flow, char *certificate);
+#endif
 
 #ifdef __cplusplus
 }

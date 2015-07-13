@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (C) 2011-14 - ntop.org
+ * Copyright (C) 2011-15 - ntop.org
  * Copyright (C) 2009-2011 by ipoque GmbH
  *
  * This file is part of nDPI, an open source deep packet inspection
@@ -28,6 +28,10 @@
   gcc -E -dM - < /dev/null |grep ENDIAN
 */
 
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+#include <machine/endian.h>
+#endif
+
 #ifdef __OpenBSD__
 #include <endian.h>
 #define __BYTE_ORDER BYTE_ORDER
@@ -49,6 +53,12 @@
 #endif
 
 #if !(defined(__LITTLE_ENDIAN__) || defined(__BIG_ENDIAN__))
+#if defined(__mips__)
+#undef __LITTLE_ENDIAN__
+#undef __LITTLE_ENDIAN
+#define __BIG_ENDIAN__
+#endif
+
 /* Kernel modules */
 #if defined(__LITTLE_ENDIAN)
 #define __LITTLE_ENDIAN__
@@ -150,7 +160,7 @@
 /* TODO: rebuild all memory areas to have a more aligned memory block here */
 
 /* DEFINITION OF MAX LINE NUMBERS FOR line parse algorithm */
-#define NDPI_MAX_PARSE_LINES_PER_PACKET                        200
+#define NDPI_MAX_PARSE_LINES_PER_PACKET                        64
 
 #define MAX_PACKET_COUNTER                                   65000
 #define MAX_DEFAULT_PORTS                                        5
@@ -208,7 +218,12 @@
 #define NDPI_COMPARE_IPV6_ADDRESS_STRUCTS(x,y)  \
   ((((u_int64_t *)(x))[0]) < (((u_int64_t *)(y))[0]) || ( (((u_int64_t *)(x))[0]) == (((u_int64_t *)(y))[0]) && (((u_int64_t *)(x))[1]) < (((u_int64_t *)(y))[1])) )
 
+#if !defined(__KERNEL__) && !defined(NDPI_IPTABLES_EXT)
 #define NDPI_NUM_BITS              256
+#else
+/* custom protocols not supported */
+#define NDPI_NUM_BITS              192
+#endif
 
 #define NDPI_BITS /* 32 */ (sizeof(ndpi_ndpi_mask) * 8 /* number of bits in a byte */)        /* bits per mask */
 #define howmanybits(x, y)   (((x)+((y)-1))/(y))
@@ -269,10 +284,10 @@
 #define get_ul8(X,O) get_u_int8_t(X,O)
 
 
-#if defined(__LITTLE_ENDIAN__)
+#if defined(__LITTLE_ENDIAN__) || defined(_LITTLE_ENDIAN)
 #define get_l16(X,O)  get_u_int16_t(X,O)
 #define get_l32(X,O)  get_u_int32_t(X,O)
-#elif defined(__BIG_ENDIAN__)
+#elif defined(__BIG_ENDIAN__) || defined(__BIG_ENDIAN)
 /* convert the bytes from big to little endian */
 #ifndef __KERNEL__
 # define get_l16(X,O) bswap_16(get_u_int16_t(X,O))
