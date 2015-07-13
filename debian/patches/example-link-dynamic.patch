@@ -6,9 +6,9 @@ Index: ndpi/configure.ac
 ===================================================================
 --- ndpi.orig/configure.ac
 +++ ndpi/configure.ac
-@@ -50,6 +50,11 @@ fi
+@@ -75,6 +75,11 @@ LIBS=$OLD_LIBS
  
- PKG_CHECK_MODULES([JSON_C], [json-c], [AC_DEFINE([HAVE_JSON_C], [1], [Use libjson-c])])
+ AC_CHECK_LIB(pthread, pthread_setaffinity_np, AC_DEFINE_UNQUOTED(HAVE_PTHREAD_SETAFFINITY_NP, 1, [libc has pthread_setaffinity_np]))
  
 +AC_ARG_ENABLE([examples-dynamic-linking],
 +             [AS_HELP_STRING([--enable-examples-dynamic-linking],
