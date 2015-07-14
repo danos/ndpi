@@ -1,6 +1,14 @@
-ndpi (1.5.1-1) UNRELEASED; urgency=medium
+ndpi (1.6-1) unstable; urgency=low
 
-  * 
+  * Imported Upstream version 1.6
+  * Update copyright with the removal of embedded json-c.
+  * Remove pcap-linking.patch and export-additional-symbols.patch (merged
+    upstream).
+  * Update json-c-use-system.patch and example-link-dynamic.patch for new
+    upstream code.
+  * Update debian/watch file for new upstrm tarball name.
+  * Update docs and copyright.
+  * Bump SONAME to 2 and update symbol file.
 
  -- Ludovico Cavedon <cavedon@debian.org>  Tue, 09 Sep 2014 16:55:57 -0700
 
