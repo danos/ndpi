@@ -7,18 +7,24 @@ libndpi.so.3 libndpi3 #MINVER#
  ndpi_find_port_based_protocol@Base 1.5.1
  ndpi_free@Base 1.4.0+svn6712
  ndpi_free_flow@Base 1.6
+ ndpi_get_flow_masterprotocol@Base 1.7
  ndpi_get_http_content_type@Base 1.6
  ndpi_get_http_method@Base 1.6
  ndpi_get_http_url@Base 1.6
  ndpi_get_num_supported_protocols@Base 1.4.0+svn6712
  ndpi_get_proto_breed@Base 1.6
  ndpi_get_proto_breed_name@Base 1.6
+ ndpi_get_proto_by_id@Base 1.7
  ndpi_get_proto_name@Base 1.4.0+svn6712
  ndpi_get_protocol_id@Base 1.5.1
+ ndpi_get_protocol_id_master_proto@Base 1.7
+ ndpi_guess_protocol_id@Base 1.7
  ndpi_guess_undetected_protocol@Base 1.4.0+svn6712
  ndpi_init_detection_module@Base 1.4.0+svn6712
  ndpi_load_protocols_file@Base 1.4.0+svn6712
+ ndpi_protocol2name@Base 1.7
  ndpi_revision@Base 1.4.0+svn6712
+ ndpi_set_detected_protocol@Base 1.7
  ndpi_set_proto_defaults@Base 1.4.0+svn6712
  ndpi_set_protocol_detection_bitmask2@Base 1.4.0+svn6712
  ndpi_tdelete@Base 1.4.0+svn6712
