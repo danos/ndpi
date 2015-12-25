@@ -1,3 +1,9 @@
+ndpi (1.7-1) UNRELEASED; urgency=medium
+
+  * 
+
+ -- Ludovico Cavedon <cavedon@debian.org>  Fri, 25 Dec 2015 21:00:52 +0100
+
 ndpi (1.6-1) unstable; urgency=low
 
   * Imported Upstream version 1.6
