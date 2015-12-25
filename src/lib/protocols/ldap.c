@@ -23,16 +23,14 @@
  */
 
 
-
-/* include files */
-
 #include "ndpi_protocols.h"
+
 #ifdef NDPI_PROTOCOL_LDAP
 
 static void ndpi_int_ldap_add_connection(struct ndpi_detection_module_struct *ndpi_struct,
 					 struct ndpi_flow_struct *flow)
 {
-  ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_LDAP, NDPI_REAL_PROTOCOL);
+  ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_LDAP, NDPI_PROTOCOL_UNKNOWN);
 }
 
 void ndpi_search_ldap(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
@@ -96,6 +94,19 @@ void ndpi_search_ldap(struct ndpi_detection_module_struct *ndpi_struct, struct n
 
 	NDPI_LOG(NDPI_PROTOCOL_LDAP, ndpi_struct, NDPI_LOG_DEBUG, "ldap excluded.\n");
 	NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_LDAP);
+}
+
+
+void init_ldap_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int32_t *id, NDPI_PROTOCOL_BITMASK *detection_bitmask)
+{
+  ndpi_set_bitmask_protocol_detection("LDAP", ndpi_struct, detection_bitmask, *id,
+				      NDPI_PROTOCOL_LDAP,
+				      ndpi_search_ldap,
+				      NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP_OR_UDP_WITH_PAYLOAD_WITHOUT_RETRANSMISSION,
+				      SAVE_DETECTION_BITMASK_AS_UNKNOWN,
+				      ADD_TO_DETECTION_BITMASK);
+
+  *id += 1;
 }
 
 #endif

@@ -60,7 +60,7 @@ static void ndpi_check_gtp(struct ndpi_detection_module_struct *ndpi_struct, str
 	
 	if(message_len <= (payload_len-sizeof(struct gtp_header_generic))) {
 	  NDPI_LOG(NDPI_PROTOCOL_GTP, ndpi_struct, NDPI_LOG_DEBUG, "Found gtp.\n");
-	  ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_GTP, NDPI_REAL_PROTOCOL);
+	  ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_GTP, NDPI_PROTOCOL_UNKNOWN);
 	  return;
 	}
       }
@@ -80,6 +80,19 @@ void ndpi_search_gtp(struct ndpi_detection_module_struct *ndpi_struct, struct nd
   /* skip marked packets */
   if(packet->detected_protocol_stack[0] != NDPI_PROTOCOL_GTP)
     ndpi_check_gtp(ndpi_struct, flow);
+}
+
+
+void init_gtp_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int32_t *id, NDPI_PROTOCOL_BITMASK *detection_bitmask)
+{
+  ndpi_set_bitmask_protocol_detection("GTP", ndpi_struct, detection_bitmask, *id,
+				      NDPI_PROTOCOL_GTP,
+				      ndpi_search_gtp,
+				      NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_UDP_WITH_PAYLOAD,
+				      SAVE_DETECTION_BITMASK_AS_UNKNOWN,
+				      ADD_TO_DETECTION_BITMASK);
+
+  *id += 1;
 }
 
 #endif

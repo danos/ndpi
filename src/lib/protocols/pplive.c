@@ -28,7 +28,7 @@
 
 #ifdef NDPI_PROTOCOL_PPLIVE
 static void ndpi_int_pplive_add_connection(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow) {
-	ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_PPLIVE, NDPI_REAL_PROTOCOL);
+  ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_PPLIVE, NDPI_PROTOCOL_UNKNOWN);
 }
 
 static void ndpi_check_pplive_udp1(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow) {
@@ -215,6 +215,19 @@ void ndpi_search_pplive(struct ndpi_detection_module_struct *ndpi_struct, struct
 	}
 	
 	ndpi_check_pplive_udp3(ndpi_struct, flow);
+}
+
+
+void init_pplive_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int32_t *id, NDPI_PROTOCOL_BITMASK *detection_bitmask)
+{
+  ndpi_set_bitmask_protocol_detection("PPLive", ndpi_struct, detection_bitmask, *id,
+				      NDPI_PROTOCOL_PPLIVE,
+				      ndpi_search_pplive,
+				      NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_UDP,
+				      SAVE_DETECTION_BITMASK_AS_UNKNOWN,
+				      ADD_TO_DETECTION_BITMASK);
+
+  *id += 1;
 }
 
 #endif

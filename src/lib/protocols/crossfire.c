@@ -22,17 +22,16 @@
  */
 
 
-
 /* include files */
 #include "ndpi_protocols.h"
 #ifdef NDPI_PROTOCOL_CROSSFIRE
 
 
 static void ndpi_int_crossfire_add_connection(struct ndpi_detection_module_struct *ndpi_struct, 
-					      struct ndpi_flow_struct *flow, ndpi_protocol_type_t protocol_type)
+					      struct ndpi_flow_struct *flow/* , ndpi_protocol_type_t protocol_type */)
 {
 
-	ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_CROSSFIRE, protocol_type);
+  ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_CROSSFIRE, NDPI_PROTOCOL_UNKNOWN);
 }
 
 void ndpi_search_crossfire_tcp_udp(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
@@ -51,7 +50,7 @@ void ndpi_search_crossfire_tcp_udp(struct ndpi_detection_module_struct *ndpi_str
 			&& get_u_int16_t(packet->payload, 22) == ntohs(0x7d00)
 			) {
 			NDPI_LOG(NDPI_PROTOCOL_CROSSFIRE, ndpi_struct, NDPI_LOG_DEBUG, "Crossfire: found udp packet.\n");
-			ndpi_int_crossfire_add_connection(ndpi_struct, flow, NDPI_REAL_PROTOCOL);
+			ndpi_int_crossfire_add_connection(ndpi_struct, flow);
 			return;
 		}
 
@@ -69,7 +68,7 @@ void ndpi_search_crossfire_tcp_udp(struct ndpi_detection_module_struct *ndpi_str
 						|| memcmp(packet->host_line.ptr, "www.crossfire", 13) == 0))
 				) {
 				NDPI_LOG(NDPI_PROTOCOL_CROSSFIRE, ndpi_struct, NDPI_LOG_DEBUG, "Crossfire: found HTTP request.\n");
-				ndpi_int_crossfire_add_connection(ndpi_struct, flow, NDPI_CORRELATED_PROTOCOL);
+				ndpi_int_crossfire_add_connection(ndpi_struct, flow);
 				return;
 			}
 		}
@@ -81,5 +80,15 @@ void ndpi_search_crossfire_tcp_udp(struct ndpi_detection_module_struct *ndpi_str
 }
 
 
+void init_crossfire_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int32_t *id, NDPI_PROTOCOL_BITMASK *detection_bitmask)
+{
+  ndpi_set_bitmask_protocol_detection("Crossfire", ndpi_struct, detection_bitmask, *id,
+				      NDPI_PROTOCOL_CROSSFIRE,
+				      ndpi_search_crossfire_tcp_udp,
+				      NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP_OR_UDP_WITH_PAYLOAD_WITHOUT_RETRANSMISSION,
+				      SAVE_DETECTION_BITMASK_AS_UNKNOWN,
+				      ADD_TO_DETECTION_BITMASK);
+  *id += 1;
+}
 
 #endif

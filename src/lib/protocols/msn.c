@@ -28,10 +28,10 @@
 #ifdef NDPI_PROTOCOL_MSN
 
 #define MAX_PACKETS_FOR_MSN 100
-static void ndpi_int_msn_add_connection(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow,
-					ndpi_protocol_type_t protocol_type)
+static void ndpi_int_msn_add_connection(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow/* , */
+					/* ndpi_protocol_type_t protocol_type */)
 {
-  ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_MSN, protocol_type);
+  ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_MSN, NDPI_PROTOCOL_UNKNOWN);
 }
 
 static u_int8_t ndpi_int_find_xmsn(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
@@ -72,7 +72,7 @@ static void ndpi_search_msn_tcp(struct ndpi_detection_module_struct *ndpi_struct
       if (memcmp(packet->payload + 24, "MSNSLP", 6) == 0
 	  || (get_u_int32_t(packet->payload, 0) == htonl(0x30000000) && get_u_int32_t(packet->payload, 4) == 0x00000000)) {
 	NDPI_LOG(NDPI_PROTOCOL_MSN, ndpi_struct, NDPI_LOG_TRACE, "detected MSN File Transfer, ifdef ssl.\n");
-	ndpi_int_msn_add_connection(ndpi_struct, flow, NDPI_REAL_PROTOCOL);
+	ndpi_int_msn_add_connection(ndpi_struct, flow);
 	return;
       }
     }
@@ -85,14 +85,12 @@ static void ndpi_search_msn_tcp(struct ndpi_detection_module_struct *ndpi_struct
       if (flow->l4.tcp.msn_ssl_ft == 2) {
 	NDPI_LOG(NDPI_PROTOCOL_MSN, ndpi_struct, NDPI_LOG_TRACE,
 		 "detected MSN File Transfer, ifdef ssl 2.\n");
-	ndpi_int_msn_add_connection(ndpi_struct, flow, NDPI_REAL_PROTOCOL);
+	ndpi_int_msn_add_connection(ndpi_struct, flow);
       }
       return;
     }
   }
 #endif
-
-
 
   /* we detect the initial connection only ! */
   /* match: "VER " ..... "CVR" x 0x0d 0x0a
@@ -119,9 +117,9 @@ static void ndpi_search_msn_tcp(struct ndpi_detection_module_struct *ndpi_struct
       /*          if (packet->payload_packet_len > 100 &&
 		  get_u_int16_t(packet->payload, 86) == htons(0x05dc)) { */
       if (packet->payload_packet_len > 101 && packet->payload[101] == 0x02) {
-	ndpi_int_msn_add_connection(ndpi_struct, flow, NDPI_CORRELATED_PROTOCOL);
+	ndpi_int_msn_add_connection(ndpi_struct, flow);
       } else {
-	ndpi_int_msn_add_connection(ndpi_struct, flow, NDPI_CORRELATED_PROTOCOL);
+	ndpi_int_msn_add_connection(ndpi_struct, flow);
       }
 
       return;
@@ -138,13 +136,13 @@ static void ndpi_search_msn_tcp(struct ndpi_detection_module_struct *ndpi_struct
 		     3) == 0 || memcmp(&packet->payload[packet->payload_packet_len - 8], "MSNP", 4) == 0) {
 	    NDPI_LOG(NDPI_PROTOCOL_MSN, ndpi_struct, NDPI_LOG_TRACE,
 		     "found MSN by pattern VER...CVR/MSNP ODOA.\n");
-	    ndpi_int_msn_add_connection(ndpi_struct, flow, NDPI_REAL_PROTOCOL);
+	    ndpi_int_msn_add_connection(ndpi_struct, flow);
 	    return;
 	  }
 	  if (memcmp(&packet->payload[4], "MSNFT", 5) == 0) {
 	    NDPI_LOG(NDPI_PROTOCOL_MSN, ndpi_struct, NDPI_LOG_TRACE,
 		     "found MSN FT by pattern VER MSNFT...0d0a.\n");
-	    ndpi_int_msn_add_connection(ndpi_struct, flow, NDPI_REAL_PROTOCOL);
+	    ndpi_int_msn_add_connection(ndpi_struct, flow);
 	    return;
 	  }
 	}
@@ -161,7 +159,7 @@ static void ndpi_search_msn_tcp(struct ndpi_detection_module_struct *ndpi_struct
       if (packet->user_agent_line.ptr != NULL &&
 	  packet->user_agent_line.len > NDPI_STATICSTRING_LEN("Messenger/") &&
 	  memcmp(packet->user_agent_line.ptr, "Messenger/", NDPI_STATICSTRING_LEN("Messenger/")) == 0) {
-	ndpi_int_msn_add_connection(ndpi_struct, flow, NDPI_CORRELATED_PROTOCOL);
+	ndpi_int_msn_add_connection(ndpi_struct, flow);
 	return;
       }
     }
@@ -190,7 +188,7 @@ static void ndpi_search_msn_tcp(struct ndpi_detection_module_struct *ndpi_struct
 		     NDPI_STATICSTRING_LEN("text/x-msnmsgr")) == 0))) {
 	  NDPI_LOG(NDPI_PROTOCOL_MSN, ndpi_struct, NDPI_LOG_TRACE,
 		   "found MSN by pattern POST http:// .... application/x-msn-messenger.\n");
-	  ndpi_int_msn_add_connection(ndpi_struct, flow, NDPI_CORRELATED_PROTOCOL);
+	  ndpi_int_msn_add_connection(ndpi_struct, flow);
 	  return;
 	}
       }
@@ -251,7 +249,7 @@ static void ndpi_search_msn_tcp(struct ndpi_detection_module_struct *ndpi_struct
 			 != 0)) {
 	    NDPI_LOG(NDPI_PROTOCOL_MSN, ndpi_struct, NDPI_LOG_TRACE,
 		     "found MSN with pattern text/xml; charset=utf-8.\n");
-	    ndpi_int_msn_add_connection(ndpi_struct, flow, NDPI_CORRELATED_PROTOCOL);
+	    ndpi_int_msn_add_connection(ndpi_struct, flow);
 	    return;
 	  }
 	  for (a = 0; a < packet->parsed_lines; a++) {
@@ -263,7 +261,7 @@ static void ndpi_search_msn_tcp(struct ndpi_detection_module_struct *ndpi_struct
 		       "found MSN with pattern text/sml; charset0utf-8.\n");
 	      NDPI_LOG(NDPI_PROTOCOL_MSN, ndpi_struct,
 		       NDPI_LOG_TRACE, "MSN xml CVS / VER / ANS found\n");
-	      ndpi_int_msn_add_connection(ndpi_struct, flow, NDPI_CORRELATED_PROTOCOL);
+	      ndpi_int_msn_add_connection(ndpi_struct, flow);
 	      return;
 	    }
 	  }
@@ -294,12 +292,12 @@ static void ndpi_search_msn_tcp(struct ndpi_detection_module_struct *ndpi_struct
 		     NDPI_STATICSTRING_LEN("text/x-msnmsgr")) == 0))) {
 	  NDPI_LOG(NDPI_PROTOCOL_MSN, ndpi_struct, NDPI_LOG_TRACE,
 		   "HTTP/1.0 200 OK .... application/x-msn-messenger.\n");
-	  ndpi_int_msn_add_connection(ndpi_struct, flow, NDPI_CORRELATED_PROTOCOL);
+	  ndpi_int_msn_add_connection(ndpi_struct, flow);
 	  return;
 	}
 	if (ndpi_int_find_xmsn(ndpi_struct, flow) == 1) {
 	  NDPI_LOG(NDPI_PROTOCOL_MSN, ndpi_struct, NDPI_LOG_TRACE, "HTTP/1.0 200 OK .... X-MSN.\n");
-	  ndpi_int_msn_add_connection(ndpi_struct, flow, NDPI_CORRELATED_PROTOCOL);
+	  ndpi_int_msn_add_connection(ndpi_struct, flow);
 	  return;
 	}
       }
@@ -312,7 +310,7 @@ static void ndpi_search_msn_tcp(struct ndpi_detection_module_struct *ndpi_struct
       if (memcmp(packet->payload, "CONNECT messenger.hotmail.com:1863 HTTP/1.", 42) == 0) {
 	NDPI_LOG(NDPI_PROTOCOL_MSN, ndpi_struct, NDPI_LOG_TRACE,
 		 "found MSN  with pattern CONNECT messenger.hotmail.com:1863 HTTP/1..\n");
-	ndpi_int_msn_add_connection(ndpi_struct, flow, NDPI_CORRELATED_PROTOCOL);
+	ndpi_int_msn_add_connection(ndpi_struct, flow);
 	return;
       }
     }
@@ -353,7 +351,7 @@ static void ndpi_search_msn_tcp(struct ndpi_detection_module_struct *ndpi_struct
 	}
 	NDPI_LOG(NDPI_PROTOCOL_MSN, ndpi_struct, NDPI_LOG_TRACE,
 		 "found MSN  with pattern USR/ANS ...mail_address.\n");
-	ndpi_int_msn_add_connection(ndpi_struct, flow, NDPI_REAL_PROTOCOL);
+	ndpi_int_msn_add_connection(ndpi_struct, flow);
 	return;
       }
     }
@@ -385,19 +383,16 @@ static void ndpi_search_msn_tcp(struct ndpi_detection_module_struct *ndpi_struct
 	    memcmp(packet->content_line.ptr, "text/x-msnmsgr", NDPI_STATICSTRING_LEN("text/x-msnmsgr")) == 0))) {
 	NDPI_LOG(NDPI_PROTOCOL_MSN, ndpi_struct, NDPI_LOG_TRACE,
 		 "HTTP/1.0 200 OK .... application/x-msn-messenger.\n");
-	ndpi_int_msn_add_connection(ndpi_struct, flow, NDPI_CORRELATED_PROTOCOL);
+	ndpi_int_msn_add_connection(ndpi_struct, flow);
 	return;
       }
       if (ndpi_int_find_xmsn(ndpi_struct, flow) == 1) {
 	NDPI_LOG(NDPI_PROTOCOL_MSN, ndpi_struct, NDPI_LOG_TRACE, "HTTP/1.0 200 OK .... X-MSN.\n");
-	ndpi_int_msn_add_connection(ndpi_struct, flow, NDPI_CORRELATED_PROTOCOL);
+	ndpi_int_msn_add_connection(ndpi_struct, flow);
 	return;
       }
     }
   }
-
-
-
 
   /* finished examining the secone packet only */
   /* direct user connection (file transfer,...) */
@@ -408,7 +403,7 @@ static void ndpi_search_msn_tcp(struct ndpi_detection_module_struct *ndpi_struct
     if (flow->packet_counter == 1 &&
 	packet->payload_packet_len > 12 && memcmp(packet->payload, "recipientid=", 12) == 0) {
       NDPI_LOG(NDPI_PROTOCOL_MSN, ndpi_struct, NDPI_LOG_DEBUG, "detected file transfer.\n");
-      ndpi_int_msn_add_connection(ndpi_struct, flow, NDPI_REAL_PROTOCOL);
+      ndpi_int_msn_add_connection(ndpi_struct, flow);
       return;
     }
   }
@@ -435,7 +430,7 @@ static void ndpi_search_msn_tcp(struct ndpi_detection_module_struct *ndpi_struct
     /* asymmetric detection to this pattern is asym (2) */
   } else if (flow->l4.tcp.msn_stage == 1 + packet->packet_direction) {
     if (packet->payload_packet_len > 10 && get_u_int32_t(packet->payload, 0) == htonl(0x666f6f00)) {
-      ndpi_int_msn_add_connection(ndpi_struct, flow, NDPI_REAL_PROTOCOL);
+      ndpi_int_msn_add_connection(ndpi_struct, flow);
       NDPI_LOG(NDPI_PROTOCOL_MSN, ndpi_struct, NDPI_LOG_TRACE, "MSN File Transfer detected 1\n");
       return;
     }
@@ -449,26 +444,26 @@ static void ndpi_search_msn_tcp(struct ndpi_detection_module_struct *ndpi_struct
 
   } else if (flow->l4.tcp.msn_stage == 2 - packet->packet_direction
 	     && packet->payload_packet_len == 4 && get_u_int32_t(packet->payload, 0) == htonl(0x30000000)) {
-    ndpi_int_msn_add_connection(ndpi_struct, flow, NDPI_REAL_PROTOCOL);
+    ndpi_int_msn_add_connection(ndpi_struct, flow);
     NDPI_LOG(NDPI_PROTOCOL_MSN, ndpi_struct, NDPI_LOG_TRACE, "MSN File Transfer detected 2\n");
     return;
   } else if ((flow->l4.tcp.msn_stage == 3 + packet->packet_direction)
 	     || (flow->l4.tcp.msn_stage == 4 - packet->packet_direction)) {
     if (packet->payload_packet_len == 4 && get_u_int32_t(packet->payload, 0) == htonl(0x30000000)) {
-      ndpi_int_msn_add_connection(ndpi_struct, flow, NDPI_REAL_PROTOCOL);
+      ndpi_int_msn_add_connection(ndpi_struct, flow);
       NDPI_LOG(NDPI_PROTOCOL_MSN, ndpi_struct, NDPI_LOG_TRACE, "MSN File Transfer detected 2\n");
       return;
     }
   } else if (flow->l4.tcp.msn_stage == 6 - packet->packet_direction) {
     if ((packet->payload_packet_len == 4) &&
 	(get_u_int32_t(packet->payload, 0) == htonl(0x10000000) || get_u_int32_t(packet->payload, 0) == htonl(0x30000000))) {
-      ndpi_int_msn_add_connection(ndpi_struct, flow, NDPI_REAL_PROTOCOL);
+      ndpi_int_msn_add_connection(ndpi_struct, flow);
       NDPI_LOG(NDPI_PROTOCOL_MSN, ndpi_struct, NDPI_LOG_TRACE, "MSN File Transfer detected 3\n");
       return;
     }
   } else if (flow->l4.tcp.msn_stage == 5 + packet->packet_direction) {
     if ((packet->payload_packet_len == 20) && get_u_int32_t(packet->payload, 0) == htonl(0x10000000)) {
-      ndpi_int_msn_add_connection(ndpi_struct, flow, NDPI_REAL_PROTOCOL);
+      ndpi_int_msn_add_connection(ndpi_struct, flow);
       NDPI_LOG(NDPI_PROTOCOL_MSN, ndpi_struct, NDPI_LOG_TRACE, "MSN File Transfer detected 3\n");
       return;
     }
@@ -481,7 +476,7 @@ static void ndpi_search_msn_tcp(struct ndpi_detection_module_struct *ndpi_struct
 	if (memcmp(&packet->payload[40], "INVITE MSNMSGR", 14) == 0
 	    || memcmp(&packet->payload[56], "INVITE MSNMSGR", 14) == 0
 	    || memcmp(&packet->payload[172], "INVITE MSNMSGR", 14) == 0) {
-	  ndpi_int_msn_add_connection(ndpi_struct, flow, NDPI_REAL_PROTOCOL);
+	  ndpi_int_msn_add_connection(ndpi_struct, flow);
 
 	  NDPI_LOG(NDPI_PROTOCOL_MSN, ndpi_struct, NDPI_LOG_TRACE, "MSN File Transfer detected 3\n");
 	  return;
@@ -521,7 +516,7 @@ static void ndpi_search_udp_msn_misc(struct ndpi_detection_module_struct
       && get_u_int32_t(packet->payload, 4) == 0 && packet->payload[9] == 0
       && get_u_int16_t(packet->payload, 10) == htons(0x0100)) {
     NDPI_LOG(NDPI_PROTOCOL_MSN, ndpi_struct, NDPI_LOG_TRACE, "msn udp misc data connection detected\n");
-    ndpi_int_msn_add_connection(ndpi_struct, flow, NDPI_REAL_PROTOCOL);
+    ndpi_int_msn_add_connection(ndpi_struct, flow);
   }
 
   /* asymmetric detection working. */
@@ -558,6 +553,22 @@ void ndpi_search_msn(struct ndpi_detection_module_struct *ndpi_struct, struct nd
       ndpi_search_udp_msn_misc(ndpi_struct, flow);
     }
   }
+}
+
+
+void init_msn_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int32_t *id, NDPI_PROTOCOL_BITMASK *detection_bitmask) 
+{
+  
+  NDPI_BITMASK_RESET(ndpi_struct->callback_buffer[*id].excluded_protocol_bitmask);
+  
+  ndpi_set_bitmask_protocol_detection("MSN", ndpi_struct, detection_bitmask, *id,
+				      NDPI_PROTOCOL_MSN,
+				      ndpi_search_msn,
+				      NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP_OR_UDP_WITH_PAYLOAD_WITHOUT_RETRANSMISSION,
+				      SAVE_DETECTION_BITMASK_AS_UNKNOWN,
+				      ADD_TO_DETECTION_BITMASK);
+
+  *id += 1;
 }
 
 #endif

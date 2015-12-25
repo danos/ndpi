@@ -54,7 +54,7 @@ static void ndpi_check_citrix(struct ndpi_detection_module_struct *ndpi_struct, 
 	
 	if(memcmp(packet->payload, citrix_header, sizeof(citrix_header)) == 0) {
 	  NDPI_LOG(NDPI_PROTOCOL_CITRIX, ndpi_struct, NDPI_LOG_DEBUG, "Found citrix.\n");
-	  ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_CITRIX, NDPI_REAL_PROTOCOL);
+	  ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_CITRIX, NDPI_PROTOCOL_UNKNOWN);
 	}
 
 	return;
@@ -64,7 +64,7 @@ static void ndpi_check_citrix(struct ndpi_detection_module_struct *ndpi_struct, 
 	if((memcmp(packet->payload, citrix_header, sizeof(citrix_header)) == 0)
 	   || (ndpi_strnstr((const char *)packet->payload, "Citrix.TcpProxyService", payload_len) != NULL)) {
 	  NDPI_LOG(NDPI_PROTOCOL_CITRIX, ndpi_struct, NDPI_LOG_DEBUG, "Found citrix.\n");
-	  ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_CITRIX, NDPI_REAL_PROTOCOL);
+	  ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_CITRIX, NDPI_PROTOCOL_UNKNOWN);
 	}
 
 	return;	
@@ -88,6 +88,18 @@ void ndpi_search_citrix(struct ndpi_detection_module_struct *ndpi_struct, struct
   /* skip marked packets */
   if(packet->detected_protocol_stack[0] != NDPI_PROTOCOL_CITRIX)
     ndpi_check_citrix(ndpi_struct, flow);
+}
+
+
+void init_citrix_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int32_t *id, NDPI_PROTOCOL_BITMASK *detection_bitmask)
+{
+  ndpi_set_bitmask_protocol_detection("Citrix", ndpi_struct, detection_bitmask, *id,
+				      NDPI_PROTOCOL_CITRIX,
+				      ndpi_search_citrix,
+				      NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP_WITH_PAYLOAD_WITHOUT_RETRANSMISSION,
+				      SAVE_DETECTION_BITMASK_AS_UNKNOWN,
+				      ADD_TO_DETECTION_BITMASK);
+  *id += 1;
 }
 
 #endif

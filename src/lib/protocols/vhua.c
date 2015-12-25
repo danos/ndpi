@@ -31,7 +31,7 @@
 #ifdef NDPI_PROTOCOL_VHUA
 
 static void ndpi_int_vhua_add_connection(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow) {
-  ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_VHUA, NDPI_REAL_PROTOCOL);
+  ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_VHUA, NDPI_PROTOCOL_UNKNOWN);
   NDPI_LOG(NDPI_PROTOCOL_VHUA, ndpi_struct, NDPI_LOG_TRACE, "VHUA Found.\n");
 }
 
@@ -63,6 +63,18 @@ void ndpi_search_vhua(struct ndpi_detection_module_struct *ndpi_struct, struct n
   if(packet->detected_protocol_stack[0] != NDPI_PROTOCOL_VHUA) {
     ndpi_check_vhua(ndpi_struct, flow);
   }
+}
+
+
+void init_vhua_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int32_t *id, NDPI_PROTOCOL_BITMASK *detection_bitmask)
+{
+  ndpi_set_bitmask_protocol_detection("VHUA", ndpi_struct, detection_bitmask, *id,
+				      NDPI_PROTOCOL_VHUA,
+				      ndpi_search_vhua,
+				      NDPI_SELECTION_BITMASK_PROTOCOL_UDP_WITH_PAYLOAD,
+				      SAVE_DETECTION_BITMASK_AS_UNKNOWN,
+				      ADD_TO_DETECTION_BITMASK);
+  *id += 1;
 }
 
 #endif

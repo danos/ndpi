@@ -81,7 +81,7 @@ static void ndpi_int_directconnect_add_connection(struct ndpi_detection_module_s
   struct ndpi_id_struct *src = flow->src;
   struct ndpi_id_struct *dst = flow->dst;
 
-  ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_DIRECTCONNECT, NDPI_REAL_PROTOCOL);
+  ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_DIRECTCONNECT, NDPI_PROTOCOL_UNKNOWN);
 
   if (src != NULL) {
     src->directconnect_last_safe_access_time = packet->tick_timestamp;
@@ -168,7 +168,7 @@ static void ndpi_search_directconnect_tcp(struct ndpi_detection_module_struct *n
       if ((u_int32_t)
 	  (packet->tick_timestamp -
 	   src->directconnect_last_safe_access_time) < ndpi_struct->directconnect_connection_ip_tick_timeout) {
-	ndpi_int_change_protocol(ndpi_struct, flow, NDPI_PROTOCOL_DIRECTCONNECT, NDPI_REAL_PROTOCOL);
+	ndpi_int_change_protocol(ndpi_struct, flow, NDPI_PROTOCOL_DIRECTCONNECT, NDPI_PROTOCOL_UNKNOWN);
 	src->directconnect_last_safe_access_time = packet->tick_timestamp;
 	NDPI_LOG(NDPI_PROTOCOL_DIRECTCONNECT, ndpi_struct,
 		 NDPI_LOG_DEBUG, "marking using dc port\n %d", ntohs(src->detected_directconnect_port));
@@ -184,7 +184,7 @@ static void ndpi_search_directconnect_tcp(struct ndpi_detection_module_struct *n
       if ((u_int32_t)
 	  (packet->tick_timestamp -
 	   src->directconnect_last_safe_access_time) < ndpi_struct->directconnect_connection_ip_tick_timeout) {
-	ndpi_int_change_protocol(ndpi_struct, flow, NDPI_PROTOCOL_DIRECTCONNECT, NDPI_REAL_PROTOCOL);
+	ndpi_int_change_protocol(ndpi_struct, flow, NDPI_PROTOCOL_DIRECTCONNECT, NDPI_PROTOCOL_UNKNOWN);
 	src->directconnect_last_safe_access_time = packet->tick_timestamp;
 	NDPI_LOG(NDPI_PROTOCOL_DIRECTCONNECT, ndpi_struct,
 		 NDPI_LOG_DEBUG, "marking using dc port\n %d", ntohs(src->detected_directconnect_ssl_port));
@@ -204,7 +204,7 @@ static void ndpi_search_directconnect_tcp(struct ndpi_detection_module_struct *n
       if ((u_int32_t)
 	  (packet->tick_timestamp -
 	   dst->directconnect_last_safe_access_time) < ndpi_struct->directconnect_connection_ip_tick_timeout) {
-	ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_DIRECTCONNECT, NDPI_REAL_PROTOCOL);
+	ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_DIRECTCONNECT, NDPI_PROTOCOL_UNKNOWN);
 	dst->directconnect_last_safe_access_time = packet->tick_timestamp;
 	NDPI_LOG(NDPI_PROTOCOL_DIRECTCONNECT, ndpi_struct,
 		 NDPI_LOG_DEBUG, "marking using dc port\n %d", ntohs(dst->detected_directconnect_port));
@@ -220,7 +220,7 @@ static void ndpi_search_directconnect_tcp(struct ndpi_detection_module_struct *n
       if ((u_int32_t)
 	  (packet->tick_timestamp -
 	   dst->directconnect_last_safe_access_time) < ndpi_struct->directconnect_connection_ip_tick_timeout) {
-	ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_DIRECTCONNECT, NDPI_REAL_PROTOCOL);
+	ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_DIRECTCONNECT, NDPI_PROTOCOL_UNKNOWN);
 	dst->directconnect_last_safe_access_time = packet->tick_timestamp;
 	NDPI_LOG(NDPI_PROTOCOL_DIRECTCONNECT, ndpi_struct,
 		 NDPI_LOG_DEBUG, "marking using dc port\n %d", ntohs(dst->detected_directconnect_ssl_port));
@@ -352,7 +352,7 @@ static void ndpi_search_directconnect_udp(struct ndpi_detection_module_struct
 	(packet->tick_timestamp -
 	 dst->directconnect_last_safe_access_time) < ndpi_struct->directconnect_connection_ip_tick_timeout) {
 
-      ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_DIRECTCONNECT, NDPI_REAL_PROTOCOL);
+      ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_DIRECTCONNECT, NDPI_PROTOCOL_UNKNOWN);
       dst->directconnect_last_safe_access_time = packet->tick_timestamp;
       NDPI_LOG(NDPI_PROTOCOL_DIRECTCONNECT, ndpi_struct,
 	       NDPI_LOG_DEBUG, "marking using dc udp port\n %d", ntohs(dst->detected_directconnect_udp_port));
@@ -469,6 +469,19 @@ void ndpi_search_directconnect(struct ndpi_detection_module_struct
   } else if (packet->udp != NULL) {
     ndpi_search_directconnect_udp(ndpi_struct, flow);
   }
+}
+
+
+void init_directconnect_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int32_t *id, NDPI_PROTOCOL_BITMASK *detection_bitmask)
+{
+  ndpi_set_bitmask_protocol_detection("DirectConnect", ndpi_struct, detection_bitmask, *id,
+				      NDPI_PROTOCOL_DIRECTCONNECT,
+				      ndpi_search_directconnect,
+				      NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP_OR_UDP_WITH_PAYLOAD_WITHOUT_RETRANSMISSION,
+				      SAVE_DETECTION_BITMASK_AS_UNKNOWN,
+				      ADD_TO_DETECTION_BITMASK);
+
+  *id += 1;
 }
 
 #endif

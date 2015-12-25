@@ -22,8 +22,6 @@
  *
  */
 
-
-
 /* include files */
 #include "ndpi_protocols.h"
 #ifdef NDPI_PROTOCOL_ARMAGETRON
@@ -33,7 +31,7 @@ static void ndpi_int_armagetron_add_connection(struct ndpi_detection_module_stru
 					       struct ndpi_flow_struct *flow)
 {
 
-  ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_ARMAGETRON, NDPI_REAL_PROTOCOL);
+  ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_ARMAGETRON, NDPI_PROTOCOL_UNKNOWN);
 }
 
 void ndpi_search_armagetron_udp(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
@@ -98,5 +96,20 @@ void ndpi_search_armagetron_udp(struct ndpi_detection_module_struct *ndpi_struct
   NDPI_LOG(NDPI_PROTOCOL_ARMAGETRON, ndpi_struct, NDPI_LOG_DEBUG, "exclude armagetron.\n");
   NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_ARMAGETRON);
 }
+
+
+
+void init_armagetron_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int32_t *id, NDPI_PROTOCOL_BITMASK *detection_bitmask)
+{
+  ndpi_set_bitmask_protocol_detection("Armagetron", ndpi_struct, detection_bitmask, *id,
+				      NDPI_PROTOCOL_ARMAGETRON,
+				      ndpi_search_armagetron_udp,
+				      NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_UDP_WITH_PAYLOAD,
+				      SAVE_DETECTION_BITMASK_AS_UNKNOWN,
+				      ADD_TO_DETECTION_BITMASK);
+
+  *id += 1;
+}
+
 
 #endif

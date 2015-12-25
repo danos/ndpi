@@ -39,6 +39,7 @@ libndpi_la_SOURCES = ndpi_content_match.c.inc \
 		     protocols/dns.c \
 		     protocols/dofus.c \
 		     protocols/dropbox.c \
+		     protocols/eaq.c \
 		     protocols/edonkey.c \
 		     protocols/fasttrack.c \
 		     protocols/fiesta.c \
@@ -59,6 +60,7 @@ libndpi_la_SOURCES = ndpi_content_match.c.inc \
 		     protocols/ipp.c \
 		     protocols/irc.c \
 		     protocols/jabber.c \
+		     protocols/kakaotalk_voice.c \
 		     protocols/kerberos.c \
 		     protocols/kontiki.c \
 		     protocols/ldap.c \
@@ -72,6 +74,7 @@ libndpi_la_SOURCES = ndpi_content_match.c.inc \
 		     protocols/megaco.c \
 		     protocols/mgcp.c \
 		     protocols/mms.c \
+		     protocols/mpegts.c \
 		     protocols/msn.c \
 		     protocols/mssql.c \
 		     protocols/mysql.c \
@@ -118,6 +121,7 @@ libndpi_la_SOURCES = ndpi_content_match.c.inc \
 		     protocols/ssdp.c \
 		     protocols/ssh.c \
 		     protocols/ssl.c \
+		     protocols/starcraft.c \
 		     protocols/stealthnet.c \
 		     protocols/steam.c \
 		     protocols/stun.c \
@@ -131,6 +135,7 @@ libndpi_la_SOURCES = ndpi_content_match.c.inc \
 		     protocols/tftp.c \
 		     protocols/thunder.c \
 		     protocols/tor.c \
+		     protocols/teredo.c \
 		     protocols/tvants.c \
 		     protocols/tvuplayer.c \
 		     protocols/twitter.c \

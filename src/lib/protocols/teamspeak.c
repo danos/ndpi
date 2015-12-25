@@ -1,5 +1,5 @@
 /*
- * viber.c 
+ * teamspeak.c 
  *
  * Copyright (C) 2013 Remy Mudingay <mudingay@ill.fr>
  *
@@ -25,7 +25,7 @@
 static void ndpi_int_teamspeak_add_connection(struct ndpi_detection_module_struct
                                              *ndpi_struct, struct ndpi_flow_struct *flow)
 {
-    ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_TEAMSPEAK, NDPI_REAL_PROTOCOL);
+  ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_TEAMSPEAK, NDPI_PROTOCOL_UNKNOWN);
 }
   u_int16_t tdport = 0, tsport = 0;
   u_int16_t udport = 0, usport = 0;
@@ -62,4 +62,17 @@ else if (packet->tcp != NULL) {
   NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_TEAMSPEAK);
   return;
 }
+
+void init_teamspeak_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int32_t *id, NDPI_PROTOCOL_BITMASK *detection_bitmask)
+{
+  ndpi_set_bitmask_protocol_detection("TeamSpeak", ndpi_struct, detection_bitmask, *id,
+				      NDPI_PROTOCOL_TEAMSPEAK,
+				      ndpi_search_teamspeak,
+				      NDPI_SELECTION_BITMASK_PROTOCOL_TCP_OR_UDP_WITH_PAYLOAD,
+				      SAVE_DETECTION_BITMASK_AS_UNKNOWN,
+				      ADD_TO_DETECTION_BITMASK);
+
+  *id += 1;
+}
+
 #endif
