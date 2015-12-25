@@ -28,15 +28,9 @@
 #ifdef NDPI_PROTOCOL_SIP
 static void ndpi_int_sip_add_connection(struct ndpi_detection_module_struct *ndpi_struct,
 					struct ndpi_flow_struct *flow,
-					u_int8_t due_to_correlation)
-{
-
-  ndpi_int_add_connection(ndpi_struct, flow,
-			  NDPI_PROTOCOL_SIP,
-			  due_to_correlation ? NDPI_CORRELATED_PROTOCOL : NDPI_REAL_PROTOCOL);
+					u_int8_t due_to_correlation) {
+  ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_SIP, NDPI_PROTOCOL_UNKNOWN);
 }
-
-
 	
 #if !defined(WIN32)
 static inline
@@ -195,6 +189,19 @@ void ndpi_search_sip(struct ndpi_detection_module_struct *ndpi_struct, struct nd
       ndpi_search_sip_handshake(ndpi_struct, flow);
     }
   }
+}
+
+
+void init_sip_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int32_t *id, NDPI_PROTOCOL_BITMASK *detection_bitmask)
+{
+  ndpi_set_bitmask_protocol_detection("SIP", ndpi_struct, detection_bitmask, *id,
+				      NDPI_PROTOCOL_SIP,
+				      ndpi_search_sip,
+				      NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP_OR_UDP_WITH_PAYLOAD,/* Fix courtesy of Miguel Quesada <mquesadab@gmail.com> */
+				      SAVE_DETECTION_BITMASK_AS_UNKNOWN,
+				      ADD_TO_DETECTION_BITMASK);
+
+  *id += 1;
 }
 
 #endif

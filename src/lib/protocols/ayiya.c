@@ -56,7 +56,7 @@ void ndpi_search_ayiya(struct ndpi_detection_module_struct *ndpi_struct, struct 
       now = flow->packet.tick_timestamp;
 
       if((epoch >= (now - fireyears)) && (epoch <= (now+86400 /* 1 day */)))      
-	ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_AYIYA, NDPI_REAL_PROTOCOL);
+	ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_AYIYA, NDPI_PROTOCOL_UNKNOWN);
 
       return;
     }
@@ -64,4 +64,18 @@ void ndpi_search_ayiya(struct ndpi_detection_module_struct *ndpi_struct, struct 
     NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_AYIYA);
   }
 }
+
+
+void init_ayiya_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int32_t *id, NDPI_PROTOCOL_BITMASK *detection_bitmask)
+{
+  ndpi_set_bitmask_protocol_detection("Ayiya", ndpi_struct, detection_bitmask, *id,
+				      NDPI_PROTOCOL_AYIYA,
+				      ndpi_search_ayiya,
+				      NDPI_SELECTION_BITMASK_PROTOCOL_UDP_WITH_PAYLOAD,
+				      SAVE_DETECTION_BITMASK_AS_UNKNOWN,
+				      ADD_TO_DETECTION_BITMASK);
+
+  *id += 1;
+}
+
 #endif

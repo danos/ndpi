@@ -36,7 +36,7 @@ void ndpi_search_viber(struct ndpi_detection_module_struct *ndpi_struct, struct 
        || (packet->payload_packet_len == 20 && packet->payload[2] == 0x09 && packet->payload[3] == 0x00)
        || ((packet->payload_packet_len < 135) && (packet->payload[0] == 0x11))) {
       NDPI_LOG(NDPI_PROTOCOL_VIBER, ndpi_struct, NDPI_LOG_DEBUG, "found VIBER.\n");
-      ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_VIBER, NDPI_REAL_PROTOCOL);
+      ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_VIBER, NDPI_PROTOCOL_UNKNOWN);
       return;
     } 
   }
@@ -44,5 +44,19 @@ void ndpi_search_viber(struct ndpi_detection_module_struct *ndpi_struct, struct 
   NDPI_LOG(NDPI_PROTOCOL_VIBER, ndpi_struct, NDPI_LOG_DEBUG, "exclude VIBER.\n");
   NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_VIBER);
 }
+
+
+void init_viber_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int32_t *id, NDPI_PROTOCOL_BITMASK *detection_bitmask) 
+{
+  ndpi_set_bitmask_protocol_detection("VIBER", ndpi_struct, detection_bitmask, *id,
+				      NDPI_PROTOCOL_VIBER,
+				      ndpi_search_viber,
+				      NDPI_SELECTION_BITMASK_PROTOCOL_UDP_WITH_PAYLOAD,
+				      SAVE_DETECTION_BITMASK_AS_UNKNOWN,
+				      ADD_TO_DETECTION_BITMASK);
+
+  *id += 1;
+}
+
 
 #endif

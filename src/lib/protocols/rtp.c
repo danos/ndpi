@@ -19,7 +19,7 @@
  *
  * You should have received a copy of the GNU Lesser General Public License
  * along with nDPI.  If not, see <http://www.gnu.org/licenses/>.
- * 
+ *
  */
 
 
@@ -32,7 +32,7 @@ static void ndpi_rtp_search(struct ndpi_detection_module_struct *ndpi_struct,
 			    struct ndpi_flow_struct *flow,
 			    const u_int8_t * payload, const u_int16_t payload_len)
 {
-  //struct ndpi_packet_struct *packet = &flow->packet;	
+  //struct ndpi_packet_struct *packet = &flow->packet;
   u_int8_t payload_type = payload[1] & 0x7F;
   u_int32_t *ssid = (u_int32_t*)&payload[8];
 
@@ -44,7 +44,7 @@ static void ndpi_rtp_search(struct ndpi_detection_module_struct *ndpi_struct,
      && (*ssid != 0)
      ) {
     NDPI_LOG(NDPI_PROTOCOL_RTP, ndpi_struct, NDPI_LOG_DEBUG, "Found rtp.\n");
-    ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_RTP, NDPI_REAL_PROTOCOL);	
+    ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_RTP, NDPI_PROTOCOL_UNKNOWN);
   } else {
     NDPI_LOG(NDPI_PROTOCOL_RTP, ndpi_struct, NDPI_LOG_DEBUG, "exclude rtp.\n");
     NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_RTP);
@@ -69,7 +69,7 @@ void ndpi_search_rtp(struct ndpi_detection_module_struct *ndpi_struct, struct nd
 static void ndpi_int_rtp_add_connection(struct ndpi_detection_module_struct
 					*ndpi_struct, struct ndpi_flow_struct *flow)
 {
-  ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_RTP, NDPI_REAL_PROTOCOL);
+  ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_RTP, NDPI_PROTOCOL_UNKNOWN);
 }
 
 /*
@@ -87,7 +87,7 @@ static void ndpi_int_rtp_add_connection(struct ndpi_detection_module_struct
  *   1, if the current packet should count towards the total, or
  *   0, if it it regarded as belonging to the previous reporting interval
  */
-	
+
 #if !defined(WIN32)
 static inline
 #else
@@ -101,7 +101,7 @@ void init_seq(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow
 }
 
 /* returns difference between old and new highest sequence number */
-	
+
 #if !defined(WIN32)
 static inline
 #else
@@ -130,7 +130,7 @@ static void ndpi_rtp_search(struct ndpi_detection_module_struct *ndpi_struct,
 			    const u_int8_t * payload, const u_int16_t payload_len)
 {
   struct ndpi_packet_struct *packet = &flow->packet;
-	
+
   u_int8_t stage;
   u_int16_t seqnum = ntohs(get_u_int16_t(payload, 2));
 
@@ -243,7 +243,7 @@ static void ndpi_rtp_search(struct ndpi_detection_module_struct *ndpi_struct,
  exclude_rtp:
 #ifdef NDPI_PROTOCOL_STUN
   if (packet->detected_protocol_stack[0] == NDPI_PROTOCOL_STUN
-      || packet->real_protocol_read_only == NDPI_PROTOCOL_STUN) {
+      || /* packet->real_protocol_read_only == NDPI_PROTOCOL_STUN */) {
     NDPI_LOG(NDPI_PROTOCOL_RTP, ndpi_struct, NDPI_LOG_DEBUG, "STUN: is detected, need next packet.\n");
     return;
   }
@@ -256,7 +256,7 @@ static void ndpi_rtp_search(struct ndpi_detection_module_struct *ndpi_struct,
 void ndpi_search_rtp(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 {
   struct ndpi_packet_struct *packet = &flow->packet;
-	
+
 
   if (packet->udp) {
     ndpi_rtp_search(ndpi_struct, flow, packet->payload, packet->payload_packet_len);
@@ -321,5 +321,19 @@ void ndpi_search_rtp(struct ndpi_detection_module_struct *ndpi_struct, struct nd
 }
 #endif
 
-#endif							/* NDPI_PROTOCOL_RTP */
+
+void init_rtp_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int32_t *id, NDPI_PROTOCOL_BITMASK *detection_bitmask)
+{
+  ndpi_set_bitmask_protocol_detection("RTP", ndpi_struct, detection_bitmask, *id,
+				      NDPI_PROTOCOL_RTP,
+				      ndpi_search_rtp,
+				      NDPI_SELECTION_BITMASK_PROTOCOL_UDP_WITH_PAYLOAD,
+				      SAVE_DETECTION_BITMASK_AS_UNKNOWN,
+				      ADD_TO_DETECTION_BITMASK);
+
+  *id += 1;
+}
+
+#endif	   
+/* NDPI_PROTOCOL_RTP */
 

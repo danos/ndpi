@@ -38,7 +38,7 @@ static void ndpi_int_direct_download_link_add_connection(struct ndpi_detection_m
 {
   struct ndpi_packet_struct *packet = &flow->packet;
 
-  ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_DIRECT_DOWNLOAD_LINK, NDPI_CORRELATED_PROTOCOL);
+  ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_DIRECT_DOWNLOAD_LINK, NDPI_PROTOCOL_UNKNOWN);
 
   flow->l4.tcp.ddlink_server_direction = packet->packet_direction;
 }
@@ -733,5 +733,17 @@ void ndpi_search_direct_download_link_tcp(struct ndpi_detection_module_struct *n
     NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_DIRECT_DOWNLOAD_LINK);
   }
 
+}
+
+void init_directdownloadlink_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int32_t *id, NDPI_PROTOCOL_BITMASK *detection_bitmask)
+{
+  ndpi_set_bitmask_protocol_detection("Direct_Download_Link", ndpi_struct, detection_bitmask, *id,
+				      NDPI_PROTOCOL_DIRECT_DOWNLOAD_LINK,
+				      ndpi_search_direct_download_link_tcp,
+				      NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP_WITH_PAYLOAD,
+				      SAVE_DETECTION_BITMASK_AS_UNKNOWN,
+				      ADD_TO_DETECTION_BITMASK);  
+
+  *id += 1;
 }
 #endif

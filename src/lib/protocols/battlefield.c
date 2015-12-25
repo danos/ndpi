@@ -33,7 +33,7 @@ static void ndpi_int_battlefield_add_connection(struct ndpi_detection_module_str
   struct ndpi_id_struct *src = flow->src;
   struct ndpi_id_struct *dst = flow->dst;
 
-  ndpi_int_add_connection(ndpi_struct, flow, NDPI_PROTOCOL_BATTLEFIELD, NDPI_REAL_PROTOCOL);
+  ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_BATTLEFIELD, NDPI_PROTOCOL_UNKNOWN);
 
   if (src != NULL) {
     src->battlefield_ts = packet->tick_timestamp;
@@ -113,6 +113,18 @@ void ndpi_search_battlefield(struct ndpi_detection_module_struct *ndpi_struct, s
 
   NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_BATTLEFIELD);
   return;
+}
+
+
+void init_battlefield_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int32_t *id, NDPI_PROTOCOL_BITMASK *detection_bitmask)
+{
+  ndpi_set_bitmask_protocol_detection("BattleField", ndpi_struct, detection_bitmask, *id,
+				      NDPI_PROTOCOL_BATTLEFIELD,
+				      ndpi_search_battlefield,
+				      NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_UDP_WITH_PAYLOAD,
+				      SAVE_DETECTION_BITMASK_AS_UNKNOWN,
+				      ADD_TO_DETECTION_BITMASK);
+  *id += 1;
 }
 
 #endif

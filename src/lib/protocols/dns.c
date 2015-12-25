@@ -170,7 +170,7 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
 	i += 4;
 
 	if(header.answer_rrs > 0) {
-	  u_int16_t rsp_type /*, rsp_class */;
+	  u_int16_t rsp_type;
 	  u_int16_t num;
 
 	  for(num = 0; num < header.answer_rrs; num++) {
@@ -186,9 +186,9 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
 	      i += data_len;
 	
 	    rsp_type = get16(&i, packet->payload);
-	    // rsp_class = get16(&i, packet->payload);
 
-	    i += 4;
+	    // Skip past the CLASS (2 octets) and TTL (4 octets) fields.
+	    i += 6;
 	    data_len = get16(&i, packet->payload);
 
 	    if((data_len <= 1) || (data_len > (packet->payload_packet_len-i))) {
@@ -265,9 +265,10 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
 #endif
 
 	if(ndpi_struct->match_dns_host_names)
-	  ndpi_match_string_subprotocol(ndpi_struct, flow, 
+	  ndpi_match_host_subprotocol(ndpi_struct, flow, 
 					(char *)flow->host_server_name,
-					strlen((const char*)flow->host_server_name));
+					strlen((const char*)flow->host_server_name),
+					NDPI_PROTOCOL_DNS);
       }
 
       i++;
@@ -284,11 +285,11 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
 
       if(packet->detected_protocol_stack[0] == NDPI_PROTOCOL_UNKNOWN) {
 	/* 
-	   Do not set the protocol with DNS if ndpi_match_string_subprotocol() has
+	   Do not set the protocol with DNS if ndpi_match_host_subprotocol() has
 	   matched a subprotocol
 	*/
 	NDPI_LOG(NDPI_PROTOCOL_DNS, ndpi_struct, NDPI_LOG_DEBUG, "found DNS.\n");      
-	ndpi_int_add_connection(ndpi_struct, flow, (dport == 5355) ? NDPI_PROTOCOL_LLMNR : NDPI_PROTOCOL_DNS, NDPI_REAL_PROTOCOL);
+	ndpi_set_detected_protocol(ndpi_struct, flow, (dport == 5355) ? NDPI_PROTOCOL_LLMNR : NDPI_PROTOCOL_DNS, NDPI_PROTOCOL_UNKNOWN);
       }
     } else {
       flow->protos.dns.bad_packet = 1;
@@ -297,4 +298,18 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
     }
   }
 }
+
+
+void init_dns_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int32_t *id, NDPI_PROTOCOL_BITMASK *detection_bitmask)
+{
+  ndpi_set_bitmask_protocol_detection("DNS", ndpi_struct, detection_bitmask, *id,
+				      NDPI_PROTOCOL_DNS,
+				      ndpi_search_dns,
+				      NDPI_SELECTION_BITMASK_PROTOCOL_V4_V6_TCP_OR_UDP_WITH_PAYLOAD_WITHOUT_RETRANSMISSION,
+				      SAVE_DETECTION_BITMASK_AS_UNKNOWN,
+				      ADD_TO_DETECTION_BITMASK);
+
+  *id += 1;
+}
+
 #endif

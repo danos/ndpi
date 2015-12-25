@@ -123,14 +123,16 @@ extern "C" {
    * @param dst void pointer to the destination subscriber state machine
    * @return returns the detected ID of the protocol
    */
-  unsigned int
-  ndpi_detection_process_packet(struct ndpi_detection_module_struct *ndpi_struct,
-				struct ndpi_flow_struct *flow,
-				const unsigned char *packet,
-				const unsigned short packetlen,
-				const u_int64_t current_tick,
-				struct ndpi_id_struct *src,
-				struct ndpi_id_struct *dst);
+  ndpi_protocol ndpi_detection_process_packet(struct ndpi_detection_module_struct *ndpi_struct,
+					      struct ndpi_flow_struct *flow,
+					      const unsigned char *packet,
+					      const unsigned short packetlen,
+					      const u_int64_t current_tick,
+					      struct ndpi_id_struct *src,
+					      struct ndpi_id_struct *dst);
+
+  u_int16_t ndpi_get_flow_masterprotocol(struct ndpi_detection_module_struct *ndpi_struct,
+					 struct ndpi_flow_struct *flow);
 
 #define NDPI_DETECTION_ONLY_IPV4 ( 1 << 0 )
 #define NDPI_DETECTION_ONLY_IPV6 ( 1 << 1 )
@@ -155,7 +157,7 @@ extern "C" {
    * @param ndpi_struct the detection module
    * @return the protocol id of the last real protocol found in the protocol history of the flow
    */
-  u_int16_t ndpi_detection_get_real_protocol_of_flow(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow);
+  /* u_int16_t ndpi_detection_get_real_protocol_of_flow(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow); */
 
   /**
    * returns true if the protocol history of the flow of the last packet given to the detection
@@ -167,17 +169,20 @@ extern "C" {
   u_int8_t ndpi_detection_flow_protocol_history_contains_protocol(struct ndpi_detection_module_struct *ndpi_struct,
 								  struct ndpi_flow_struct *flow,
 								  u_int16_t protocol_id);
-  unsigned int ndpi_find_port_based_protocol(struct ndpi_detection_module_struct *ndpi_struct,
-					     u_int8_t proto, u_int32_t shost, u_int16_t sport, u_int32_t dhost, u_int16_t dport);
-  unsigned int ndpi_guess_undetected_protocol(struct ndpi_detection_module_struct *ndpi_struct,
+  ndpi_protocol ndpi_find_port_based_protocol(struct ndpi_detection_module_struct *ndpi_struct,
 					      u_int8_t proto, u_int32_t shost, u_int16_t sport, u_int32_t dhost, u_int16_t dport);
-  int ndpi_match_string_subprotocol(struct ndpi_detection_module_struct *ndpi_struct,
-				    struct ndpi_flow_struct *flow, char *string_to_match, u_int string_to_match_len);
+  ndpi_protocol ndpi_guess_undetected_protocol(struct ndpi_detection_module_struct *ndpi_struct,
+					       u_int8_t proto, u_int32_t shost, u_int16_t sport, u_int32_t dhost, u_int16_t dport);
+  int ndpi_match_host_subprotocol(struct ndpi_detection_module_struct *ndpi_struct,
+				  struct ndpi_flow_struct *flow, char *string_to_match, u_int string_to_match_len,
+				  u_int16_t master_protocol_id);
   int ndpi_match_content_subprotocol(struct ndpi_detection_module_struct *ndpi_struct,
 				     struct ndpi_flow_struct *flow,
-				     char *string_to_match, u_int string_to_match_len);
+				     char *string_to_match, u_int string_to_match_len,
+				     u_int16_t master_protocol_id);
   int ndpi_match_bigram(struct ndpi_detection_module_struct *ndpi_struct, 
 			ndpi_automa *automa, char *bigram_to_match);
+  char* ndpi_protocol2name(struct ndpi_detection_module_struct *ndpi_mod, ndpi_protocol proto, char *buf, u_int buf_len);
   char* ndpi_get_proto_name(struct ndpi_detection_module_struct *mod, u_int16_t proto_id);
   ndpi_protocol_breed_t ndpi_get_proto_breed(struct ndpi_detection_module_struct *ndpi_struct, u_int16_t proto);
   char* ndpi_get_proto_breed_name(struct ndpi_detection_module_struct *ndpi_struct, ndpi_protocol_breed_t breed_id);
