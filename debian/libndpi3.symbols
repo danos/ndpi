@@ -1,4 +1,4 @@
-libndpi.so.2 libndpi2 #MINVER#
+libndpi.so.3 libndpi3 #MINVER#
  ndpi_detection_get_sizeof_ndpi_flow_struct@Base 1.4.0+svn6712
  ndpi_detection_get_sizeof_ndpi_id_struct@Base 1.4.0+svn6712
  ndpi_detection_process_packet@Base 1.4.0+svn6712
