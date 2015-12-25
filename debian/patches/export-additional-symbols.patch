@@ -1,12 +1,14 @@
-Description: Also export ndpi_set_proto_defaults symbol.
+Description: export additional symbols expoted by the public include files
 Author: Ludovico Cavedon <cavedon@debian.org>
 
 Index: ndpi/libndpi.sym
 ===================================================================
 --- ndpi.orig/libndpi.sym
 +++ ndpi/libndpi.sym
-@@ -16,3 +16,4 @@ ndpi_tdelete
- ndpi_revision
- ndpi_init_detection_module
- ndpi_get_num_supported_protocols
-+ndpi_set_proto_defaults
+@@ -28,3 +28,6 @@ ndpi_get_proto_breed_name
+ ndpi_get_proto_by_id
+ ndpi_get_protocol_id_master_proto
+ ndpi_guess_protocol_id
++ndpi_get_flow_masterprotocol
++ndpi_protocol2name
++ndpi_set_detected_protocol
