@@ -10,6 +10,16 @@ Copyright: 2011-2014 ntop.org
 	   2009-2011 ipoque GmbH
 License: LGPL-3.0+
 
+Files: src/lib/protocols/hep.c
+Copyright: 2009-2011 ipoque GmbH
+           2011-15 ntop.org
+           2011-15 QXIP BV
+License: LGPL-3.0+
+
+Files: src/lib/protocols/ubntac2.c
+Copyright: 2015 Thomas Fjellstrom
+License: LGPL-3.0+
+
 Files: src/lib/third_party/*
 Copyright: 2010-2012 Kamiar Kanani <kamiar.kanani@gmail.com>
 License: LGPL-3.0+
