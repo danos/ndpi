@@ -15,28 +15,19 @@ DEB_UPSTREAM_VERSION=$(shell dpkg-parsechangelog \
 		     | sed -rne 's/^Version: ([^-]+).*/\1/p')
 PACKAGE = ndpi
 SRC_VERSION := $(shell dpkg-parsechangelog | sed -ne 's/^Version: \(\([0-9]\+\):\)\?\(.*\)-.*/\3/p')
-SVN_REVISION := $(shell echo $(SRC_VERSION) | cut -d + -f 2 | sed 's/svn//' )
-UPSTREAM_VERSION := $(shell echo $(SRC_VERSION) | cut -d + -f 1)
+GIT_COMMIT := $(shell echo $(SRC_VERSION) | grep -E -o '[~+]git[0-9]+\..*' | cut -d . -f 2 )
 TARBALL = $(PACKAGE)_$(SRC_VERSION).orig.tar.gz
-UPSTREAM_SVN_REPO = https://svn.ntop.org/svn/ntop/trunk/nDPI/
+UPSTREAM_GIT_REPO = https://github.com/ntop/nDPI
 
 get-orig-source:
 	@echo DEB_UPSTREAM_VERSION $(DEB_UPSTREAM_VERSION)
 	@echo SRC_VERSION $(SRC_VERSION)
-	@echo SVN_REVISION $(SVN_REVISION)
-	@echo UPSTREAM_VERSION $(UPSTREAM_VERSION)
-ifeq ($(findstring svn,$(SRC_VERSION)),)
+	@echo GIT_COMMIT $(GIT_COMMIT)
+ifeq ($(findstring git,$(SRC_VERSION)),)
 	# Download and use upstream vanilla tarball
-	uscan --verbose --force-download --download-version $(UPSTREAM_VERSION)
+	uscan --verbose --force-download --download-version $(SRC_VERSION)
 else
-	rm -rf get-orig-source ../$(TARBALL)
-	mkdir get-orig-source
-	svn export -r $(SVN_REVISION) $(UPSTREAM_SVN_REPO) get-orig-source/$(PACKAGE)-$(SRC_VERSION)
-	# Remove binaries without source.
-	rm -fr get-orig-source/$(PACKAGE)-$(SRC_VERSION)/docs/nDPI_QuickStartGuide.p*
-	rm -fr get-orig-source/$(PACKAGE)-$(SRC_VERSION)/example/third-party/json-c
-	GZIP='--best --no-name' tar czf ../$(TARBALL) -C get-orig-source $(PACKAGE)-$(SRC_VERSION)
-	rm -rf get-orig-source
+	wget $(UPSTREAM_GIT_REPO)/archive/$(GIT_COMMIT).tar.gz -O ../$(TARBALL)
 endif
 
 .PHONY: override_dh_auto_configure override_dh_strip get-orig-source
