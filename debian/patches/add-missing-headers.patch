@@ -1,0 +1,15 @@
+Description: make sure ndpi_includes.h in installed as well.
+Author: <cavedon@debian.org>
+
+Index: ndpi/src/lib/Makefile.am
+===================================================================
+--- ndpi.orig/src/lib/Makefile.am
++++ ndpi/src/lib/Makefile.am
+@@ -8,6 +8,7 @@ libndpi_la_includedir = $(includedir)/li
+ 
+ libndpi_la_include_HEADERS = ../include/ndpi_api.h \
+ 			     ../include/ndpi_define.h \
++			     ../include/ndpi_includes.h \
+ 			     ../include/ndpi_main.h \
+ 			     ../include/ndpi_protocol_ids.h \
+ 			     ../include/ndpi_protocols.h \
