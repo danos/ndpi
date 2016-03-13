@@ -1,4 +1,5 @@
 libndpi.so.3 libndpi3 #MINVER#
+ ndpi_calloc@Base 1.7.1~git20151130.6f3d5a7
  ndpi_detection_get_sizeof_ndpi_flow_struct@Base 1.4.0+svn6712
  ndpi_detection_get_sizeof_ndpi_id_struct@Base 1.4.0+svn6712
  ndpi_detection_process_packet@Base 1.4.0+svn6712
@@ -11,6 +12,7 @@ libndpi.so.3 libndpi3 #MINVER#
  ndpi_get_http_content_type@Base 1.6
  ndpi_get_http_method@Base 1.6
  ndpi_get_http_url@Base 1.6
+ ndpi_get_lower_proto@Base 1.7.1~git20151130.6f3d5a7
  ndpi_get_num_supported_protocols@Base 1.4.0+svn6712
  ndpi_get_proto_breed@Base 1.6
  ndpi_get_proto_breed_name@Base 1.6
@@ -21,7 +23,10 @@ libndpi.so.3 libndpi3 #MINVER#
  ndpi_guess_protocol_id@Base 1.7
  ndpi_guess_undetected_protocol@Base 1.4.0+svn6712
  ndpi_init_detection_module@Base 1.4.0+svn6712
+ ndpi_is_proto@Base 1.7.1~git20151130.6f3d5a7
+ ndpi_l4_detection_process_packet@Base 1.7.1~git20151130.6f3d5a7
  ndpi_load_protocols_file@Base 1.4.0+svn6712
+ ndpi_malloc@Base 1.7.1~git20151130.6f3d5a7
  ndpi_protocol2name@Base 1.7
  ndpi_revision@Base 1.4.0+svn6712
  ndpi_set_detected_protocol@Base 1.7
