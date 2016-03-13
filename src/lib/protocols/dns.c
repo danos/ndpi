@@ -85,10 +85,6 @@ static u_int16_t get16(int *i, const u_int8_t *payload) {
 
 /* *********************************************** */
 
-struct dns_packet_header {
-  u_int16_t transaction_id, flags, num_queries, answer_rrs, authority_rrs, additional_rrs;
-} __attribute__((packed));
-
 void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 {
   struct ndpi_packet_struct *packet = &flow->packet;
@@ -107,9 +103,9 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
   }
 
   if(((dport == 53) || (sport == 53) || (dport == 5355))
-     && (packet->payload_packet_len > sizeof(struct dns_packet_header))) {
+	  && (packet->payload_packet_len > sizeof(struct ndpi_dns_packet_header))) {
     int i = packet->tcp ? 2 : 0;
-    struct dns_packet_header header, *dns = (struct dns_packet_header*)&packet->payload[i];
+	struct ndpi_dns_packet_header header, *dns = (struct ndpi_dns_packet_header*)&packet->payload[i];
     u_int8_t is_query, ret_code, is_dns = 0;
     u_int32_t a_record[NDPI_MAX_DNS_REQUESTS] = { 0 }, query_offset, num_a_records = 0;
 
@@ -121,7 +117,7 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
     header.additional_rrs = ntohs(dns->additional_rrs);
     is_query = (header.flags & 0x8000) ? 0 : 1;
     ret_code = is_query ? 0 : (header.flags & 0x0F);
-    i += sizeof(struct dns_packet_header);
+	i += sizeof(struct ndpi_dns_packet_header);
     query_offset = i;
 
     if(is_query) {
@@ -230,6 +226,7 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
 
     if(is_dns) {
       int j = 0;
+      int size_host_server_name = sizeof(flow->host_server_name);
 
       flow->protos.dns.num_queries = (u_int8_t)header.num_queries, 
 	flow->protos.dns.num_answers = (u_int8_t)(header.answer_rrs+header.authority_rrs+header.additional_rrs),
@@ -238,7 +235,7 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
       i = query_offset+1;
 
       while((i < packet->payload_packet_len)
-	    && (j < (sizeof(flow->host_server_name)-1))	  
+	    && (j < (size_host_server_name-1))	  
 	    && (packet->payload[i] != '\0')) {
 	flow->host_server_name[j] = tolower(packet->payload[i]);
 	if(flow->host_server_name[j] < ' ')
@@ -250,8 +247,8 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
 	char a_buf[32];
 	int i;
 
-	for(i=0; i<num_a_records; i++) {
-	  j += snprintf((char*)&flow->host_server_name[j], sizeof(flow->host_server_name)-1-j, "%s%s",
+	for(i=0; i<num_a_records && j < size_host_server_name; i++) {
+	  j += snprintf((char*)&flow->host_server_name[j], size_host_server_name-1-j, "%s%s",
 			(i == 0) ? "@" : ";",
 			ndpi_intoa_v4(a_record[i], a_buf, sizeof(a_buf)));
 	}
