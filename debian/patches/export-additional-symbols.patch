@@ -5,10 +5,8 @@ Index: ndpi/libndpi.sym
 ===================================================================
 --- ndpi.orig/libndpi.sym
 +++ ndpi/libndpi.sym
-@@ -28,3 +28,6 @@ ndpi_get_proto_breed_name
- ndpi_get_proto_by_id
- ndpi_get_protocol_id_master_proto
- ndpi_guess_protocol_id
+@@ -35,3 +35,4 @@ ndpi_is_proto
+ ndpi_malloc
+ ndpi_calloc
+ ndpi_set_detected_protocol
 +ndpi_get_flow_masterprotocol
-+ndpi_protocol2name
-+ndpi_set_detected_protocol
