@@ -1,6 +1,11 @@
-ndpi (1.7.1~git20151130.6f3d5a7-1) UNRELEASED; urgency=medium
+ndpi (1.7.1~git20151130.6f3d5a7-1) unstable; urgency=medium
 
-  * 
+  * Imported Upstream version 1.7.1~git20151130.6f3d5a7
+  * Support fetching a specific version from upstream git.
+  * Refresh patches.
+  * Update copyright.
+  * Update symbols list.
+  * Add add-missing-headers.patch to include ndpi_includes.h.
 
  -- Ludovico Cavedon <cavedon@debian.org>  Fri, 25 Dec 2015 21:00:52 +0100
 
