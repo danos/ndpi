@@ -9,6 +9,7 @@ libndpi_la_includedir = $(includedir)/libndpi-@VERSION@/libndpi
 libndpi_la_include_HEADERS = ../include/ndpi_api.h \
 			     ../include/ndpi_define.h \
 			     ../include/ndpi_main.h \
+			     ../include/ndpi_includes.h \
 			     ../include/ndpi_protocol_ids.h \
 			     ../include/ndpi_protocols.h \
 			     ../include/ndpi_typedefs.h
@@ -110,8 +111,7 @@ libndpi_la_SOURCES = ndpi_content_match.c.inc \
 		     protocols/skype.c \
 		     protocols/smb.c \
 		     protocols/snmp.c \
-		     protocols/socks4.c \
-		     protocols/socks5.c \
+		     protocols/socks45.c \
 		     protocols/socrates.c \
 		     protocols/sopcast.c \
 		     protocols/soulseek.c \
@@ -139,14 +139,12 @@ libndpi_la_SOURCES = ndpi_content_match.c.inc \
 		     protocols/twitter.c \
 		     protocols/ubntac2.c \
 		     protocols/usenet.c \
-		     protocols/veohtv.c \
 		     protocols/viber.c \
 		     protocols/vhua.c \
 		     protocols/vmware.c \
 		     protocols/vnc.c \
 		     protocols/warcraft3.c \
 		     protocols/whoisdas.c \
-		     protocols/winmx.c \
 		     protocols/world_of_kung_fu.c \
 		     protocols/world_of_warcraft.c \
 		     protocols/xbox.c \
@@ -154,6 +152,9 @@ libndpi_la_SOURCES = ndpi_content_match.c.inc \
 		     protocols/yahoo.c \
 		     protocols/zattoo.c \
 		     protocols/zeromq.c \
+		     protocols/coap.c \
+		     protocols/mqtt.c \
+		     protocols/rx.c \
 		     third_party/include/actypes.h \
 		     third_party/include/ahocorasick.h \
 		     third_party/include/node.h \

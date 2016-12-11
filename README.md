@@ -1,7 +1,7 @@
 ![ntop][ntopng_logo] ![ntop][ntop_logo]
 # nDPI
 
-[![Build Status](https://travis-ci.org/ntop/nDPI.png?branch=master)](https://travis-ci.org/ntop/nDPI)
+[![Build Status](https://travis-ci.org/ntop/nDPI.png?branch=dev)](https://travis-ci.org/ntop/nDPI)
 
 ## What is nDPI ?
 
@@ -40,12 +40,6 @@ The entire procedure of adding new protocols in detail:
 If you want to distribute a source tar file of nDPI do:
 
 - make dist
-
-
-### Acknowledgements
-
-Many thanks to <A HREF=http://www.radcom.com>Radcom</A> Ltd for supporting the development of nDPI.
-
 
 [ntopng_logo]: https://camo.githubusercontent.com/0f789abcef232035c05e0d2e82afa3cc3be46485/687474703a2f2f7777772e6e746f702e6f72672f77702d636f6e74656e742f75706c6f6164732f323031312f30382f6e746f706e672d69636f6e2d313530783135302e706e67
 
