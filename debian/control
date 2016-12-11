@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Ludovico Cavedon <cavedon@debian.org>
 Build-Depends: debhelper (>= 9), autotools-dev, dh-autoreconf, libjson-c-dev,
  libpcap-dev, pkg-config
-Standards-Version: 3.9.6
+Standards-Version: 3.9.8
 Homepage: http://www.ntop.org/products/ndpi/
 Vcs-Git: https://anonscm.debian.org/git/collab-maint/ndpi.git
 Vcs-Browser: https://anonscm.debian.org/gitweb/?p=collab-maint/ndpi.git
