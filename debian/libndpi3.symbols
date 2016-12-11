@@ -1,12 +1,16 @@
 libndpi.so.3 libndpi3 #MINVER#
+ ndpi_add_string_to_automa@Base 1.8
  ndpi_calloc@Base 1.7.1~git20151130.6f3d5a7
  ndpi_detection_get_sizeof_ndpi_flow_struct@Base 1.4.0+svn6712
  ndpi_detection_get_sizeof_ndpi_id_struct@Base 1.4.0+svn6712
+ ndpi_detection_giveup@Base 1.8
  ndpi_detection_process_packet@Base 1.4.0+svn6712
  ndpi_dump_protocols@Base 1.4.0+svn6712
  ndpi_exit_detection_module@Base 1.4.0+svn6712
+ ndpi_finalize_automa@Base 1.8
  ndpi_find_port_based_protocol@Base 1.5.1
  ndpi_free@Base 1.4.0+svn6712
+ ndpi_free_automa@Base 1.8
  ndpi_free_flow@Base 1.6
  ndpi_get_flow_masterprotocol@Base 1.7
  ndpi_get_http_content_type@Base 1.6
@@ -22,18 +26,25 @@ libndpi.so.3 libndpi3 #MINVER#
  ndpi_get_protocol_id_master_proto@Base 1.7
  ndpi_guess_protocol_id@Base 1.7
  ndpi_guess_undetected_protocol@Base 1.4.0+svn6712
+ ndpi_init_automa@Base 1.8
  ndpi_init_detection_module@Base 1.4.0+svn6712
  ndpi_is_proto@Base 1.7.1~git20151130.6f3d5a7
  ndpi_l4_detection_process_packet@Base 1.7.1~git20151130.6f3d5a7
  ndpi_load_protocols_file@Base 1.4.0+svn6712
  ndpi_malloc@Base 1.7.1~git20151130.6f3d5a7
+ ndpi_match_string@Base 1.8
+ ndpi_match_string_subprotocol@Base 1.8
  ndpi_protocol2name@Base 1.7
  ndpi_revision@Base 1.4.0+svn6712
  ndpi_set_detected_protocol@Base 1.7
  ndpi_set_proto_defaults@Base 1.4.0+svn6712
  ndpi_set_protocol_detection_bitmask2@Base 1.4.0+svn6712
+ ndpi_strnstr@Base 1.8
  ndpi_tdelete@Base 1.4.0+svn6712
  ndpi_tdestroy@Base 1.4.0+svn6712
  ndpi_tfind@Base 1.4.0+svn6712
  ndpi_tsearch@Base 1.4.0+svn6712
  ndpi_twalk@Base 1.4.0+svn6712
+ set_ndpi_debug_function@Base 1.8
+ set_ndpi_free@Base 1.8
+ set_ndpi_malloc@Base 1.8
