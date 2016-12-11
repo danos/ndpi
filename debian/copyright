@@ -3,11 +3,20 @@ Upstream-Name: nDPI
 Source: https://svn.ntop.org/svn/ntop/trunk/nDPI/
 
 Files: *
-Copyright: 2011-2014 ntop.org
+Copyright: 2011-2016 ntop.org
            2014 Tomasz Bujlow <tomasz@skatnet.dk>
            2013 Remy Mudingay <mudingay@ill.fr>
 	   2012 Gianluca Costa xplico.org
 	   2009-2011 ipoque GmbH
+License: LGPL-3.0+
+
+Files: src/lib/protocols/coap.c src/lib/protocols/mqtt.c
+Copyright: 2016 Sorin Zamfir <sorin.zamfir@yahoo.com>
+License: LGPL-3.0+
+
+Files: src/lib/protocols/rx.c
+Copyright: 2012-2016 ntop.org
+           2016 Giovanni Mascellani <gio@debian.org>
 License: LGPL-3.0+
 
 Files: src/lib/protocols/hep.c
