@@ -1,4 +1,4 @@
-libndpi.so.3 libndpi3 #MINVER#
+libndpi.so.4 libndpi4 #MINVER#
  ndpi_add_string_to_automa@Base 1.8
  ndpi_calloc@Base 1.7.1~git20151130.6f3d5a7
  ndpi_detection_get_sizeof_ndpi_flow_struct@Base 1.4.0+svn6712
