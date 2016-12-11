@@ -11,7 +11,7 @@ override_dh_auto_configure:
 	dh_auto_configure -- --with-system-json-c --enable-examples-dynamic-linking
 
 override_dh_strip:
-	dh_strip --dbg-package=libndpi-dbg
+	dh_strip --dbgsym-migration='libndpi-dbg (<< 1.8-1~)'
 
 
 # Adapted from http://wiki.debian.org/SandroTosi/Svn_get-orig-source
