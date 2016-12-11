@@ -6,7 +6,7 @@ Index: ndpi/configure.ac
 ===================================================================
 --- ndpi.orig/configure.ac
 +++ ndpi/configure.ac
-@@ -75,6 +75,11 @@ LIBS=$OLD_LIBS
+@@ -79,6 +79,11 @@ LIBS=$OLD_LIBS
  
  AC_CHECK_LIB(pthread, pthread_setaffinity_np, AC_DEFINE_UNQUOTED(HAVE_PTHREAD_SETAFFINITY_NP, 1, [libc has pthread_setaffinity_np]))
  
@@ -30,5 +30,5 @@ Index: ndpi/example/Makefile.am
  AM_LDFLAGS = -static
 +endif
  
- ndpiReader_SOURCES = ndpiReader.c
+ ndpiReader_SOURCES = ndpiReader.c ndpi_util.c
  
