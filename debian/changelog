@@ -1,8 +1,16 @@
-ndpi (1.8-1) UNRELEASED; urgency=medium
+ndpi (1.8-1) unstable; urgency=medium
 
   * Imported Upstream version 1.8
+  * Update copyright.
+  * Refresh and update pacthes.
+  * Remove export-additional-symbols.patch (merged upstream).
+  * Update Standards-Version to 3.9.8.
+  * Update symbols file for libndpi3.
+  * Bump SONAME to libndpi4.
+  * Enable all build hardening.
+  * Migrate to libndpi-dbgsym.
 
- -- Ludovico Cavedon <cavedon@debian.org>  Sat, 10 Dec 2016 19:19:12 -0800
+ -- Ludovico Cavedon <cavedon@debian.org>  Sat, 10 Dec 2016 20:08:44 -0800
 
 ndpi (1.7.1~git20151130.6f3d5a7-1) unstable; urgency=medium
 
