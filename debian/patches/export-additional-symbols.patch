@@ -5,7 +5,7 @@ Index: ndpi/libndpi.sym
 ===================================================================
 --- ndpi.orig/libndpi.sym
 +++ ndpi/libndpi.sym
-@@ -37,6 +37,7 @@ ndpi_is_proto
+@@ -39,6 +39,7 @@ ndpi_is_proto
  ndpi_malloc
  ndpi_calloc
  ndpi_set_detected_protocol
