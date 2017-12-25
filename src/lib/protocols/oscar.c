@@ -244,11 +244,19 @@ static void ndpi_search_oscar_tcp_connect(struct ndpi_detection_module_struct
       */
       if (channel == DATA)
 	{
-	  family = get_u_int16_t(packet->payload, 6);
+	  if (packet->payload_packet_len >= 8)
+	    family = get_u_int16_t(packet->payload, 6);
+	  else
+	    family = 0;
 	  if (packet->payload_packet_len >= 10)
 	    type = get_u_int16_t(packet->payload, 8);
 	  else
 	    type = 0;
+	  if (family == 0 || type == 0)
+	  {
+	      NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_OSCAR);
+	      return;
+	  }
 
 	  /* Family 0x0001 */
 	  if (family == htons(GE_SE_CTL))
@@ -571,7 +579,7 @@ static void ndpi_search_oscar_tcp_connect(struct ndpi_detection_module_struct
 		{
 		  /* request ID */
 		  req_ID = get_u_int32_t(packet->payload, 12);
-		  if((req_ID <= 4294967295))
+		  if((req_ID <= ((u_int32_t)-1)))
 		    {
 		      NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR Detected \n");
 		      ndpi_int_oscar_add_connection(ndpi_struct, flow);

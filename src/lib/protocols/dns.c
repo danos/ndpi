@@ -80,7 +80,7 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
   }
 
   if((s_port == 53 || d_port == 53 || d_port == 5355)
-     && (flow->packet.payload_packet_len > sizeof(struct ndpi_dns_packet_header))) {
+     && (flow->packet.payload_packet_len > sizeof(struct ndpi_dns_packet_header)+x)) {
     struct ndpi_dns_packet_header dns_header;
     int invalid = 0;
 
@@ -185,7 +185,7 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
       /* extract host name server */
       int j = 0, max_len = sizeof(flow->host_server_name)-1, off = sizeof(struct ndpi_dns_packet_header) + 1;
 
-      while(flow->packet.payload[off] != '\0' && off < flow->packet.payload_packet_len) {
+      while(off < flow->packet.payload_packet_len && flow->packet.payload[off] != '\0') {
 	flow->host_server_name[j] = flow->packet.payload[off];
 	if(j < max_len) {
 	  if(flow->host_server_name[j] < ' ')
@@ -196,6 +196,9 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
 
 	off++;
       }
+
+	if(is_query && ndpi_struct->dns_dissect_response)
+	  return; /* The response will set the verdict */
 
       flow->host_server_name[j] = '\0';
 
@@ -217,9 +220,6 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
 #endif
     
       if(flow->packet.detected_protocol_stack[0] == NDPI_PROTOCOL_UNKNOWN) {
-	if(is_query && ndpi_struct->dns_dissect_response)
-	  return; /* The response will set the verdict */
-	
 	/**
 	   Do not set the protocol with DNS if ndpi_match_host_subprotocol() has
 	   matched a subprotocol

@@ -22,7 +22,6 @@
  *
  */
 
-
 #include "ndpi_api.h"
 
 #ifdef NDPI_PROTOCOL_QUIC
@@ -34,18 +33,6 @@ static int quic_ports(u_int16_t sport, u_int16_t dport)
     return 1;
 
   return 0;
-}
-
-/* ***************************************************************** */
-
-static int quic_payload(const u_int8_t *payload) {
-  if((payload[0] == 'Q')
-     && isdigit(payload[1])
-     && isdigit(payload[2])
-     && isdigit(payload[3]))
-    return(1);
-
-  return(0);
 }
 
 /* ***************************************************************** */
@@ -86,7 +73,6 @@ void ndpi_search_quic(struct ndpi_detection_module_struct *ndpi_struct,
      && ((packet->payload[0] & 0xC2) == 0x00)
      && (quic_ports(ntohs(packet->udp->source), ntohs(packet->udp->dest)))
      ) {
-    char *begin;
     int i;
 
     if((version_len > 0) && (packet->payload[1+cid_len] != 'Q'))
@@ -95,33 +81,44 @@ void ndpi_search_quic(struct ndpi_detection_module_struct *ndpi_struct,
     NDPI_LOG(NDPI_PROTOCOL_QUIC, ndpi_struct, NDPI_LOG_DEBUG, "found QUIC.\n");
     ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_QUIC, NDPI_PROTOCOL_UNKNOWN);
 
-    if(!strncmp((char*)&packet->payload[quic_hlen+17], "CHLO" /* Client Hello */, 4)) {
-      /* Check if SNI (Server Name Identification) is present */
-      for(i=quic_hlen+12; i<udp_len-3; i++) {
-	if((packet->payload[i] == 'S')
-	   && (packet->payload[i+1] == 'N')
-	   && (packet->payload[i+2] == 'I')
-	   && (packet->payload[i+3] == 0)) {
-	  u_int32_t offset = *((u_int32_t*)&packet->payload[i+4]);
-	  u_int32_t prev_offset = *((u_int32_t*)&packet->payload[i-4]);
-	  int len = offset-prev_offset;
-	  int sni_offset = i+prev_offset+1;
+    if(packet->payload[quic_hlen+12] != 0xA0)
+      quic_hlen++;
+	     
+    if(udp_len > quic_hlen + 16 + 4) {
+      if(!strncmp((char*)&packet->payload[quic_hlen+16], "CHLO" /* Client Hello */, 4)) {
+	/* Check if SNI (Server Name Identification) is present */
+	for(i=quic_hlen+12; i<udp_len-3; i++) {
+	  if((packet->payload[i] == 'S')
+	     && (packet->payload[i+1] == 'N')
+	     && (packet->payload[i+2] == 'I')
+	     && (packet->payload[i+3] == 0)) {
+	    u_int32_t offset = *((u_int32_t*)&packet->payload[i+4]);
+	    u_int32_t prev_offset = *((u_int32_t*)&packet->payload[i-4]);
+	    int len = offset-prev_offset;
+	    int sni_offset = i+prev_offset+1;
 
-	  while((packet->payload[sni_offset] == '-') && (sni_offset < udp_len))
-	    sni_offset++;
+	    while((sni_offset < udp_len) && (packet->payload[sni_offset] == '-'))
+	      sni_offset++;
 
-	  if((sni_offset+len) < udp_len) {
-	    int max_len = sizeof(flow->host_server_name)-1, j = 0;
+	    if((sni_offset+len) < udp_len) {
+	      int max_len = sizeof(flow->host_server_name)-1, j = 0;
 
-	    if(len > max_len) len = max_len;
+	      if(len > max_len) len = max_len;
 
-	    while((len > 0) && (sni_offset < udp_len)) {
-	      flow->host_server_name[j++] = packet->payload[sni_offset];
-	      sni_offset++, len--;
+	      while((len > 0) && (sni_offset < udp_len)) {
+		flow->host_server_name[j++] = packet->payload[sni_offset];
+		sni_offset++, len--;
+	      }
+
+	      ndpi_match_host_subprotocol(ndpi_struct, flow, 
+					  (char *)flow->host_server_name,
+					  strlen((const char*)flow->host_server_name),
+					  NDPI_PROTOCOL_QUIC);
+	    
 	    }
-	  }
 
-	  break;
+	    break;
+	  }
 	}
       }
     }
