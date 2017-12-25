@@ -39,8 +39,11 @@ static void ndpi_int_irc_add_connection(struct ndpi_detection_module_struct *ndp
 }
 
 	
+
 #if !defined(WIN32)
 static inline
+#elif defined(MINGW_GCC)
+__mingw_forceinline static
 #else
 __forceinline static
 #endif
@@ -141,14 +144,14 @@ static u_int8_t ndpi_check_for_IRC_traces(const u_int8_t * ptr, u_int16_t len)
 }
 
 
-u_int8_t ndpi_search_irc_ssl_detect_ninty_percent_but_very_fast(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
+u_int8_t ndpi_search_irc_ssl_detect_ninety_percent_but_very_fast(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 {
 
   struct ndpi_packet_struct *packet = &flow->packet;
 	
 
   NDPI_LOG(NDPI_PROTOCOL_IRC, ndpi_struct, NDPI_LOG_DEBUG,
-	   "called ndpi_search_irc_ssl_detect_ninty_percent_but_very_fast\n");
+	   "called ndpi_search_irc_ssl_detect_ninety_percent_but_very_fast\n");
 
   /* case 1: len 1460, len 1460, len 1176 several times in one direction, than len = 4, 4096, 8192 in the other direction */
   if (packet->payload_packet_len == 1460
@@ -475,7 +478,7 @@ void ndpi_search_irc_tcp(struct ndpi_detection_module_struct *ndpi_struct, struc
     }
   }
   if (flow->detected_protocol_stack[0] != NDPI_PROTOCOL_IRC &&
-      ndpi_search_irc_ssl_detect_ninty_percent_but_very_fast(ndpi_struct, flow) != 0) {
+      ndpi_search_irc_ssl_detect_ninety_percent_but_very_fast(ndpi_struct, flow) != 0) {
     return;
   }
 

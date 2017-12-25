@@ -3,6 +3,7 @@ ndpi_strnstr
 ndpi_detection_giveup
 ndpi_get_proto_name
 ndpi_free
+ndpi_flow_free
 ndpi_guess_undetected_protocol
 ndpi_tfind
 ndpi_tsearch
@@ -29,6 +30,7 @@ ndpi_free_flow
 ndpi_get_proto_breed
 ndpi_get_proto_breed_name
 ndpi_get_proto_by_id
+ndpi_get_proto_by_name
 ndpi_get_protocol_id_master_proto
 ndpi_guess_protocol_id
 ndpi_protocol2name
@@ -40,9 +42,20 @@ ndpi_set_detected_protocol
 ndpi_match_string_subprotocol
 ndpi_init_automa
 ndpi_free_automa
+ndpi_add_string_value_to_automa
 ndpi_add_string_to_automa
 ndpi_finalize_automa
 ndpi_match_string
+ndpi_match_string_id
 set_ndpi_malloc
+set_ndpi_flow_malloc
 set_ndpi_free
+set_ndpi_flow_free
 set_ndpi_debug_function
+ndpi_category_str
+ndpi_get_proto_category
+ndpi_netbios_name_interpret
+ndpi_category_set_name
+ndpi_category_get_name
+ndpi_is_custom_category
+ndpi_is_subprotocol_informative

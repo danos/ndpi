@@ -53,23 +53,21 @@ static u_int8_t is_utp_pkt(const u_int8_t *payload, u_int payload_len) {
 
 static void ndpi_add_connection_as_bittorrent(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow,
 					      int bt_offset, int check_hash,
-					      const u_int8_t save_detection, const u_int8_t encrypted_connection/* , */
-					      /* ndpi_protocol_type_t protocol_type */)
+					      const u_int8_t save_detection, const u_int8_t encrypted_connection)
 {
   if(check_hash) {
     const char *bt_hash = NULL; /* 20 bytes long */
-    const char *peer_id = NULL; /* 20 bytes long */
 
     if(bt_offset == -1) {
-      const char *bt_magic = ndpi_strnstr((const char *)flow->packet.payload, 
+      const char *bt_magic = ndpi_strnstr((const char *)flow->packet.payload,
 					  "BitTorrent protocol", flow->packet.payload_packet_len);
 
       if(bt_magic)
-	bt_hash = &bt_magic[19], peer_id = &bt_magic[39];
+	bt_hash = &bt_magic[19];
     } else
-      bt_hash = (const char*)&flow->packet.payload[28], peer_id = (const char*)&flow->packet.payload[48];
- 
-    if(bt_hash) memcpy(flow->bittorent_hash, bt_hash, 20);
+      bt_hash = (const char*)&flow->packet.payload[28];
+
+    if(bt_hash) memcpy(flow->protos.bittorrent.hash, bt_hash, 20);
   }
 
   ndpi_int_change_protocol(ndpi_struct, flow, NDPI_PROTOCOL_BITTORRENT, NDPI_PROTOCOL_UNKNOWN);
@@ -92,8 +90,7 @@ static u_int8_t ndpi_int_search_bittorrent_tcp_zero(struct ndpi_detection_module
       NDPI_LOG(NDPI_PROTOCOL_BITTORRENT,
 	       ndpi_struct, NDPI_LOG_TRACE, "BT: plain BitTorrent protocol detected\n");
       ndpi_add_connection_as_bittorrent(ndpi_struct, flow, 19, 1,
-					NDPI_PROTOCOL_SAFE_DETECTION, NDPI_PROTOCOL_PLAIN_DETECTION/* , */
-					/* NDPI_REAL_PROTOCOL */);
+					NDPI_PROTOCOL_SAFE_DETECTION, NDPI_PROTOCOL_PLAIN_DETECTION);
       return 1;
     }
   }
@@ -125,8 +122,7 @@ static u_int8_t ndpi_int_search_bittorrent_tcp_zero(struct ndpi_detection_module
     NDPI_LOG(NDPI_PROTOCOL_BITTORRENT, ndpi_struct,
 	     NDPI_LOG_TRACE, "BT: plain Bitcomet persistent seed protocol detected\n");
     ndpi_add_connection_as_bittorrent(ndpi_struct, flow, -1, 1,
-				      NDPI_PROTOCOL_SAFE_DETECTION, NDPI_PROTOCOL_WEBSEED_DETECTION/* , */
-				      /* NDPI_CORRELATED_PROTOCOL */);
+				      NDPI_PROTOCOL_SAFE_DETECTION, NDPI_PROTOCOL_WEBSEED_DETECTION);
     return 1;
   }
 
@@ -388,19 +384,18 @@ static void ndpi_int_search_bittorrent_tcp(struct ndpi_detection_module_struct *
 void ndpi_search_bittorrent(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 {
   struct ndpi_packet_struct *packet = &flow->packet;
-  int no_bittorrent = 0;
   char *bt_proto = NULL;
 
   /* This is broadcast */
-  if(packet->iph 
+  if(packet->iph
      && (((packet->iph->saddr == 0xFFFFFFFF) || (packet->iph->daddr == 0xFFFFFFFF))
-	 || (packet->udp 
+	 || (packet->udp
 	     && ((ntohs(packet->udp->source) == 3544) /* teredo.c */
 		 || (ntohs(packet->udp->dest) == 3544))))) {
     NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_BITTORRENT);
     return;
   }
-  
+
   if(packet->detected_protocol_stack[0] != NDPI_PROTOCOL_BITTORRENT) {
     /* check for tcp retransmission here */
 
@@ -446,7 +441,8 @@ void ndpi_search_bittorrent(struct ndpi_detection_module_struct *ndpi_struct, st
 	    /* Heuristic */
 	    bt_proto = ndpi_strnstr((const char *)&packet->payload[20], "BitTorrent protocol", packet->payload_packet_len-20);
 	    goto bittorrent_found;
-	  } else if(((v1_version & 0x0f) == 1)
+      /* CSGO/DOTA conflict */
+	  } else if(flow->packet_counter > 8 && ((v1_version & 0x0f) == 1)
 		    && ((v1_version >> 4) < 5 /* ST_NUM_STATES */)
 		    && (v1_extension      < 3 /* EXT_NUM_EXT */)
 		    && (v1_window_size    < 32768 /* 32k */)
@@ -471,8 +467,8 @@ void ndpi_search_bittorrent(struct ndpi_detection_module_struct *ndpi_struct, st
 
       if(flow->bittorrent_stage < 10) {
 	  /* We have detected bittorrent but we need to wait until we get a hash */
-	  
-	  if(packet->payload_packet_len > 19 /* min size */) {  
+
+	  if(packet->payload_packet_len > 19 /* min size */) {
 	    if(ndpi_strnstr((const char *)packet->payload, ":target20:", packet->payload_packet_len)
 	       || ndpi_strnstr((const char *)packet->payload, ":find_node1:", packet->payload_packet_len)
 	       || ndpi_strnstr((const char *)packet->payload, "d1:ad2:id20:", packet->payload_packet_len)
@@ -480,10 +476,10 @@ void ndpi_search_bittorrent(struct ndpi_detection_module_struct *ndpi_struct, st
 	       || ndpi_strnstr((const char *)packet->payload, ":filter64", packet->payload_packet_len)
 	       || ndpi_strnstr((const char *)packet->payload, "d1:rd2:id20:", packet->payload_packet_len)
 	       || (bt_proto = ndpi_strnstr((const char *)packet->payload, "BitTorrent protocol", packet->payload_packet_len))
-	       ) {	    
+	       ) {
 	    bittorrent_found:
 	      if(bt_proto && (packet->payload_packet_len > 47))
-		memcpy(flow->bittorent_hash, &bt_proto[27], 20);
+		memcpy(flow->protos.bittorrent.hash, &bt_proto[27], 20);
 
 	      NDPI_LOG(NDPI_PROTOCOL_BITTORRENT,
 		       ndpi_struct, NDPI_LOG_TRACE, "BT: plain BitTorrent protocol detected\n");
@@ -491,7 +487,7 @@ void ndpi_search_bittorrent(struct ndpi_detection_module_struct *ndpi_struct, st
 						NDPI_PROTOCOL_SAFE_DETECTION, NDPI_PROTOCOL_PLAIN_DETECTION);
 	      return;
 	    }
-	  }	
+	  }
 
 	return;
       }

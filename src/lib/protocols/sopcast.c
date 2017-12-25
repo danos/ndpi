@@ -43,6 +43,8 @@ static void ndpi_int_sopcast_add_connection(struct ndpi_detection_module_struct
 	
 #if !defined(WIN32)
 static inline
+#elif defined(MINGW_GCC)
+__mingw_forceinline static
 #else
 __forceinline static
 #endif
@@ -144,7 +146,7 @@ static void ndpi_search_sopcast_udp(struct ndpi_detection_module_struct
     ndpi_int_sopcast_add_connection(ndpi_struct, flow);
     return;
   }
-  /* this case has been seen once. Please revome this comment, if you see it another time */
+  /* this case has been seen once. Please remove this comment, if you see it another time */
   if (packet->payload_packet_len == 60 && packet->payload[0] == 0x00
       && packet->payload[2] == 0x01
       && packet->payload[8] == 0x03 && packet->payload[9] == 0xff
@@ -174,7 +176,7 @@ static void ndpi_search_sopcast_udp(struct ndpi_detection_module_struct
     ndpi_int_sopcast_add_connection(ndpi_struct, flow);
     return;
   }
-  /* this case has been seen once. Please revome this comment, if you see it another time */
+  /* this case has been seen once. Please remove this comment, if you see it another time */
   if (packet->payload_packet_len == 286 && packet->payload[0] == 0x00
       && packet->payload[1] == 0x02 && packet->payload[2] == 0x01
       && packet->payload[3] == 0x07 && packet->payload[4] == 0x03

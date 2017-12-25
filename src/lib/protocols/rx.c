@@ -27,10 +27,11 @@
 
 #ifdef NDPI_PROTOCOL_RX
 
-/* See http://web.mit.edu/kolya/afs/rx/rx-spec for procotol description. */
+/* See http://web.mit.edu/kolya/afs/rx/rx-spec for protocol description. */
 
 /* The should be no need for explicit packing, but just in case... */
-struct __attribute__((__packed__)) ndpi_rx_header {
+PACK_ON
+struct ndpi_rx_header {
   u_int32_t conn_epoch;
   u_int32_t conn_id;
   u_int32_t call_number;
@@ -42,7 +43,7 @@ struct __attribute__((__packed__)) ndpi_rx_header {
   u_int8_t security;
   u_int16_t checksum;
   u_int16_t service_id;
-};
+} PACK_OFF;
 
 /* Type values */
 #define DATA	           1
@@ -77,8 +78,6 @@ void ndpi_check_rx(struct ndpi_detection_module_struct *ndpi_struct,
 {
   struct ndpi_packet_struct *packet = &flow->packet;
   u_int32_t payload_len = packet->payload_packet_len;
-  int found = 0;
-
 
   NDPI_LOG(NDPI_PROTOCOL_RX, ndpi_struct, NDPI_LOG_DEBUG, "RX: pck: %d, dir[0]: %d, dir[1]: %d\n",
            flow->packet_counter, flow->packet_direction_counter[0], flow->packet_direction_counter[1]);
@@ -108,7 +107,7 @@ void ndpi_check_rx(struct ndpi_detection_module_struct *ndpi_struct,
   **/
   
   /* TYPE field */
-  if((header->type < DATA) && (header->type > VERSION)) {
+  if((header->type < DATA) || (header->type > VERSION)) {
     NDPI_LOG(NDPI_PROTOCOL_RX, ndpi_struct, NDPI_LOG_DEBUG, "excluding RX\n");
     NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_RX);
     return;
@@ -170,8 +169,7 @@ void ndpi_check_rx(struct ndpi_detection_module_struct *ndpi_struct,
 
  security:
   /* SECURITY field */
-  if(header->security != 0 && header->security != 1 &&
-     header->security != 2 && header->security != 3)
+  if(header->security > 3)
   {
     NDPI_LOG(NDPI_PROTOCOL_RX, ndpi_struct, NDPI_LOG_DEBUG, "excluding RX\n");
     NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_RX);

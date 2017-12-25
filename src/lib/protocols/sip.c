@@ -34,6 +34,8 @@ static void ndpi_int_sip_add_connection(struct ndpi_detection_module_struct *ndp
 
 #if !defined(WIN32)
 static inline
+#elif defined(MINGW_GCC)
+__mingw_forceinline static
 #else
 __forceinline static
 #endif
@@ -121,7 +123,7 @@ void ndpi_search_sip_handshake(struct ndpi_detection_module_struct
 	}
 
         if ((memcmp(packet_payload, "CANCEL ", 7) == 0 || memcmp(packet_payload, "cancel ", 7) == 0)
-	    && (memcmp(&packet_payload[4], "SIP:", 4) == 0 || memcmp(&packet_payload[4], "sip:", 4) == 0)) {
+	    && (memcmp(&packet_payload[7], "SIP:", 4) == 0 || memcmp(&packet_payload[7], "sip:", 4) == 0)) {
 	  NDPI_LOG(NDPI_PROTOCOL_SIP, ndpi_struct, NDPI_LOG_DEBUG, "found sip CANCEL.\n");
 	  ndpi_int_sip_add_connection(ndpi_struct, flow, 0);
 	  return;
