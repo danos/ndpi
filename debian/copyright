@@ -3,7 +3,7 @@ Upstream-Name: nDPI
 Source: https://svn.ntop.org/svn/ntop/trunk/nDPI/
 
 Files: *
-Copyright: 2011-2016 ntop.org
+Copyright: 2011-2017 ntop.org
            2014 Tomasz Bujlow <tomasz@skatnet.dk>
            2013 Remy Mudingay <mudingay@ill.fr>
 	   2012 Gianluca Costa xplico.org
@@ -11,7 +11,18 @@ Copyright: 2011-2016 ntop.org
 License: LGPL-3.0+
 
 Files: src/lib/protocols/coap.c src/lib/protocols/mqtt.c
+       src/lib/protocols/someip.c
 Copyright: 2016 Sorin Zamfir <sorin.zamfir@yahoo.com>
+License: LGPL-3.0+
+
+Files: src/lib/protocols/csgo.c
+Copyright: 2016-2017 Vitaly Lavrov <vel21ripn@gmail.com>
+License: LGPL-3.0+
+
+Files: src/lib/protocols/hep.c
+Copyright: 2009-2011 ipoque GmbH
+           2011-15 ntop.org
+           2011-15 QXIP BV
 License: LGPL-3.0+
 
 Files: src/lib/protocols/rx.c
@@ -19,10 +30,14 @@ Copyright: 2012-2016 ntop.org
            2016 Giovanni Mascellani <gio@debian.org>
 License: LGPL-3.0+
 
-Files: src/lib/protocols/hep.c
-Copyright: 2009-2011 ipoque GmbH
-           2011-15 ntop.org
-           2011-15 QXIP BV
+Files: src/lib/protocols/smpp.c
+Copyright: 2016 Damir Franusic <df@release14.org>
+           2016 ntop.org
+License: LGPL-3.0+
+
+Files: src/lib/protocols/tinc.c
+Copyright: 2017 William Guglielmo <william@deselmo.com>
+           2017 ntop.org
 License: LGPL-3.0+
 
 Files: src/lib/protocols/ubntac2.c
@@ -43,6 +58,14 @@ Copyright: 2011-14 ntop.org
            2014 Matteo Bogo <matteo.bogo@gmail.com>
 License: LGPL-3.0+
 
+Files: example/uthash.h
+Copyright: 2003-2017 Troy D. Hanson http://troydhanson.github.com/uthash
+License: BSD-1-clause
+
+Files: src/lib/third_party/*/libcache.*
+Copyright: 2017 William Guglielmo <william@deselmo.com>
+License: Expat
+
 Files: src/lib/third_party/*/ndpi_patricia.*
 Copyright: 2005 Dave Plonka <plonka@doit.wisc.edu>
            1999-2013 Regents of the University of Michigan
@@ -54,22 +77,24 @@ Copyright: 2013 Raphaël Hertzog <hertzog@debian.org>
            2013 Ludovico Cavedon <cavedon@debian.org>
 License: LGPL-3.0+
 
-License: LGPL-3.0+
- This package is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 3 of the License, or (at your option) any later version.
+License: BSD-1-clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
  .
- This package is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
+     * Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
  .
- You should have received a copy of the GNU General Public License
- along with this program. If not, see <http://www.gnu.org/licenses/>.
- .
- On Debian systems, the complete text of the GNU Lesser General
- Public License can be found in "/usr/share/common-licenses/LGPL-3".
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
+ IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+ OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 License: BSD-2-clause
  Redistributions of source code must retain the above copyright notice,
@@ -90,3 +115,40 @@ License: BSD-2-clause
  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+License: Expat
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ .
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
+
+License: LGPL-3.0+
+ This package is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 3 of the License, or (at your option) any later version.
+ .
+ This package is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <http://www.gnu.org/licenses/>.
+ .
+ On Debian systems, the complete text of the GNU Lesser General
+ Public License can be found in "/usr/share/common-licenses/LGPL-3".
+
