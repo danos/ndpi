@@ -4,6 +4,9 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 DPKG_EXPORT_BUILDFLAGS = 1
 include /usr/share/dpkg/buildflags.mk
 
+# Used by debian/libndpi-wireshark.install
+export WIRESHARK_VERSION = 2.4.3
+
 %:
 	dh $@ --with autoreconf
 

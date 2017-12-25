@@ -1,0 +1,2 @@
+#! /usr/bin/dh-exec
+/usr/bin/ndpiReader usr/lib/${DEB_HOST_MULTIARCH}/wireshark/extcap/ndpiReader
