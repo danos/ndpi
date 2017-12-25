@@ -1,6 +1,9 @@
-libndpi.so.4 libndpi4 #MINVER#
+libndpi.so.5 libndpi5 #MINVER#
  ndpi_add_string_to_automa@Base 1.8
+ ndpi_add_string_value_to_automa@Base 2.2
  ndpi_calloc@Base 1.7.1~git20151130.6f3d5a7
+ ndpi_category_get_name@Base 2.2
+ ndpi_category_set_name@Base 2.2
  ndpi_detection_get_sizeof_ndpi_flow_struct@Base 1.4.0+svn6712
  ndpi_detection_get_sizeof_ndpi_id_struct@Base 1.4.0+svn6712
  ndpi_detection_giveup@Base 1.8
@@ -8,7 +11,8 @@ libndpi.so.4 libndpi4 #MINVER#
  ndpi_dump_protocols@Base 1.4.0+svn6712
  ndpi_exit_detection_module@Base 1.4.0+svn6712
  ndpi_finalize_automa@Base 1.8
- ndpi_find_port_based_protocol@Base 1.5.1
+ ndpi_flow_free@Base 2.2
+ ndpi_flow_malloc@Base 2.2
  ndpi_free@Base 1.4.0+svn6712
  ndpi_free_automa@Base 1.8
  ndpi_free_flow@Base 1.6
@@ -21,6 +25,8 @@ libndpi.so.4 libndpi4 #MINVER#
  ndpi_get_proto_breed@Base 1.6
  ndpi_get_proto_breed_name@Base 1.6
  ndpi_get_proto_by_id@Base 1.7
+ ndpi_get_proto_by_name@Base 2.2
+ ndpi_get_proto_category@Base 2.2
  ndpi_get_proto_name@Base 1.4.0+svn6712
  ndpi_get_protocol_id@Base 1.5.1
  ndpi_get_protocol_id_master_proto@Base 1.7
@@ -28,12 +34,16 @@ libndpi.so.4 libndpi4 #MINVER#
  ndpi_guess_undetected_protocol@Base 1.4.0+svn6712
  ndpi_init_automa@Base 1.8
  ndpi_init_detection_module@Base 1.4.0+svn6712
+ ndpi_is_custom_category@Base 2.2
  ndpi_is_proto@Base 1.7.1~git20151130.6f3d5a7
- ndpi_l4_detection_process_packet@Base 1.7.1~git20151130.6f3d5a7
+ ndpi_is_subprotocol_informative@Base 2.2
  ndpi_load_protocols_file@Base 1.4.0+svn6712
  ndpi_malloc@Base 1.7.1~git20151130.6f3d5a7
  ndpi_match_string@Base 1.8
+ ndpi_match_string_id@Base 2.2
  ndpi_match_string_subprotocol@Base 1.8
+ ndpi_netbios_name_interpret@Base 2.2
+ ndpi_process_extra_packet@Base 2.2
  ndpi_protocol2name@Base 1.7
  ndpi_revision@Base 1.4.0+svn6712
  ndpi_set_detected_protocol@Base 1.7
@@ -47,5 +57,7 @@ libndpi.so.4 libndpi4 #MINVER#
  ndpi_tsearch@Base 1.4.0+svn6712
  ndpi_twalk@Base 1.4.0+svn6712
  set_ndpi_debug_function@Base 1.8
+ set_ndpi_flow_free@Base 2.2
+ set_ndpi_flow_malloc@Base 2.2
  set_ndpi_free@Base 1.8
  set_ndpi_malloc@Base 1.8
