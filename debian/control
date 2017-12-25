@@ -5,7 +5,6 @@ Maintainer: Ludovico Cavedon <cavedon@debian.org>
 Build-Depends:
     autotools-dev,
     debhelper (>= 9.20160114),
-    dh-autoreconf,
     dh-exec (>=0.3),
     dpkg-dev (>= 1.16.1.1),
     libjson-c-dev,

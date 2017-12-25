@@ -8,9 +8,10 @@ include /usr/share/dpkg/buildflags.mk
 export WIRESHARK_VERSION = 2.4.3
 
 %:
-	dh $@ --with autoreconf
+	dh $@
 
 override_dh_auto_configure:
+	./autogen.sh
 	dh_auto_configure -- --with-system-json-c --enable-examples-dynamic-linking
 
 override_dh_strip:
