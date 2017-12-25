@@ -37,6 +37,7 @@ libndpi.so.4 libndpi4 #MINVER#
  ndpi_protocol2name@Base 1.7
  ndpi_revision@Base 1.4.0+svn6712
  ndpi_set_detected_protocol@Base 1.7
+ ndpi_set_proto_category@Base 2.2
  ndpi_set_proto_defaults@Base 1.4.0+svn6712
  ndpi_set_protocol_detection_bitmask2@Base 1.4.0+svn6712
  ndpi_strnstr@Base 1.8
