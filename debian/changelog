@@ -1,8 +1,26 @@
-ndpi (2.2-1) UNRELEASED; urgency=medium
+ndpi (2.2-1) unstable; urgency=medium
 
-  * 
+  * Imported Upstream version 2.2 (Closes: #878128, #878124).
+  * Update watch file to fetch new versions from github.
+  * Update copyright file.
+  * Add Multi-Arch flags in control file.
+  * Add libndpi-wireshark with wireshark dissector.
+  * Bump Standards-Version to 4.1.2.
+  * Update and refresh patches.
+  * Stop using dh-autoreconf (automatically called by autogen.sh).
+  * Add no-configure-after-autogen.patch to prevent autogen.sh from
+    automatically invoking configure.
+  * Update export-additional-symbols.patch, adding new required exported
+    symbols in libndpi.sym.
+  * Bump libndpi SONAME to 5.
+  * Use pkg-info.mk for parsing changelog.
+  * Patch nintendo.pcap and skype-conference-call.pcap to make sure libpcap is
+    able to open them during tests, based on
+    https://github.com/ntop/nDPI/issues/462#issuecomment-332552609.
+  * Embded libcache.h into libndpi includes, as it is included by
+    ndpi_typedefs.h.
 
- -- Ludovico Cavedon <cavedon@debian.org>  Mon, 25 Dec 2017 21:36:25 +0100
+ -- Ludovico Cavedon <cavedon@debian.org>  Tue, 26 Dec 2017 02:10:48 +0100
 
 ndpi (1.8-1) unstable; urgency=medium
 
