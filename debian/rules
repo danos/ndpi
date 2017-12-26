@@ -15,6 +15,15 @@ override_dh_auto_configure:
 	./autogen.sh
 	dh_auto_configure -- --with-system-json-c --enable-examples-dynamic-linking
 
+override_dh_auto_test:
+	for f in nintendo.pcap skype-conference-call.pcap; do \
+	    if ! [ -f $(CURDIR)/tests/pcap/$$f.orig ]; then \
+		cp $(CURDIR)/tests/pcap/$$f $(CURDIR)/tests/pcap/$$f.orig; \
+		xdelta patch $(CURDIR)/debian/patches/$$f.xdelta $(CURDIR)/tests/pcap/$$f.orig $(CURDIR)/tests/pcap/$$f; \
+	    fi; \
+	done
+	dh_auto_test
+
 override_dh_strip:
 	dh_strip --dbgsym-migration='libndpi-dbg (<< 1.8-1~)'
 
