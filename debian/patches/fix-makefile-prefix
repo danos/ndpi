@@ -1,0 +1,35 @@
+--- a/src/lib/Makefile.in
++++ b/src/lib/Makefile.in
+@@ -10,8 +10,8 @@
+ #
+ # Installation directories
+ #
+-prefix     = /usr/local
+-libdir     = ${prefix}/lib
++prefix     = /usr
++libdir     = ${prefix}/lib/$(DEB_TARGET_MULTIARCH)
+ includedir = ${prefix}/include/ndpi
+ CC         = @CC@
+ CFLAGS     += -fPIC -DPIC -I../include -Ithird_party/include -DNDPI_LIB_COMPILATION -O2 -g
+--- a/example/Makefile.in
++++ b/example/Makefile.in
+@@ -3,7 +3,7 @@ CFLAGS=-g -I../src/include @CFLAGS@
+ LIBNDPI=../src/lib/libndpi.a
+ LDFLAGS=$(LIBNDPI) @PCAP_LIB@ -lpthread @LDFLAGS@
+ OBJS=ndpiReader.o ndpi_util.o
+-PREFIX?=/usr/local
++PREFIX?=/usr
+ 
+ all: ndpiReader @DPDK_TARGET@
+ 
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -1,7 +1,7 @@
+ ACLOCAL_AMFLAGS = -I m4
+ SUBDIRS = src/lib example tests
+ 
+-pkgconfigdir = $(prefix)/libdata/pkgconfig
++pkgconfigdir = $(prefix)/lib/$(DEB_TARGET_MULTIARCH)/pkgconfig
+ pkgconfig_DATA = libndpi.pc
+ 
+ EXTRA_DIST = autogen.sh
