@@ -1,3 +1,13 @@
+ndpi (2.6-1~1.gbpe94173) UNRELEASED; urgency=medium
+
+  ** SNAPSHOT build @e9417387af387f4d8b9c9aa88c037139620e6fb0 **
+
+  * [e941738] Update upstream source from tag 'upstream/2.6'
+    Update to upstream version '2.6'
+    with Debian dir ebb088f5b1a1a88743e71021b4a9c252b397527e
+
+ -- Bernd Zeimetz <bzed@debian.org>  Sat, 12 Jan 2019 16:45:26 +0100
+
 ndpi (2.2-1) unstable; urgency=medium
 
   * Imported Upstream version 2.2 (Closes: #878128, #878124).
