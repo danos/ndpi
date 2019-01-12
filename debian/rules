@@ -14,7 +14,7 @@ export WIRESHARK_VERSION = $(strip $(shell apt-cache policy wireshark | grep Can
 override_dh_auto_configure:
 	cp $(CURDIR)/src/lib/third_party/include/libcache.h $(CURDIR)/src/include/
 	./autogen.sh
-	dh_auto_configure -- --with-system-json-c --enable-examples-dynamic-linking
+	dh_auto_configure -- --prefix=/usr
 
 override_dh_auto_test:
 	#for f in nintendo.pcap skype-conference-call.pcap; do \
