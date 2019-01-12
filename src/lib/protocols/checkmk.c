@@ -1,7 +1,7 @@
 /*
  * checkmk.c
  *
- * Copyright (C) 2011-17 - ntop.org
+ * Copyright (C) 2011-18 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -21,10 +21,12 @@
  *
  *
  */
+#include "ndpi_protocol_ids.h"
 
-#include "ndpi_protocols.h"
+#define NDPI_CURRENT_PROTO NDPI_PROTOCOL_CHECKMK
 
-#ifdef NDPI_PROTOCOL_CHECKMK
+#include "ndpi_api.h"
+
 
 static void ndpi_int_checkmk_add_connection(struct ndpi_detection_module_struct *ndpi_struct,
 					    struct ndpi_flow_struct *flow)
@@ -78,6 +80,3 @@ void init_checkmk_dissector(struct ndpi_detection_module_struct *ndpi_struct,
 				      ADD_TO_DETECTION_BITMASK);
   *id += 1;
 }
-
-
-#endif

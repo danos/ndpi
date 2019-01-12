@@ -1,7 +1,7 @@
 /*
  * mssql.c
  *
- * Copyright (C) 2016 - ntop.org
+ * Copyright (C) 2016-18 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -22,9 +22,12 @@
  */
 
 
-#include "ndpi_protocols.h"
+#include "ndpi_protocol_ids.h"
 
-#ifdef NDPI_PROTOCOL_MSSQL_TDS
+#define NDPI_CURRENT_PROTO NDPI_PROTOCOL_MSSQL_TDS
+
+#include "ndpi_api.h"
+
 
 struct tds_packet_header {
   u_int8_t type;
@@ -46,24 +49,24 @@ void ndpi_search_mssql_tds(struct ndpi_detection_module_struct *ndpi_struct, str
   struct ndpi_packet_struct *packet = &flow->packet;
   struct tds_packet_header *h = (struct tds_packet_header*) packet->payload;
 
+  NDPI_LOG_DBG(ndpi_struct, "search mssql_tds\n");
+
   if(packet->payload_packet_len < sizeof(struct tds_packet_header)) {
-    NDPI_LOG(NDPI_PROTOCOL_MSSQL_TDS, ndpi_struct, NDPI_LOG_DEBUG, "exclude mssql_tds\n");
-    NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_MSSQL_TDS);
+    NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
     return;
   }
   
   if((h->type >= 1 && h->type <= 8) || (h->type >= 14 && h->type <= 18)) {
     if(h->status == 0x00 || h->status == 0x01 || h->status == 0x02 || h->status == 0x04 || h->status == 0x08 || h->status == 0x09 || h->status == 0x10) {
       if(ntohs(h->length) == packet->payload_packet_len && h->window == 0x00) {
-	NDPI_LOG(NDPI_PROTOCOL_MSSQL_TDS, ndpi_struct, NDPI_LOG_DEBUG, "found mssql_tds\n");
+	NDPI_LOG_INFO(ndpi_struct, "found mssql_tds\n");
 	ndpi_int_mssql_tds_add_connection(ndpi_struct, flow);
 	return;
       }
     }
   }
   
-  NDPI_LOG(NDPI_PROTOCOL_MSSQL_TDS, ndpi_struct, NDPI_LOG_DEBUG, "exclude mssql_tds\n");
-  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_MSSQL_TDS);
+  NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
 }
 
 
@@ -78,5 +81,3 @@ void init_mssql_tds_dissector(struct ndpi_detection_module_struct *ndpi_struct, 
 
   *id += 1;
 }
-
-#endif

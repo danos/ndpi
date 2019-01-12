@@ -2,7 +2,7 @@
  * oscar.c
  *
  * Copyright (C) 2009-2011 by ipoque GmbH
- * Copyright (C) 2011-15 - ntop.org
+ * Copyright (C) 2011-18 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -22,6 +22,9 @@
  *
  */
 
+#include "ndpi_protocol_ids.h"
+
+#define NDPI_CURRENT_PROTO NDPI_PROTOCOL_OSCAR
 
 #include "ndpi_api.h"
 
@@ -69,7 +72,6 @@
 #define EMAIL               0x0018
 #define IS_EXT              0x0085
 
-#ifdef NDPI_PROTOCOL_OSCAR
 
 static void ndpi_int_oscar_add_connection(struct ndpi_detection_module_struct *ndpi_struct,
 					  struct ndpi_flow_struct *flow)
@@ -146,28 +148,28 @@ static void ndpi_search_oscar_tcp_connect(struct ndpi_detection_module_struct
 	  /* No TLVs */
 	  if(packet->payload_packet_len == 10)
 	    {
-	      NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR - Sign In \n");
+	      NDPI_LOG_INFO(ndpi_struct, "found OSCAR - Sign In \n");
 	      ndpi_int_oscar_add_connection(ndpi_struct, flow);
 	      return;
 	    }
 	  /* /\* SCREEN_NAME *\/ */
 	  /* if (get_u_int16_t(packet->payload, 10) == htons(SCREEN_NAME)) /\* packet->payload[10] == 0x00 && packet->payload[11] == 0x01 *\/ */
 	  /*   { */
-	  /*     NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR - Screen Name \n"); */
+	  /*     NDPI_LOG_INFO(ndpi_struct, "found OSCAR - Screen Name \n"); */
 	  /*     ndpi_int_oscar_add_connection(ndpi_struct, flow); */
 	  /*     return; */
 	  /*   } */
 	  /* /\* PASSWD *\/ */
 	  /* if (get_u_int16_t(packet->payload, 10) == htons(PASSWD)) /\* packet->payload[10] == 0x00 && packet->payload[11] == 0x02 *\/ */
 	  /*   { */
-	  /*     NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR - Password (roasted) \n"); */
+	  /*     NDPI_LOG_INFO(ndpi_struct, "found OSCAR - Password (roasted) \n"); */
 	  /*     ndpi_int_oscar_add_connection(ndpi_struct, flow); */
 	  /*     return; */
 	  /*   } */
 	  /* CLIENT_NAME */
 	  if (get_u_int16_t(packet->payload, 10) == htons(CLIENT_NAME)) /* packet->payload[10] == 0x00 && packet->payload[11] == 0x03 */
 	    {
-	      NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR - Client Name \n");
+	      NDPI_LOG_INFO(ndpi_struct, "found OSCAR - Client Name \n");
 	      ndpi_int_oscar_add_connection(ndpi_struct, flow);
 	      return;
 	    }
@@ -182,7 +184,7 @@ static void ndpi_search_oscar_tcp_connect(struct ndpi_detection_module_struct
 		       (get_u_int8_t(packet->payload, packet->payload_packet_len - 1) == 0x01) ||
 		       (get_u_int8_t(packet->payload, packet->payload_packet_len - 1) == 0x03))
 		      {
-			NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR - Login \n");
+			NDPI_LOG_INFO(ndpi_struct, "found OSCAR - Login \n");
 			ndpi_int_oscar_add_connection(ndpi_struct, flow);
 			return;
 		      }
@@ -191,35 +193,35 @@ static void ndpi_search_oscar_tcp_connect(struct ndpi_detection_module_struct
 	  /* MAJOR_VERSION */
 	  if (get_u_int16_t(packet->payload, 10) == htons(MAJOR_VERSION))
 	    {
-	      NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR - Major_Version \n");
+	      NDPI_LOG_INFO(ndpi_struct, "found OSCAR - Major_Version \n");
 	      ndpi_int_oscar_add_connection(ndpi_struct, flow);
 	      return;
 	    }
 	  /* MINOR_VERSION */
 	  if (get_u_int16_t(packet->payload, 10) == htons(MINOR_VERSION))
 	    {
-	      NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR - Minor_Version \n");
+	      NDPI_LOG_INFO(ndpi_struct, "found OSCAR - Minor_Version \n");
 	      ndpi_int_oscar_add_connection(ndpi_struct, flow);
 	      return;
 	    }
 	  /* POINT_VERSION */
 	  if (get_u_int16_t(packet->payload, 10) == htons(POINT_VERSION))
 	    {
-	      NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR - Point_Version \n");
+	      NDPI_LOG_INFO(ndpi_struct, "found OSCAR - Point_Version \n");
 	      ndpi_int_oscar_add_connection(ndpi_struct, flow);
 	      return;
 	    }
 	  /* BUILD_NUM */
 	  if (get_u_int16_t(packet->payload, 10) == htons(BUILD_NUM))
 	    {
-	      NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR - Build_Num \n");
+	      NDPI_LOG_INFO(ndpi_struct, "found OSCAR - Build_Num \n");
 	      ndpi_int_oscar_add_connection(ndpi_struct, flow);
 	      return;
 	    }
 	  /* CLIENT_RECONNECT */
 	  if (get_u_int16_t(packet->payload, 10) == htons(CLIENT_RECONNECT))
 	    {
-	      NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR - Client_Reconnect \n");
+	      NDPI_LOG_INFO(ndpi_struct, "found OSCAR - Client_Reconnect \n");
 	      ndpi_int_oscar_add_connection(ndpi_struct, flow);
 	      return;
 	    }
@@ -254,7 +256,7 @@ static void ndpi_search_oscar_tcp_connect(struct ndpi_detection_module_struct
 	    type = 0;
 	  if (family == 0 || type == 0)
 	  {
-	      NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_OSCAR);
+	      NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
 	      return;
 	  }
 
@@ -565,8 +567,7 @@ static void ndpi_search_oscar_tcp_connect(struct ndpi_detection_module_struct
 
 	  if(excluded == 1)
 	    {
-	      NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "exclude oscar.\n");
-	      NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_OSCAR);
+	      NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
 	    }
 
 	  /* flag */
@@ -581,7 +582,7 @@ static void ndpi_search_oscar_tcp_connect(struct ndpi_detection_module_struct
 		  req_ID = get_u_int32_t(packet->payload, 12);
 		  if((req_ID <= ((u_int32_t)-1)))
 		    {
-		      NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR Detected \n");
+		      NDPI_LOG_INFO(ndpi_struct, "found OSCAR\n");
 		      ndpi_int_oscar_add_connection(ndpi_struct, flow);
 		      return;
 		    }
@@ -595,7 +596,7 @@ static void ndpi_search_oscar_tcp_connect(struct ndpi_detection_module_struct
       */
       if (channel == O_ERROR)
 	{
-	  NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR Detected - Error frame \n");
+	  NDPI_LOG_INFO(ndpi_struct, "found OSCAR - Error frame \n");
 	  ndpi_int_oscar_add_connection(ndpi_struct, flow);
 	  return;
 	}
@@ -605,7 +606,7 @@ static void ndpi_search_oscar_tcp_connect(struct ndpi_detection_module_struct
       */
       if (channel == SIGNOFF)
 	{
-	  NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR Detected - Signoff frame \n");
+	  NDPI_LOG_INFO(ndpi_struct, "found OSCAR - Signoff frame \n");
 	  ndpi_int_oscar_add_connection(ndpi_struct, flow);
 	  return;
 	}
@@ -615,7 +616,7 @@ static void ndpi_search_oscar_tcp_connect(struct ndpi_detection_module_struct
       */
       if (channel == KEEP_ALIVE)
 	{
-	  NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR Detected - Keep Alive frame \n");
+	  NDPI_LOG_INFO(ndpi_struct, "found OSCAR - Keep Alive frame \n");
 	  ndpi_int_oscar_add_connection(ndpi_struct, flow);
 	  return;
 	}
@@ -628,8 +629,8 @@ static void ndpi_search_oscar_tcp_connect(struct ndpi_detection_module_struct
       NDPI_PARSE_PACKET_LINE_INFO(ndpi_struct, flow, packet);
       if (packet->host_line.len >= 18 && packet->host_line.ptr != NULL) {
 	if (memcmp(packet->host_line.ptr, "lifestream.aol.com", 18) == 0) {
-	  NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG,
-		   "OSCAR over HTTP found, POST method\n");
+	  NDPI_LOG_INFO(ndpi_struct,
+		   "found OSCAR over HTTP, POST method\n");
 	  ndpi_int_oscar_add_connection(ndpi_struct, flow);
 	  return;
 	}
@@ -643,7 +644,7 @@ static void ndpi_search_oscar_tcp_connect(struct ndpi_detection_module_struct
 	  (memcmp(&packet->payload[5], "aim/gromit/aim_express", 22) == 0) ||
 	  (memcmp(&packet->payload[5], "b/ss/aolwpaim", 13) == 0) ||
 	  (memcmp(&packet->payload[5], "hss/storage/aimtmpshare", 23) == 0)) {
-	NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR over HTTP found, GET /aim/\n");
+	NDPI_LOG_INFO(ndpi_struct, "found OSCAR over HTTP, GET /aim/\n");
 	ndpi_int_oscar_add_connection(ndpi_struct, flow);
 	return;
       }
@@ -656,7 +657,7 @@ static void ndpi_search_oscar_tcp_connect(struct ndpi_detection_module_struct
 	     (memcmp(packet->user_agent_line.ptr, "mobileICQ/", 10) == 0) ||
 	     (memcmp(packet->user_agent_line.ptr, "AIM%20Free/", NDPI_STATICSTRING_LEN("AIM%20Free/")) == 0) ||
 	     (memcmp(packet->user_agent_line.ptr, "AIM/", 4) == 0))) {
-	  NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR over HTTP found\n");
+	  NDPI_LOG_INFO(ndpi_struct, "found OSCAR over HTTP\n");
 	  ndpi_int_oscar_add_connection(ndpi_struct, flow);
 	  return;
 	}
@@ -670,8 +671,8 @@ static void ndpi_search_oscar_tcp_connect(struct ndpi_detection_module_struct
 	  for (i = 0; i < (packet->referer_line.len - 22); i++) {
 	    if (packet->referer_line.ptr[i] == 'a') {
 	      if (memcmp(&packet->referer_line.ptr[i + 1], "im/gromit/aim_express", 21) == 0) {
-		NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG,
-			 "OSCAR over HTTP found : aim/gromit/aim_express\n");
+		NDPI_LOG_INFO(ndpi_struct,
+			 "found OSCAR over HTTP : aim/gromit/aim_express\n");
 		ndpi_int_oscar_add_connection(ndpi_struct, flow);
 		return;
 	      }
@@ -682,12 +683,12 @@ static void ndpi_search_oscar_tcp_connect(struct ndpi_detection_module_struct
     }
     if (memcmp(packet->payload, "CONNECT ", 8) == 0) {
       if (memcmp(packet->payload, "CONNECT login.icq.com:443 HTTP/1.", 33) == 0) {
-	NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR ICQ-HTTP FOUND\n");
+	NDPI_LOG_INFO(ndpi_struct, "found OSCAR ICQ-HTTP\n");
 	ndpi_int_oscar_add_connection(ndpi_struct, flow);
 	return;
       }
       if (memcmp(packet->payload, "CONNECT login.oscar.aol.com:5190 HTTP/1.", 40) == 0) {
-	NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR AIM-HTTP FOUND\n");
+	NDPI_LOG_INFO(ndpi_struct, "found OSCAR AIM-HTTP\n");
 	ndpi_int_oscar_add_connection(ndpi_struct, flow);
 	return;
       }
@@ -697,33 +698,33 @@ static void ndpi_search_oscar_tcp_connect(struct ndpi_detection_module_struct
 
   if (packet->payload_packet_len > 43
       && memcmp(packet->payload, "GET http://http.proxy.icq.com/hello HTTP/1.", 43) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR ICQ-HTTP PROXY FOUND\n");
+    NDPI_LOG_INFO(ndpi_struct, "found OSCAR ICQ-HTTP PROXY\n");
     ndpi_int_oscar_add_connection(ndpi_struct, flow);
     return;
   }
 
   if (packet->payload_packet_len > 46
       && memcmp(packet->payload, "GET http://aimhttp.oscar.aol.com/hello HTTP/1.", 46) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR AIM-HTTP PROXY FOUND\n");
+    NDPI_LOG_INFO(ndpi_struct, "found OSCAR AIM-HTTP PROXY\n");
     ndpi_int_oscar_add_connection(ndpi_struct, flow);
     return;
   }
 
   if (packet->payload_packet_len > 5 && get_u_int32_t(packet->payload, 0) == htonl(0x05010003)) {
-    NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "Maybe OSCAR Picturetransfer\n");
+    NDPI_LOG_DBG2(ndpi_struct, "Maybe OSCAR Picturetransfer\n");
     return;
   }
 
   if (packet->payload_packet_len == 10 && get_u_int32_t(packet->payload, 0) == htonl(0x05000001) &&
       get_u_int32_t(packet->payload, 4) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "Maybe OSCAR Picturetransfer\n");
+    NDPI_LOG_DBG2(ndpi_struct, "Maybe OSCAR Picturetransfer\n");
     return;
   }
 
   if (packet->payload_packet_len >= 70 &&
       memcmp(&packet->payload[packet->payload_packet_len - 26],
 	     "\x67\x00\x65\x00\x74\x00\x43\x00\x61\x00\x74\x00\x61\x00\x6c\x00\x6f\x00\x67", 19) == 0) {
-    NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR PICTURE TRANSFER\n");
+    NDPI_LOG_INFO(ndpi_struct, "found OSCAR PICTURE TRANSFER\n");
     ndpi_int_oscar_add_connection(ndpi_struct, flow);
     return;
   }
@@ -751,7 +752,7 @@ static void ndpi_search_oscar_tcp_connect(struct ndpi_detection_module_struct
 					      == 0)
 					     )))) {
 	// FILE TRANSFER PATTERN:: OFT3 or OFT2
-	NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR FILE TRANSFER\n");
+	NDPI_LOG_INFO(ndpi_struct, "found OSCAR FILE TRANSFER\n");
 	ndpi_int_oscar_add_connection(ndpi_struct, flow);
 	return;
       }
@@ -759,7 +760,7 @@ static void ndpi_search_oscar_tcp_connect(struct ndpi_detection_module_struct
       if (memcmp(packet->payload, "ODC2", 4) == 0 && memcmp(&packet->payload[6], "\x00\x01\x00\x06", 4) == 0) {
 	//PICTURE TRANSFER PATTERN EXMAPLE::
 	//4f 44 43 32 00 4c 00 01 00 06 00 00 00 00 00 00  ODC2.L..........
-	NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR PICTURE TRANSFER\n");
+	NDPI_LOG_INFO(ndpi_struct, "found OSCAR PICTURE TRANSFER\n");
 	ndpi_int_oscar_add_connection(ndpi_struct, flow);
 	return;
       }
@@ -770,7 +771,7 @@ static void ndpi_search_oscar_tcp_connect(struct ndpi_detection_module_struct
 	&& packet->payload[packet->payload_packet_len - 12] == 'L'
 	&& (memcmp(&packet->payload[packet->payload_packet_len - 6], "DEST", 4) == 0)
 	&& (memcmp(&packet->payload[packet->payload_packet_len - 2], "\x00\x00", 2) == 0)) {
-      NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR PICTURE TRANSFER\n");
+      NDPI_LOG_INFO(ndpi_struct, "found OSCAR PICTURE TRANSFER\n");
       ndpi_int_oscar_add_connection(ndpi_struct, flow);
       if (ntohs(packet->tcp->dest) == 443 || ntohs(packet->tcp->source) == 443) {
 	flow->oscar_ssl_voice_stage = 1;
@@ -787,7 +788,7 @@ static void ndpi_search_oscar_tcp_connect(struct ndpi_detection_module_struct
 
 
   if (packet->detected_protocol_stack[0] != NDPI_PROTOCOL_OSCAR) {
-    NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_OSCAR);
+    NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
     return;
   }
 }
@@ -795,8 +796,8 @@ static void ndpi_search_oscar_tcp_connect(struct ndpi_detection_module_struct
 void ndpi_search_oscar(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 {
   struct ndpi_packet_struct *packet = &flow->packet;
+  NDPI_LOG_DBG(ndpi_struct, "search OSCAR\n");
   if (packet->tcp != NULL) {
-    NDPI_LOG(NDPI_PROTOCOL_OSCAR, ndpi_struct, NDPI_LOG_DEBUG, "OSCAR :: TCP\n");
     ndpi_search_oscar_tcp_connect(ndpi_struct, flow);
   }
 }
@@ -813,5 +814,3 @@ void init_oscar_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_in
 
   *id += 1;
 }
-
-#endif

@@ -1,11 +1,7 @@
 /*
  * quic.c
  *
- * Copyright (C) 2012-16 - ntop.org
- *
- * Based on code of:
- * Andrea Buscarinu - <andrea.buscarinu@gmail.com>
- * Michele Campus - <campus@ntop.org>
+ * Copyright (C) 2012-18 - ntop.org
  *
  * This module is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -20,11 +16,17 @@
  * You should have received a copy of the GNU Lesser General Public License.
  * If not, see <http://www.gnu.org/licenses/>.
  *
+ * Based on code of:
+ * Andrea Buscarinu - <andrea.buscarinu@gmail.com>
+ * Michele Campus - <campus@ntop.org>
+ *
  */
 
-#include "ndpi_api.h"
+#include "ndpi_protocol_ids.h"
 
-#ifdef NDPI_PROTOCOL_QUIC
+#define NDPI_CURRENT_PROTO NDPI_PROTOCOL_QUIC
+
+#include "ndpi_api.h"
 
 static int quic_ports(u_int16_t sport, u_int16_t dport)
 {
@@ -68,6 +70,8 @@ void ndpi_search_quic(struct ndpi_detection_module_struct *ndpi_struct,
   u_int seq_len = quic_len((packet->payload[0] & 0x30) >> 4);
   u_int quic_hlen = 1 /* flags */ + version_len + seq_len + cid_len;
 
+  NDPI_LOG_DBG(ndpi_struct, "search QUIC\n");
+
   if(packet->udp != NULL
      && (udp_len > (quic_hlen+4 /* QXXX */))
      && ((packet->payload[0] & 0xC2) == 0x00)
@@ -78,7 +82,7 @@ void ndpi_search_quic(struct ndpi_detection_module_struct *ndpi_struct,
     if((version_len > 0) && (packet->payload[1+cid_len] != 'Q'))
       goto no_quic;
 
-    NDPI_LOG(NDPI_PROTOCOL_QUIC, ndpi_struct, NDPI_LOG_DEBUG, "found QUIC.\n");
+    NDPI_LOG_INFO(ndpi_struct, "found QUIC\n");
     ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_QUIC, NDPI_PROTOCOL_UNKNOWN);
 
     if(packet->payload[quic_hlen+12] != 0xA0)
@@ -101,20 +105,23 @@ void ndpi_search_quic(struct ndpi_detection_module_struct *ndpi_struct,
 	      sni_offset++;
 
 	    if((sni_offset+len) < udp_len) {
-	      int max_len = sizeof(flow->host_server_name)-1, j = 0;
-
-	      if(len > max_len) len = max_len;
-
-	      while((len > 0) && (sni_offset < udp_len)) {
-		flow->host_server_name[j++] = packet->payload[sni_offset];
-		sni_offset++, len--;
+	      if(!ndpi_struct->disable_metadata_export) {
+		int max_len = sizeof(flow->host_server_name)-1, j = 0;
+		ndpi_protocol_match_result ret_match;
+		
+		if(len > max_len) len = max_len;
+		
+		while((len > 0) && (sni_offset < udp_len)) {
+		  flow->host_server_name[j++] = packet->payload[sni_offset];
+		  sni_offset++, len--;
+		}
+		
+		ndpi_match_host_subprotocol(ndpi_struct, flow, 
+					    (char *)flow->host_server_name,
+					    strlen((const char*)flow->host_server_name),
+					    &ret_match,
+					    NDPI_PROTOCOL_QUIC);
 	      }
-
-	      ndpi_match_host_subprotocol(ndpi_struct, flow, 
-					  (char *)flow->host_server_name,
-					  strlen((const char*)flow->host_server_name),
-					  NDPI_PROTOCOL_QUIC);
-	    
 	    }
 
 	    break;
@@ -126,8 +133,7 @@ void ndpi_search_quic(struct ndpi_detection_module_struct *ndpi_struct,
   }
 
  no_quic:
-  NDPI_LOG(NDPI_PROTOCOL_QUIC, ndpi_struct, NDPI_LOG_DEBUG, "exclude QUIC.\n");
-  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_QUIC);
+  NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
 }
 
 /* ***************************************************************** */
@@ -142,5 +148,3 @@ void init_quic_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int
 
   *id += 1;
 }
-
-#endif /* NDPI_PROTOCOL_QUIC */

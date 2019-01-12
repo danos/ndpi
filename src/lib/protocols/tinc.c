@@ -2,7 +2,7 @@
  * tinc.c
  *
  * Copyright (C) 2017 - William Guglielmo <william@deselmo.com>
- * Copyright (C) 2017 - ntop.org
+ * Copyright (C) 2017-18 - ntop.org
  *
  * nDPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,11 +18,13 @@
  * along with nDPI.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+#include "ndpi_protocol_ids.h"
 
+#define NDPI_CURRENT_PROTO NDPI_PROTOCOL_TINC
 
 #include "ndpi_api.h"
+#include "libcache.h"
 
-#ifdef NDPI_PROTOCOL_TINC
 
 static void ndpi_check_tinc(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 {
@@ -52,7 +54,7 @@ static void ndpi_check_tinc(struct ndpi_detection_module_struct *ndpi_struct, st
 
 	/* cache_free(ndpi_struct->tinc_cache); */
 
-        NDPI_LOG(NDPI_PROTOCOL_TINC, ndpi_struct, NDPI_LOG_DEBUG, "Found tinc udp connection\n");
+        NDPI_LOG_INFO(ndpi_struct, "found tinc udp connection\n");
         ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_TINC, NDPI_PROTOCOL_UNKNOWN);
       }
     }
@@ -111,7 +113,7 @@ static void ndpi_check_tinc(struct ndpi_detection_module_struct *ndpi_struct, st
 	      ndpi_struct->tinc_cache = cache_new(TINC_CACHE_MAX_SIZE);              
 
 	    cache_add(ndpi_struct->tinc_cache, &(flow->tinc_cache_entry), sizeof(flow->tinc_cache_entry));
-	    NDPI_LOG(NDPI_PROTOCOL_TINC, ndpi_struct, NDPI_LOG_DEBUG, "Found tinc tcp connection\n");
+	    NDPI_LOG_INFO(ndpi_struct, "found tinc tcp connection\n");
 	    ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_TINC, NDPI_PROTOCOL_UNKNOWN);
 	  }
 	  return;
@@ -123,14 +125,13 @@ static void ndpi_check_tinc(struct ndpi_detection_module_struct *ndpi_struct, st
     }
   }
 
-  NDPI_LOG(NDPI_PROTOCOL_TINC, ndpi_struct, NDPI_LOG_DEBUG, "exclude tinc.\n");
-  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_TINC);
+  NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
 }
 
 void ndpi_search_tinc(struct ndpi_detection_module_struct* ndpi_struct, struct ndpi_flow_struct* flow) {
   struct ndpi_packet_struct* packet = &flow->packet;
 
-  NDPI_LOG(NDPI_PROTOCOL_TINC, ndpi_struct, NDPI_LOG_DEBUG, "tinc detection...\n");
+  NDPI_LOG_DBG(ndpi_struct, "tinc detection\n");
 
   if(packet->detected_protocol_stack[0] != NDPI_PROTOCOL_TINC) {
     if(packet->tcp_retransmission == 0) {
@@ -151,4 +152,3 @@ void init_tinc_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int
   *id += 1;
 }
 
-#endif

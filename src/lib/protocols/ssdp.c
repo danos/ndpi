@@ -2,7 +2,7 @@
  * ssdp.c
  *
  * Copyright (C) 2009-2011 by ipoque GmbH
- * Copyright (C) 2011-15 - ntop.org
+ * Copyright (C) 2011-18 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -22,9 +22,11 @@
  *
  */
 
+#include "ndpi_protocol_ids.h"
 
-#include "ndpi_protocols.h"
-#ifdef NDPI_PROTOCOL_SSDP
+#define NDPI_CURRENT_PROTO NDPI_PROTOCOL_SSDP
+
+#include "ndpi_api.h"
 
 
 static void ndpi_int_ssdp_add_connection(struct ndpi_detection_module_struct
@@ -38,33 +40,29 @@ void ndpi_search_ssdp(struct ndpi_detection_module_struct *ndpi_struct, struct n
 {
   struct ndpi_packet_struct *packet = &flow->packet;
 	
-  //      struct ndpi_id_struct         *src=ndpi_struct->src;
-  //      struct ndpi_id_struct         *dst=ndpi_struct->dst;
-
-  NDPI_LOG(NDPI_PROTOCOL_SSDP, ndpi_struct, NDPI_LOG_DEBUG, "search ssdp.\n");
+  NDPI_LOG_DBG(ndpi_struct, "search ssdp\n");
   if (packet->udp != NULL) {
 
-    if (packet->payload_packet_len > 100) {
+    if (packet->payload_packet_len >= 19) {
       if ((memcmp(packet->payload, "M-SEARCH * HTTP/1.1", 19) == 0)
 	  || memcmp(packet->payload, "NOTIFY * HTTP/1.1", 17) == 0) {
 
 
-	NDPI_LOG(NDPI_PROTOCOL_SSDP, ndpi_struct, NDPI_LOG_DEBUG, "found ssdp.\n");
+	NDPI_LOG_INFO(ndpi_struct, "found ssdp\n");
 	ndpi_int_ssdp_add_connection(ndpi_struct, flow);
 	return;
       }
 
 #define SSDP_HTTP "HTTP/1.1 200 OK\r\n"
       if(memcmp(packet->payload, SSDP_HTTP, strlen(SSDP_HTTP)) == 0) {
-	NDPI_LOG(NDPI_PROTOCOL_SSDP, ndpi_struct, NDPI_LOG_DEBUG, "found ssdp.\n");
+	NDPI_LOG_INFO(ndpi_struct, "found ssdp\n");
 	ndpi_int_ssdp_add_connection(ndpi_struct, flow);
 	return;
       }
     }
   }
 
-  NDPI_LOG(NDPI_PROTOCOL_SSDP, ndpi_struct, NDPI_LOG_DEBUG, "ssdp excluded.\n");
-  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_SSDP);
+  NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
 }
 
 
@@ -80,4 +78,3 @@ void init_ssdp_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int
   *id += 1;
 }
 
-#endif

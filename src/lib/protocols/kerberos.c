@@ -2,7 +2,7 @@
  * kerberos.c
  *
  * Copyright (C) 2009-2011 by ipoque GmbH
- * Copyright (C) 2011-15 - ntop.org
+ * Copyright (C) 2011-18 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -22,24 +22,26 @@
  * 
  */
 
+#include "ndpi_protocol_ids.h"
 
-#include "ndpi_protocols.h"
+#define NDPI_CURRENT_PROTO NDPI_PROTOCOL_KERBEROS
 
-#ifdef NDPI_PROTOCOL_KERBEROS
+#include "ndpi_api.h"
+
 
 static void ndpi_int_kerberos_add_connection(struct ndpi_detection_module_struct *ndpi_struct,
 					     struct ndpi_flow_struct *flow)
 {
   ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_KERBEROS, NDPI_PROTOCOL_UNKNOWN);
+  NDPI_LOG_DBG(ndpi_struct, "trace KERBEROS\n");
 }
 
 
 void ndpi_search_kerberos(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 {
-	struct ndpi_packet_struct *packet = &flow->packet;	
-//      struct ndpi_id_struct         *src=ndpi_struct->src;
-//      struct ndpi_id_struct         *dst=ndpi_struct->dst;
+	struct ndpi_packet_struct *packet = &flow->packet;
 
+	NDPI_LOG_DBG(ndpi_struct, "search KERBEROS\n");
 
 	/* I have observed 0a,0c,0d,0e at packet->payload[19/21], maybe there are other possibilities */
 	if (packet->payload_packet_len >= 4 && ntohl(get_u_int32_t(packet->payload, 0)) == packet->payload_packet_len - 4) {
@@ -47,7 +49,6 @@ void ndpi_search_kerberos(struct ndpi_detection_module_struct *ndpi_struct, stru
 			packet->payload[14] == 0x05 &&
 			(packet->payload[19] == 0x0a ||
 			 packet->payload[19] == 0x0c || packet->payload[19] == 0x0d || packet->payload[19] == 0x0e)) {
-			NDPI_LOG(NDPI_PROTOCOL_KERBEROS, ndpi_struct, NDPI_LOG_DEBUG, "found KERBEROS\n");
 			ndpi_int_kerberos_add_connection(ndpi_struct, flow);
 			return;
 
@@ -56,18 +57,12 @@ void ndpi_search_kerberos(struct ndpi_detection_module_struct *ndpi_struct, stru
 			packet->payload[16] == 0x05 &&
 			(packet->payload[21] == 0x0a ||
 			 packet->payload[21] == 0x0c || packet->payload[21] == 0x0d || packet->payload[21] == 0x0e)) {
-			NDPI_LOG(NDPI_PROTOCOL_KERBEROS, ndpi_struct, NDPI_LOG_DEBUG, "found KERBEROS\n");
 			ndpi_int_kerberos_add_connection(ndpi_struct, flow);
 			return;
 
 		}
-
-
-
 	}
-
-	NDPI_LOG(NDPI_PROTOCOL_KERBEROS, ndpi_struct, NDPI_LOG_DEBUG, "no KERBEROS detected.\n");
-	NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_KERBEROS);
+	NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
 }
 
 
@@ -83,4 +78,3 @@ void init_kerberos_dissector(struct ndpi_detection_module_struct *ndpi_struct, u
   *id += 1;
 }
 
-#endif

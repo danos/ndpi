@@ -1,7 +1,7 @@
 /*
  * nintendo.c
  *
- * Copyright (C) 2017 by ntop.org
+ * Copyright (C) 2017-18 by ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -21,10 +21,11 @@
  *
  */
 
+#include "ndpi_protocol_ids.h"
+
+#define NDPI_CURRENT_PROTO NDPI_PROTOCOL_NINTENDO
 
 #include "ndpi_api.h"
-
-#ifdef NDPI_PROTOCOL_NINTENDO
 
 static void ndpi_int_nintendo_add_connection(struct ndpi_detection_module_struct *ndpi_struct,
 					     struct ndpi_flow_struct *flow,
@@ -43,15 +44,14 @@ void ndpi_search_nintendo(struct ndpi_detection_module_struct *ndpi_struct, stru
       const char nintendo_pattern[] = { 0x32, 0xab, 0x98, 0x64, 0x02 };
 
       if(memcmp(payload, nintendo_pattern, 5) == 0) {
-	NDPI_LOG(NDPI_PROTOCOL_NINTENDO, ndpi_struct, NDPI_LOG_DEBUG, "Found nintendo.\n");
+	NDPI_LOG_INFO(ndpi_struct, "found nintendo\n");
 	ndpi_int_nintendo_add_connection(ndpi_struct, flow, 0);
 	return;
       }
     }
   }
 
-  NDPI_LOG(NDPI_PROTOCOL_NINTENDO, ndpi_struct, NDPI_LOG_DEBUG, "Exclude Nintendo.\n");
-  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_NINTENDO);
+  NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
 }
 
 void init_nintendo_dissector(struct ndpi_detection_module_struct *ndpi_struct,
@@ -65,4 +65,3 @@ void init_nintendo_dissector(struct ndpi_detection_module_struct *ndpi_struct,
   *id += 1;
 }
 
-#endif

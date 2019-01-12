@@ -1,7 +1,30 @@
-#include "ndpi_api.h"
-#ifdef NDPI_PROTOCOL_LISP
+/*
+ * list.c
+ *
+ * Copyright (C) 2017-18 - ntop.org
+ *
+ * nDPI is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * nDPI is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with nDPI.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
 
-#define LISP_PORT 4341
+#include "ndpi_protocol_ids.h"
+
+#define NDPI_CURRENT_PROTO NDPI_PROTOCOL_LISP
+
+#include "ndpi_api.h"
+
+#define LISP_PORT  4341
 #define LISP_PORT1 4342
 
 static void ndpi_int_lisp_add_connection(struct ndpi_detection_module_struct *ndpi_struct,
@@ -16,9 +39,8 @@ static void ndpi_check_lisp(struct ndpi_detection_module_struct *ndpi_struct, st
 {
 
   struct ndpi_packet_struct *packet = &flow->packet;  
-  u_int32_t payload_len = packet->payload_packet_len;
 
-   if(packet->udp != NULL) {
+  if(packet->udp != NULL) {
 
     u_int16_t lisp_port = htons(LISP_PORT);
     u_int16_t lisp_port1 = htons(LISP_PORT1);
@@ -28,22 +50,21 @@ static void ndpi_check_lisp(struct ndpi_detection_module_struct *ndpi_struct, st
 	((packet->udp->source == lisp_port1)
        && (packet->udp->dest == lisp_port1)) ) {
      
-	  NDPI_LOG(NDPI_PROTOCOL_LISP, ndpi_struct, NDPI_LOG_DEBUG, "Found lisp.\n");
+	  NDPI_LOG_INFO(ndpi_struct, "found lisp\n");
 	  ndpi_int_lisp_add_connection(ndpi_struct, flow, 0);
 	  return;
 
       }
     }
 
-  NDPI_LOG(NDPI_PROTOCOL_LISP, ndpi_struct, NDPI_LOG_DEBUG, "exclude lisp.\n");
-  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_LISP);
+  NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
 }
 
 void ndpi_search_lisp(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 {
   struct ndpi_packet_struct *packet = &flow->packet;
 
-  NDPI_LOG(NDPI_PROTOCOL_LISP, ndpi_struct, NDPI_LOG_DEBUG, "lisp detection...\n");
+  NDPI_LOG_DBG(ndpi_struct, "search lisp\n");
 
   /* skip marked packets */
   if (packet->detected_protocol_stack[0] != NDPI_PROTOCOL_LISP) {
@@ -65,4 +86,3 @@ void init_lisp_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int
   *id += 1;
 }
 
-#endif

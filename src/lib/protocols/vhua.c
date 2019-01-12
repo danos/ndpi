@@ -1,7 +1,7 @@
 /*
  * vhua.c
  *
- * Copyright (C) 2011-15 - ntop.org
+ * Copyright (C) 2011-18 - ntop.org
  *
  * nDPI is free software: you can vhuatribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -17,7 +17,9 @@
  * along with nDPI.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+#include "ndpi_protocol_ids.h"
 
+#define NDPI_CURRENT_PROTO NDPI_PROTOCOL_VHUA
 
 #include "ndpi_api.h"
 
@@ -28,11 +30,10 @@
 
  */
 
-#ifdef NDPI_PROTOCOL_VHUA
 
 static void ndpi_int_vhua_add_connection(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow) {
   ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_VHUA, NDPI_PROTOCOL_UNKNOWN);
-  NDPI_LOG(NDPI_PROTOCOL_VHUA, ndpi_struct, NDPI_LOG_TRACE, "VHUA Found.\n");
+  NDPI_LOG_INFO(ndpi_struct, "found VHUA\n");
 }
 
 
@@ -47,8 +48,7 @@ static void ndpi_check_vhua(struct ndpi_detection_module_struct *ndpi_struct, st
   if((flow->packet_counter > 3)
      || (packet->udp == NULL)
      || (packet->payload_packet_len < sizeof(p0))) {
-    NDPI_LOG(NDPI_PROTOCOL_VHUA, ndpi_struct, NDPI_LOG_TRACE, "Exclude VHUA.\n");
-    NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_VHUA);
+    NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
   } else if(memcmp(packet->payload, p0, sizeof(p0)) == 0) {
     ndpi_int_vhua_add_connection(ndpi_struct, flow);
   }
@@ -57,7 +57,7 @@ static void ndpi_check_vhua(struct ndpi_detection_module_struct *ndpi_struct, st
 void ndpi_search_vhua(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow) {
   struct ndpi_packet_struct *packet = &flow->packet;
 
-  NDPI_LOG(NDPI_PROTOCOL_VHUA, ndpi_struct, NDPI_LOG_TRACE, "VHUA detection...\n");
+  NDPI_LOG_DBG(ndpi_struct, "search VHUA\n");
 
   /* skip marked packets */
   if(packet->detected_protocol_stack[0] != NDPI_PROTOCOL_VHUA) {
@@ -77,4 +77,3 @@ void init_vhua_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int
   *id += 1;
 }
 
-#endif

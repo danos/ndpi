@@ -1,7 +1,7 @@
 /*
  * ndpi_content_match.c
  *
- * Copyright (C) 2011-2017 - ntop.org
+ * Copyright (C) 2011-18 - ntop.org
  *
  * nDPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -21,7 +21,6 @@
 /* ****************************************************** */
 
 static ndpi_network host_protocol_list[] = {
-
   /*
     SoundCloud
   */
@@ -71,7 +70,6 @@ static ndpi_network host_protocol_list[] = {
   { 0xB92D0600 /* 185.45.6.0/23 */, 23, NDPI_PROTOCOL_TWITTER },
   { 0xBC40E000 /* 188.64.224.0/21 */, 21, NDPI_PROTOCOL_TWITTER },
   { 0xC02C4400 /* 192.44.68.0/23 */, 23, NDPI_PROTOCOL_TWITTER },
-  { 0xC030EC00 /* 192.48.236.0/23 */, 23, NDPI_PROTOCOL_TWITTER },
   { 0xC0854C00 /* 192.133.76.0/22 */, 22, NDPI_PROTOCOL_TWITTER },
   { 0xC7109C00 /* 199.16.156.0/22 */, 22, NDPI_PROTOCOL_TWITTER },
   { 0xC73B9400 /* 199.59.148.0/22 */, 22, NDPI_PROTOCOL_TWITTER },
@@ -82,38 +80,49 @@ static ndpi_network host_protocol_list[] = {
   /*
     WhatsApp Inc.
   */
-
-   { 0x3216C6CC /* 50.22.198.204/30 */, 30, NDPI_PROTOCOL_WHATSAPP },
-   { 0x4B7E2720 /* 75.126.39.32/27 */, 27, NDPI_PROTOCOL_WHATSAPP },
-   { 0x6CA8B460 /* 108.168.180.96/27 */, 27, NDPI_PROTOCOL_WHATSAPP },
-   { 0x9E553A00 /* 158.85.58.0/25 */, 25, NDPI_PROTOCOL_WHATSAPP },
-   { 0x9E55FE40 /* 158.85.254.64/27 */, 27, NDPI_PROTOCOL_WHATSAPP },
-   { 0xA92F2320 /* 169.47.35.32/27 */, 27, NDPI_PROTOCOL_WHATSAPP },
-   { 0xA93743E0 /* 169.55.67.224/27 */, 27, NDPI_PROTOCOL_WHATSAPP },
-   { 0xA93764A0 /* 169.55.100.160/27 */, 27, NDPI_PROTOCOL_WHATSAPP },
-   { 0xA937EBA0 /* 169.55.235.160/27 */, 27, NDPI_PROTOCOL_WHATSAPP },
-   { 0xADC0A220 /* 173.192.162.32/27 */, 27, NDPI_PROTOCOL_WHATSAPP },
-   { 0xB8AD8840 /* 184.173.136.64/27 */, 27, NDPI_PROTOCOL_WHATSAPP },
-   { 0xB93CDA35 /* 185.60.218.53/32 */, 27, NDPI_PROTOCOL_WHATSAPP },
-   { 0xC60BFB20 /* 198.11.251.32/27 */, 27, NDPI_PROTOCOL_WHATSAPP },
-   { 0xD02B73C0 /* 208.43.115.192/27 */, 27, NDPI_PROTOCOL_WHATSAPP },
-   { 0xD02B7A80 /* 208.43.122.128/27 */, 27, NDPI_PROTOCOL_WHATSAPP },
-
+  { 0x1F0D4B00 /* 31.13.75.0/24 */,     24, NDPI_PROTOCOL_WHATSAPP },
+  { 0x1F0D5600 /* 31.13.86.0/24 */,     24, NDPI_PROTOCOL_WHATSAPP },
+  { 0x3216C6CC /* 50.22.198.204/30 */,  30, NDPI_PROTOCOL_WHATSAPP },
+  { 0x4B7E2720 /* 75.126.39.32/27 */,   27, NDPI_PROTOCOL_WHATSAPP },
+  { 0x6CA8B460 /* 108.168.180.96/27 */, 27, NDPI_PROTOCOL_WHATSAPP },
+  { 0x9E553A00 /* 158.85.58.0/25 */,    25, NDPI_PROTOCOL_WHATSAPP },
+  { 0x9E55FE40 /* 158.85.254.64/27 */,  27, NDPI_PROTOCOL_WHATSAPP },
+  { 0xA92C5360 /* 169.44.82.96/27   */, 27, NDPI_PROTOCOL_WHATSAPP },
+  { 0xA92DD6E0 /* 169.45.214.224/27 */, 27, NDPI_PROTOCOL_WHATSAPP },
+  { 0xA92DDBE0 /* 169.45.219.224/27 */, 27, NDPI_PROTOCOL_WHATSAPP },
+  { 0xA92DF860 /* 169.45.248.96/27  */, 27, NDPI_PROTOCOL_WHATSAPP },
+  { 0xA92F05C0 /* 169.47.5.192/26 */,   26, NDPI_PROTOCOL_WHATSAPP },
+  { 0xA92F2320 /* 169.47.35.32/27 */,   27, NDPI_PROTOCOL_WHATSAPP },
+  { 0xA9373CAA /* 169.55.60.170/32  */, 27, NDPI_PROTOCOL_WHATSAPP },
+  { 0xA93C4F00 /* 169.60.79.0/24 */,    24, NDPI_PROTOCOL_WHATSAPP },
+  { 0xA93F4C11 /* 169.63.76.0/25 */,    25, NDPI_PROTOCOL_WHATSAPP },
+  { 0xA93F4940 /* 169.63.73.64/25 */,   25, NDPI_PROTOCOL_WHATSAPP },
+  { 0xA93764A0 /* 169.55.100.160/27 */, 27, NDPI_PROTOCOL_WHATSAPP },
+  { 0xA937EBA0 /* 169.55.235.160/27 */, 27, NDPI_PROTOCOL_WHATSAPP },
+  { 0xADC0A220 /* 173.192.162.32/27 */, 27, NDPI_PROTOCOL_WHATSAPP },
+  { 0xB8AD8840 /* 184.173.136.64/27 */, 27, NDPI_PROTOCOL_WHATSAPP },
+  { 0xB93CDA35 /* 185.60.218.53/32 */,  27, NDPI_PROTOCOL_WHATSAPP },
+  { 0xC60BFB20 /* 198.11.251.32/27 */,  27, NDPI_PROTOCOL_WHATSAPP },
+  { 0xD02B73C0 /* 208.43.115.192/27 */, 27, NDPI_PROTOCOL_WHATSAPP },
+  { 0xD02B7A80 /* 208.43.122.128/27 */, 27, NDPI_PROTOCOL_WHATSAPP },
+  /* Files */
+  { 0xB93CD835 /* 185.60.216.53/32 */,  32, NDPI_PROTOCOL_WHATSAPP_FILES },
 
   /*
     WeChat
     origin AS132203, AS132591, AS45090
   */
+  { 0xCBCD93AB /* 203.205.147.171/32 */, 32, NDPI_PROTOCOL_WECHAT },
+  { 0xCBCD93AD /* 203.205.147.173/32 */, 32, NDPI_PROTOCOL_WECHAT },
+  { 0xCBCD97A2 /* 203.205.151.162/32 */, 32, NDPI_PROTOCOL_WECHAT },
+  { 0x67071E25 /* 103.7.30.37/32     */, 32, NDPI_PROTOCOL_WECHAT },
+  { 0XCBCDB000 /* 203.205.176.0/20   */, 20, NDPI_PROTOCOL_WECHAT },
+  { 0XCBCDC000 /* 203.205.192.0/18   */, 18, NDPI_PROTOCOL_WECHAT },
 
-   { 0xCBCD93AB /* 203.205.147.171/32 */, 32, NDPI_PROTOCOL_WECHAT },
-   { 0xCBCD93AD /* 203.205.147.173/32 */, 32, NDPI_PROTOCOL_WECHAT },
-   { 0xCBCD97A2 /* 203.205.151.162/32 */, 32, NDPI_PROTOCOL_WECHAT },
-   { 0x67071E25 /* 103.7.30.37/32 */, 32, NDPI_PROTOCOL_WECHAT },
-
-   /*
+  /*
     OpenDNS, LLC
     origin AS36692, AS30607
-   */
+  */
 
   { 0x26631400 /* 38.99.20.0/23 */, 23, NDPI_PROTOCOL_OPENDNS },
   { 0x3F504FC0 /* 63.80.79.192/26 */, 26, NDPI_PROTOCOL_OPENDNS },
@@ -216,59 +225,9 @@ static ndpi_network host_protocol_list[] = {
   { 0x344D0000 /* 52.77.0.0/16 */, 16, NDPI_PROTOCOL_AMAZON },
   { 0x344E0000 /* 52.78.0.0/16 */, 16, NDPI_PROTOCOL_AMAZON },
   { 0x344F0000 /* 52.79.0.0/16 */, 16, NDPI_PROTOCOL_AMAZON },
-  { 0x3452BB00 /* 52.82.187.0/24 */, 24, NDPI_PROTOCOL_AMAZON },
-  { 0x34530000 /* 52.83.0.0/16 */, 16, NDPI_PROTOCOL_AMAZON },
-  { 0x34540000 /* 52.84.0.0/15 */, 15, NDPI_PROTOCOL_AMAZON },
-  { 0x34560000 /* 52.86.0.0/15 */, 15, NDPI_PROTOCOL_AMAZON },
-  { 0x34580000 /* 52.88.0.0/15 */, 15, NDPI_PROTOCOL_AMAZON },
+  { 0x34520000 /* 52.82.0.0/14 */, 14, NDPI_PROTOCOL_AMAZON },
+  { 0x34580000 /* 52.88.0.0/13 */, 13, NDPI_PROTOCOL_AMAZON },
   { 0x345A0000 /* 52.90.0.0/15 */, 15, NDPI_PROTOCOL_AMAZON },
-  { 0x345C0000 /* 52.92.0.0/20 */, 20, NDPI_PROTOCOL_AMAZON },
-  { 0x345C1000 /* 52.92.16.0/20 */, 20, NDPI_PROTOCOL_AMAZON },
-  { 0x345C2000 /* 52.92.32.0/22 */, 22, NDPI_PROTOCOL_AMAZON },
-  { 0x345C2800 /* 52.92.40.0/21 */, 21, NDPI_PROTOCOL_AMAZON },
-  { 0x345C3000 /* 52.92.48.0/22 */, 22, NDPI_PROTOCOL_AMAZON },
-  { 0x345C3400 /* 52.92.52.0/22 */, 22, NDPI_PROTOCOL_AMAZON },
-  { 0x345C3800 /* 52.92.56.0/22 */, 22, NDPI_PROTOCOL_AMAZON },
-  { 0x345C3C00 /* 52.92.60.0/22 */, 22, NDPI_PROTOCOL_AMAZON },
-  { 0x345C4000 /* 52.92.64.0/22 */, 22, NDPI_PROTOCOL_AMAZON },
-  { 0x345C4400 /* 52.92.68.0/22 */, 22, NDPI_PROTOCOL_AMAZON },
-  { 0x345C4800 /* 52.92.72.0/22 */, 22, NDPI_PROTOCOL_AMAZON },
-  { 0x345C4C00 /* 52.92.76.0/22 */, 22, NDPI_PROTOCOL_AMAZON },
-  { 0x345C5400 /* 52.92.84.0/22 */, 22, NDPI_PROTOCOL_AMAZON },
-  { 0x345C5800 /* 52.92.88.0/22 */, 22, NDPI_PROTOCOL_AMAZON },
-  { 0x345CF800 /* 52.92.248.0/22 */, 22, NDPI_PROTOCOL_AMAZON },
-  { 0x345CFC00 /* 52.92.252.0/22 */, 22, NDPI_PROTOCOL_AMAZON },
-  { 0x345D0000 /* 52.93.0.0/16 */, 16, NDPI_PROTOCOL_AMAZON },
-  { 0x345E0000 /* 52.94.0.0/22 */, 22, NDPI_PROTOCOL_AMAZON },
-  { 0x345E0400 /* 52.94.4.0/24 */, 24, NDPI_PROTOCOL_AMAZON },
-  { 0x345E0500 /* 52.94.5.0/24 */, 24, NDPI_PROTOCOL_AMAZON },
-  { 0x345E0600 /* 52.94.6.0/24 */, 24, NDPI_PROTOCOL_AMAZON },
-  { 0x345E0700 /* 52.94.7.0/24 */, 24, NDPI_PROTOCOL_AMAZON },
-  { 0x345E0800 /* 52.94.8.0/24 */, 24, NDPI_PROTOCOL_AMAZON },
-  { 0x345E0900 /* 52.94.9.0/24 */, 24, NDPI_PROTOCOL_AMAZON },
-  { 0x345E0A00 /* 52.94.10.0/24 */, 24, NDPI_PROTOCOL_AMAZON },
-  { 0x345E0B00 /* 52.94.11.0/24 */, 24, NDPI_PROTOCOL_AMAZON },
-  { 0x345E0C00 /* 52.94.12.0/24 */, 24, NDPI_PROTOCOL_AMAZON },
-  { 0x345E0D00 /* 52.94.13.0/24 */, 24, NDPI_PROTOCOL_AMAZON },
-  { 0x345E0E00 /* 52.94.14.0/24 */, 24, NDPI_PROTOCOL_AMAZON },
-  { 0x345E0F00 /* 52.94.15.0/24 */, 24, NDPI_PROTOCOL_AMAZON },
-  { 0x345E1100 /* 52.94.17.0/24 */, 24, NDPI_PROTOCOL_AMAZON },
-  { 0x345E1800 /* 52.94.24.0/23 */, 23, NDPI_PROTOCOL_AMAZON },
-  { 0x345E1C00 /* 52.94.28.0/23 */, 23, NDPI_PROTOCOL_AMAZON },
-  { 0x345E2000 /* 52.94.32.0/20 */, 20, NDPI_PROTOCOL_AMAZON },
-  { 0x345E3000 /* 52.94.48.0/20 */, 20, NDPI_PROTOCOL_AMAZON },
-  { 0x345E4000 /* 52.94.64.0/22 */, 22, NDPI_PROTOCOL_AMAZON },
-  { 0x345E5000 /* 52.94.80.0/20 */, 20, NDPI_PROTOCOL_AMAZON },
-  { 0x345E6000 /* 52.94.96.0/20 */, 20, NDPI_PROTOCOL_AMAZON },
-  { 0x345E7000 /* 52.94.112.0/22 */, 22, NDPI_PROTOCOL_AMAZON },
-  { 0x345ECC00 /* 52.94.204.0/23 */, 23, NDPI_PROTOCOL_AMAZON },
-  { 0x345ECE00 /* 52.94.206.0/23 */, 23, NDPI_PROTOCOL_AMAZON },
-  { 0x345ED000 /* 52.94.208.0/21 */, 21, NDPI_PROTOCOL_AMAZON },
-  { 0x345ED800 /* 52.94.216.0/21 */, 21, NDPI_PROTOCOL_AMAZON },
-  { 0x345EE000 /* 52.94.224.0/20 */, 20, NDPI_PROTOCOL_AMAZON },
-  { 0x345EF000 /* 52.94.240.0/22 */, 22, NDPI_PROTOCOL_AMAZON },
-  { 0x345EFC00 /* 52.94.252.0/23 */, 23, NDPI_PROTOCOL_AMAZON },
-  { 0x345EFE00 /* 52.94.254.0/23 */, 23, NDPI_PROTOCOL_AMAZON },
   { 0x345F0000 /* 52.95.0.0/21 */, 21, NDPI_PROTOCOL_AMAZON },
   { 0x345F0A00 /* 52.95.10.0/23 */, 23, NDPI_PROTOCOL_AMAZON },
   { 0x345F0C00 /* 52.95.12.0/22 */, 22, NDPI_PROTOCOL_AMAZON },
@@ -584,18 +543,31 @@ static ndpi_network host_protocol_list[] = {
   { 0xC0AD4000 /* 192.173.64.0/18 */, 18, NDPI_PROTOCOL_NETFLIX },
   { 0xC6266000 /* 198.38.96.0/19 */, 19, NDPI_PROTOCOL_NETFLIX },
   { 0xC62D3000 /* 198.45.48.0/20 */, 20, NDPI_PROTOCOL_NETFLIX },
-  { 0xD04B4C00 /* 208.75.76.0/22 */, 22, NDPI_PROTOCOL_NETFLIX },
+  { 0xD194D687 /* 209.148.214.135/21 */, 21, NDPI_PROTOCOL_NETFLIX },
 
   /*
     Cloudflare, Inc.
     origin AS13335, AS132892, AS203898, AS394536
   */
 
-  { 0x4044C000 /* 64.68.192.0/24 */, 24, NDPI_PROTOCOL_CLOUDFLARE },
+  { 0x321ff200 /* 50.31.242.0/23 */, 23, NDPI_PROTOCOL_CLOUDFLARE },
+  { 0x6715f400 /* 103.21.244.0/22 */, 22, NDPI_PROTOCOL_CLOUDFLARE },
+  { 0x6716c800 /* 103.22.200.0/22 */, 22, NDPI_PROTOCOL_CLOUDFLARE },
+  { 0x671f0400 /* 103.31.4.0/22 */, 22, NDPI_PROTOCOL_CLOUDFLARE },
   { 0x68100000 /* 104.16.0.0/12 */, 12, NDPI_PROTOCOL_CLOUDFLARE },
   { 0x6CA2C000 /* 108.162.192.0/18 */, 18, NDPI_PROTOCOL_CLOUDFLARE },
+  { 0x83004800 /* 131.0.72.0/22 */, 22, NDPI_PROTOCOL_CLOUDFLARE },
   { 0x8D654400 /* 141.101.68.0/24 */, 24, NDPI_PROTOCOL_CLOUDFLARE },
   { 0x8D654500 /* 141.101.69.0/24 */, 24, NDPI_PROTOCOL_CLOUDFLARE },
+  { 0x8d656000 /* 141.101.96.0/21 */, 21, NDPI_PROTOCOL_CLOUDFLARE },
+  { 0x8d654000 /* 141.101.64.0/20 */, 20, NDPI_PROTOCOL_CLOUDFLARE },
+  { 0x8d655000 /* 141.101.80.0/21 */, 21, NDPI_PROTOCOL_CLOUDFLARE },
+  { 0x8d655800 /* 141.101.88.0/19 */, 19, NDPI_PROTOCOL_CLOUDFLARE },
+  { 0x8d656800 /* 141.101.104.0/21 */, 21, NDPI_PROTOCOL_CLOUDFLARE },
+  { 0x8d657000 /* 141.101.112.0/21 */, 21, NDPI_PROTOCOL_CLOUDFLARE },
+  { 0x8d657800 /* 141.101.120.0/22 */, 22, NDPI_PROTOCOL_CLOUDFLARE },
+  { 0x8d657c00 /* 141.101.124.0/22 */, 22, NDPI_PROTOCOL_CLOUDFLARE },
+  { 0xbe5df000 /* 190.93.240.0/20 */, 20, NDPI_PROTOCOL_CLOUDFLARE },
   { 0xA29E0000 /* 162.158.0.0/15 */, 15, NDPI_PROTOCOL_CLOUDFLARE },
   { 0xA2FB5200 /* 162.251.82.0/24 */, 24, NDPI_PROTOCOL_CLOUDFLARE },
   { 0xAC400000 /* 172.64.0.0/13 */, 13, NDPI_PROTOCOL_CLOUDFLARE },
@@ -609,6 +581,7 @@ static ndpi_network host_protocol_list[] = {
   { 0xBC726B00 /* 188.114.107.0/24 */, 24, NDPI_PROTOCOL_CLOUDFLARE },
   { 0xBC726C00 /* 188.114.108.0/22 */, 22, NDPI_PROTOCOL_CLOUDFLARE },
   { 0xC6298000 /* 198.41.128.0/17 */, 17, NDPI_PROTOCOL_CLOUDFLARE },
+  { 0xc5eaf000 /* 197.234.240.0/22 */, 22, NDPI_PROTOCOL_CLOUDFLARE },
   { 0xC71B8000 /* 199.27.128.0/21 */, 21, NDPI_PROTOCOL_CLOUDFLARE },
 
   /*
@@ -636,11 +609,11 @@ static ndpi_network host_protocol_list[] = {
 
   /* Teamviewer 159.122.189.32-63 */
   { 0x9F7ABD30 /* 159.122.189.32 */, 21, NDPI_PROTOCOL_TEAMVIEWER },
-   
-  /*
-   IFLIX services -by www.vizuamatix.com R&D team
-  */
 
+#if 0
+  /*
+    IFLIX services -by www.vizuamatix.com R&D team
+  */
   { 0x344D0000 /* 52.77.0.0 */, 16, NDPI_PROTOCOL_IFLIX },
   { 0x34DC0000 /* 52.220.0.0 */, 16, NDPI_PROTOCOL_IFLIX },
   { 0x344A0000 /* 52.74.0.0 */, 16, NDPI_PROTOCOL_IFLIX },
@@ -650,13 +623,14 @@ static ndpi_network host_protocol_list[] = {
   { 0x36C09600 /* 54.192.150.0  */, 24, NDPI_PROTOCOL_IFLIX },
   { 0x344AC0F7 /* 52.74.192.247  */, 32, NDPI_PROTOCOL_IFLIX },
   { 0x0215E718 /* 2.21.231.24 */, 32, NDPI_PROTOCOL_IFLIX },
+#endif
 
   /*
     Citrix GotoMeeting (AS16815, AS21866)
   */
 
-  { 0xD873D000 /* 216.115.208.0 */, 20, NDPI_PROTOCOL_CITRIX_ONLINE },
-  { 0xD8DB7000 /* 216.219.112.0 */, 20, NDPI_PROTOCOL_CITRIX_ONLINE },
+  { 0xD873D000 /* 216.115.208.0 */, 20, NDPI_PROTOCOL_CITRIX },
+  { 0xD8DB7000 /* 216.219.112.0 */, 20, NDPI_PROTOCOL_CITRIX },
 
   /*
     Cisco Webex LLC
@@ -680,12 +654,16 @@ static ndpi_network host_protocol_list[] = {
     https://whois.arin.net/rest/nets;q=AWS-VIBER-MEDIA?showDetails=true&showARIN=false&showNonArinTopLevelNet=false&ext=netref2
   */
 
+  { 0x0DE61550 /* 13.230.21.80/28 */, 28, NDPI_PROTOCOL_VIBER },
+  { 0x0D39B480 /* 13.57.180.128/28 */, 28, NDPI_PROTOCOL_VIBER },
+  { 0x012C30400 /* 18.195.4.0/23 */, 23, NDPI_PROTOCOL_VIBER },
+  { 0x012C45500 /* 18.196.85.0/25 */, 25, NDPI_PROTOCOL_VIBER },
+  { 0x022E8A340 /* 34.232.163.64/28 */, 28, NDPI_PROTOCOL_VIBER },
+  { 0x022F67200 /* 34.246.114.0/23 */, 23, NDPI_PROTOCOL_VIBER },
   { 0x3400FC00 /* 52.0.252.0/22 */, 22, NDPI_PROTOCOL_VIBER },
   { 0x3640BFF0 /* 54.64.191.240/28 */, 28, NDPI_PROTOCOL_VIBER },
   { 0x36A5FFD0 /* 54.165.255.208/28 */, 28, NDPI_PROTOCOL_VIBER },
   { 0x36A5FFE0 /* 54.165.255.224/27 */, 27, NDPI_PROTOCOL_VIBER },
-  { 0x36A93FA0 /* 54.169.63.160/27 */, 27, NDPI_PROTOCOL_VIBER },
-  { 0x36A93FC0 /* 54.169.63.192/26 */, 26, NDPI_PROTOCOL_VIBER },
   { 0x36DBBFA0 /* 54.219.191.160/28 */, 28, NDPI_PROTOCOL_VIBER },
   { 0x36E8FB90 /* 54.232.251.144/28 */, 28, NDPI_PROTOCOL_VIBER },
 
@@ -730,6 +708,7 @@ static ndpi_network host_protocol_list[] = {
   { 0x287F816D /* 40.126.129.109 */, 32, NDPI_PROTOCOL_SKYPE },
   { 0x4237DF00 /* 65.55.223.0 */, 26, NDPI_PROTOCOL_SKYPE },
   { 0x17600000 /* 23.96.0.0 */, 13, NDPI_PROTOCOL_SKYPE },
+  { 0x34724A05 /* 52.114.74.5 */, 32, NDPI_PROTOCOL_SKYPE },
 
   /*
     Blizzard Entertainment, Inc
@@ -831,13 +810,13 @@ static ndpi_network host_protocol_list[] = {
   { 0xD8EF2000 /* 216.239.32.0/19 */, 19, NDPI_PROTOCOL_GOOGLE },
   { 0xD8FCDC00 /* 216.252.220.0/22 */, 22, NDPI_PROTOCOL_GOOGLE },
 
-/*
+  /*
     Canonical Ltd (Ubuntu)
-    origin AS41231
+    origin AS41231z
   */
 
-  { 0x5BBD5800 /* 91.189.88.0/21 */, 21, NDPI_PROTOCOL_UBUNTUONE },
-  { 0xA2D52000 /* 162.213.32.0/22 */, 22, NDPI_PROTOCOL_UBUNTUONE },
+  { 0x5BBD5800 /* 91.189.88.0/21 */,   21, NDPI_PROTOCOL_UBUNTUONE },
+  { 0xA2D52000 /* 162.213.32.0/22 */,  22, NDPI_PROTOCOL_UBUNTUONE },
   { 0xB97DBC00 /* 185.125.188.0/22 */, 22, NDPI_PROTOCOL_UBUNTUONE },
 
   /*
@@ -852,7 +831,7 @@ static ndpi_network host_protocol_list[] = {
   { 0x5B6C1400 /* 91.108.20.0/22 */, 22, NDPI_PROTOCOL_TELEGRAM },
   { 0x5B6C3800 /* 91.108.56.0/22 */, 22, NDPI_PROTOCOL_TELEGRAM },
   { 0x959AA000 /* 149.154.160.0/20 */, 20, NDPI_PROTOCOL_TELEGRAM },
-  
+
   /*
     BitTorrent
   */
@@ -7949,6 +7928,7 @@ static ndpi_network host_protocol_list[] = {
     Valve Corporation (Steam)
     origin AS32590
   */
+
   { 0x2D79B800 /* 45.121.184.0/22 */, 22, NDPI_PROTOCOL_STEAM },
   { 0x670A7C00 /* 103.10.124.0/23 */, 23, NDPI_PROTOCOL_STEAM },
   { 0x671C3600 /* 103.28.54.0/23 */, 23, NDPI_PROTOCOL_STEAM },
@@ -7967,8 +7947,16 @@ static ndpi_network host_protocol_list[] = {
   { 0xD040C900 /* 208.64.201.0/22 */, 22, NDPI_PROTOCOL_STEAM },
   { 0xD04EA400 /* 208.78.164.0/22 */, 22, NDPI_PROTOCOL_STEAM },
 
+  /*
+    VidTO
+  */
+  { 0x51111030 /* 81.17.16.48/32 */, 32,  NDPI_PROTOCOL_VIDTO  },
+  { 0x5fb7329d /* 95.183.50.157/32 */, 32, NDPI_PROTOCOL_VIDTO },
+  { 0x577824f2 /* 87.120.36.242/32 */, 32, NDPI_PROTOCOL_VIDTO },
+
   { 0x0, 0, 0 }
 };
+
 
 /* ****************************************************** */
 
@@ -7982,342 +7970,459 @@ static ndpi_network host_protocol_list[] = {
   ----------------------------
 
   NDPI_PROTOCOL_SAFE
-    - Web sites (and CDNs) which are not commonly used to host malicious activities.
-    - OS update hosts.
-    - App stores.
-    - Commonly used services with passwords in encrypted channels (SMTPS, POPS, etc)
+  - Web sites (and CDNs) which are not commonly used to host malicious activities.
+  - OS update hosts.
+  - App stores.
+  - Commonly used services with passwords in encrypted channels (SMTPS, POPS, etc)
 
   NDPI_PROTOCOL_ACCEPTABLE
-    - Cloud services may be used to host malware (e.g., https://www.fireeye.com/blog/threat-research/2015/11/china-based-threat.html),
-      but it is mostly used for normal purposes.
-    - Webmail sites, which can be used to phising.
-    - Encrypted administrative protocols, such as SSH.
-    - Text, voice or video communication (e.g., Skype, Slack, Whatsapp).
-    - Ads services are commonly used to spread malware
-      (https://www.tripwire.com/state-of-security/security-data-protection/crypto-ransomware-spreads-via-poisoned-ads-on-major-websites/)
+  - Cloud services may be used to host malware (e.g., https://www.fireeye.com/blog/threat-research/2015/11/china-based-threat.html),
+  but it is mostly used for normal purposes.
+  - Webmail sites, which can be used to phising.
+  - Encrypted administrative protocols, such as SSH.
+  - Text, voice or video communication (e.g., Skype, Slack, Whatsapp).
+  - Ads services are commonly used to spread malware
+  (https://www.tripwire.com/state-of-security/security-data-protection/crypto-ransomware-spreads-via-poisoned-ads-on-major-websites/)
 
   NDPI_PROTOCOL_FUN
-    - Social media sites and services.
-    - Communication used for fun purposes, like Snapchat, Tinder, etc.
-    - Audio and videostreamming services (e.g., Netflix).
-    - Game services.
+  - Social media sites and services.
+  - Communication used for fun purposes, like Snapchat, Tinder, etc.
+  - Audio and videostreamming services (e.g., Netflix).
+  - Game services.
 
   NDPI_PROTOCOL_UNSAFE
-    - Unencrypted administrative protocols, such as Telnet.
-    - Cloud hosted servers when accessed by default domains, such as *.amazonaws.com.
-        - "AWS Supports 41% of Malware Hosting Sites, More than Any Other Web Host or ISP"
-          http://www.thewhir.com/web-hosting-news/aws-supports-41-malware-hosting-sites-web-host-isp
-        - https://www.scmagazine.com/600-plus-cloud-repositories-spotted-hosting-malware-and-malicious-files/article/572205/
-        - https://howtoremove.guide/remove-s3-amazonaws-virus/
-    - Torrents.
-    - Commonly used services with passwords in unencrypted channels (SMTP, POP, etc)
+  - Unencrypted administrative protocols, such as Telnet.
+  - Cloud hosted servers when accessed by default domains, such as *.amazonaws.com.
+  - "AWS Supports 41% of Malware Hosting Sites, More than Any Other Web Host or ISP"
+  http://www.thewhir.com/web-hosting-news/aws-supports-41-malware-hosting-sites-web-host-isp
+  - https://www.scmagazine.com/600-plus-cloud-repositories-spotted-hosting-malware-and-malicious-files/article/572205/
+  - https://howtoremove.guide/remove-s3-amazonaws-virus/
+  - Torrents.
+  - Commonly used services with passwords in unencrypted channels (SMTP, POP, etc)
 
   NDPI_PROTOCOL_POTENTIALLY_DANGEROUS
-    - Tor and other anonymization access.
-    - Sites commonly used to host malware and not as commonly used by "normal" users. (e.g., pastebin.com)
-      https://isc.sans.edu/forums/diary/Many+Malware+Samples+Found+on+Pastebin/22036/
+  - Tor and other anonymization access.
+  - Sites commonly used to host malware and not as commonly used by "normal" users. (e.g., pastebin.com)
+  https://isc.sans.edu/forums/diary/Many+Malware+Samples+Found+on+Pastebin/22036/
 
   NDPI_PROTOCOL_UNRATED
-    - Avoid this class.
+  - Avoid this class.
 
 */
 
+/* ****************************************************** */
+
+/*
+
+Each part of a domain name can be no longer than 63 characters. There are no single-digit top-level domains and none contain digits. It doesn't look like ICANN will approve such domains either.
+
+https://www.regular-expressions.info/email.html
+
+(?i) is to make searches case insensitive
+
+(?:) is a non-capturing group used to allow patterns such as .co.uk or .com.cn
+     The non-capturing group is used in a nested fashion to capture the
+     .co, and then, optionally, another m.
+
+*/
+
+#define TLD "(?i)(?:\\.co(?:m)?)?\\.[a-z]{2,63}$"
+
+/* ****************************************************** */
+
 ndpi_protocol_match host_match[] = {
-  { "amazon.",                  "Amazon",           NDPI_PROTOCOL_AMAZON, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-  { "amazon.com",               "Amazon",           NDPI_PROTOCOL_AMAZON, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-  { "images-amazon.com",        "Amazon",           NDPI_PROTOCOL_AMAZON, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
-  { "amazonaws.com",            "Amazon",           NDPI_PROTOCOL_AMAZON, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_UNSAFE },
-  { "amazon-adsystem.com",      "Amazon",           NDPI_PROTOCOL_AMAZON, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".cloudfront.net",          "Amazon",           NDPI_PROTOCOL_AMAZON, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
+  { "s3.ll.dash.row.aiv-cdn.net", NULL, "s3\\.ll\\.dash\\.row\\.aiv-cdn\\.net",          "AmazonVideo",      NDPI_PROTOCOL_AMAZON_VIDEO, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+  { "s3-dub.cf.dash.row.aiv-cdn.net", NULL, "s3-dub\\.cf\\.dash\\.row\\.aiv-cdn\\.net",  "AmazonVideo",      NDPI_PROTOCOL_AMAZON_VIDEO, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+  { "dmqdd6hw24ucf.cloudfront.net", NULL, "dmqdd6hw24ucf\\.cloudfront\\.net",            "AmazonVideo",      NDPI_PROTOCOL_AMAZON_VIDEO, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+  { "d25xi40x97liuc.cloudfront.net", NULL, "d25xi40x97liuc\\.cloudfront\\.net",          "AmazonVideo",      NDPI_PROTOCOL_AMAZON_VIDEO, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+  { ".aiv-delivery.net", NULL, "\\.aiv-delivery\\.net",                                  "AmazonVideo",      NDPI_PROTOCOL_AMAZON_VIDEO, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+  { "amazon.", NULL, NULL,                              "Amazon",           NDPI_PROTOCOL_AMAZON, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+  { "amazon.com", NULL, "amazon" TLD,                   "Amazon",           NDPI_PROTOCOL_AMAZON, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+  { "images-amazon.com", NULL, "images-amazon" TLD,     "Amazon",           NDPI_PROTOCOL_AMAZON, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
+  { "amazonaws.com", NULL, "amazonaws" TLD,             "Amazon",           NDPI_PROTOCOL_AMAZON, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
+  { "amazon-adsystem.com", NULL, "amazon-adsystem" TLD, "Amazon",           NDPI_PROTOCOL_AMAZON, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".cloudfront.net", NULL, "\\.cloudfront" TLD,       "Amazon",           NDPI_PROTOCOL_AMAZON, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
 
-  { ".apple.com",               "Apple",            NDPI_PROTOCOL_APPLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-  { ".apple-dns.net",           "Apple",            NDPI_PROTOCOL_APPLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-  { ".mzstatic.com",            "Apple",            NDPI_PROTOCOL_APPLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-  { ".aaplimg.com",             "Apple",            NDPI_PROTOCOL_APPLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-  { ".icloud.com",              "AppleiCloud",      NDPI_PROTOCOL_APPLE_ICLOUD, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
-  { "iosapps.itunes.apple.com", "AppleStore",       NDPI_PROTOCOL_APPLESTORE, NDPI_PROTOCOL_CATEGORY_SW_UPDATE, NDPI_PROTOCOL_SAFE }, /* iOS */
-  { "osxapps.itunes.apple.com", "AppleStore",       NDPI_PROTOCOL_APPLESTORE, NDPI_PROTOCOL_CATEGORY_SW_UPDATE, NDPI_PROTOCOL_SAFE }, /* MacOS */
-  { "buy.itunes.apple.com",     "AppleStore",       NDPI_PROTOCOL_APPLESTORE, NDPI_PROTOCOL_CATEGORY_SW_UPDATE, NDPI_PROTOCOL_SAFE },
-  { "su.itunes.apple.com",      "AppleStore",       NDPI_PROTOCOL_APPLESTORE, NDPI_PROTOCOL_CATEGORY_SW_UPDATE, NDPI_PROTOCOL_SAFE },
-  { "se.itunes.apple.com",      "AppleStore",       NDPI_PROTOCOL_APPLESTORE, NDPI_PROTOCOL_CATEGORY_SW_UPDATE, NDPI_PROTOCOL_SAFE },
-  { "myapp.itunes.apple.com",   "AppleStore",       NDPI_PROTOCOL_APPLESTORE, NDPI_PROTOCOL_CATEGORY_SW_UPDATE, NDPI_PROTOCOL_SAFE },
-  { "swscan.apple.com",         "AppleStore",       NDPI_PROTOCOL_APPLESTORE, NDPI_PROTOCOL_CATEGORY_SW_UPDATE, NDPI_PROTOCOL_SAFE },
-  { "itunes-apple.com",         "AppleStore",       NDPI_PROTOCOL_APPLESTORE, NDPI_PROTOCOL_CATEGORY_SW_UPDATE, NDPI_PROTOCOL_SAFE },
-  { "itunes.apple.com",         "AppleiTunes",      NDPI_PROTOCOL_APPLE_ITUNES, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_FUN },
-
-  { ".cnn.c",                   "CNN",              NDPI_PROTOCOL_CNN, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-  { ".cnn.net",                 "CNN",              NDPI_PROTOCOL_CNN, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-
-  { ".dropbox.com",             "DropBox",          NDPI_PROTOCOL_DROPBOX, NDPI_PROTOCOL_CATEGORY_CLOUD, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".dropbox-dns.com",         "DropBox",          NDPI_PROTOCOL_DROPBOX, NDPI_PROTOCOL_CATEGORY_CLOUD, NDPI_PROTOCOL_ACCEPTABLE },
-  { "log.getdropbox.com",       "DropBox",          NDPI_PROTOCOL_DROPBOX, NDPI_PROTOCOL_CATEGORY_CLOUD, NDPI_PROTOCOL_ACCEPTABLE },
-
-  { ".ebay.",                   "eBay",             NDPI_PROTOCOL_EBAY, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE }, /* or FUN */
-  { ".ebay.com",                "eBay",             NDPI_PROTOCOL_EBAY, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-  { ".ebaystatic.com",          "eBay",             NDPI_PROTOCOL_EBAY, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-  { ".ebaydesc.com",            "eBay",             NDPI_PROTOCOL_EBAY, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-  { ".ebayrtm.com",             "eBay",             NDPI_PROTOCOL_EBAY, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-  { ".ebaystratus.com",         "eBay",             NDPI_PROTOCOL_EBAY, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-  { ".ebayimg.com",             "eBay",             NDPI_PROTOCOL_EBAY, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-
-  { "facebook.com",             "Facebook",         NDPI_PROTOCOL_FACEBOOK, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
-  { "fbstatic-a.akamaihd.net",  "Facebook",         NDPI_PROTOCOL_FACEBOOK, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
-  { ".fbcdn.net",               "Facebook",         NDPI_PROTOCOL_FACEBOOK, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
-  { "fbcdn-",                   "Facebook",         NDPI_PROTOCOL_FACEBOOK, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
-  { ".facebook.net",            "Facebook",         NDPI_PROTOCOL_FACEBOOK, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
-
-  { ".speedtest.net",           "Ookla",            NDPI_PROTOCOL_OOKLA, NDPI_PROTOCOL_CATEGORY_NETWORK_TOOL, NDPI_PROTOCOL_SAFE },
-
-  { "drive-thirdparty.",        "GoogleDrive",      NDPI_PROTOCOL_GOOGLE_DRIVE, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
-  { "docs.",                    "GoogleDrive",      NDPI_PROTOCOL_GOOGLE_DRIVE, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".docs.",                   "GoogleDrive",      NDPI_PROTOCOL_GOOGLE_DRIVE, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
-  { "drive.",                   "GoogleDrive",      NDPI_PROTOCOL_GOOGLE_DRIVE, NDPI_PROTOCOL_CATEGORY_CLOUD, NDPI_PROTOCOL_ACCEPTABLE },
-
-  { "android.clients.google.com",   "PlayStore",    NDPI_PROTOCOL_PLAYSTORE, NDPI_PROTOCOL_CATEGORY_SW_UPDATE, NDPI_PROTOCOL_SAFE },
-  { "ggpht.com",                    "PlayStore",    NDPI_PROTOCOL_PLAYSTORE, NDPI_PROTOCOL_CATEGORY_SW_UPDATE, NDPI_PROTOCOL_SAFE },
-
-  { "google.",                  "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-  { ".google.",                 "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-  { ".gstatic.com",             "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-  { ".googlesyndication.com",   "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-  { ".googletagservices.com",   "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".2mdn.net",                "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".doubleclick.net",         "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE }, /* Ads */
-  { "googleads.",               "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
-  { "google-analytics.",        "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-  { "googleusercontent.",       "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
-  { "googleadservices.",        "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
-  { "googleapis.com",           "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
-  { "1e100.net",                "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
-
-  { "maps.google.",             "GoogleMaps",       NDPI_PROTOCOL_GOOGLE_MAPS, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-  { "maps.gstatic.com",         "GoogleMaps",       NDPI_PROTOCOL_GOOGLE_MAPS, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-
-  { ".gmail.",                  "GMail",            NDPI_PROTOCOL_GMAIL, NDPI_PROTOCOL_CATEGORY_MAIL, NDPI_PROTOCOL_ACCEPTABLE },
-  { "mail.google.",             "GMail",            NDPI_PROTOCOL_GMAIL, NDPI_PROTOCOL_CATEGORY_MAIL, NDPI_PROTOCOL_ACCEPTABLE },
-
-  { "mail.outlook.com",         "Hotmail",          NDPI_PROTOCOL_HOTMAIL, NDPI_PROTOCOL_CATEGORY_MAIL, NDPI_PROTOCOL_ACCEPTABLE },
-
-  { ".last.fm",                 "LastFM",           NDPI_PROTOCOL_LASTFM, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-
-  { "msn.com",                  "MSN",              NDPI_PROTOCOL_MSN, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE }, /*News site*/
-
-  { "netflix.com",              "NetFlix",          NDPI_PROTOCOL_NETFLIX, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "nflxext.com",              "NetFlix",          NDPI_PROTOCOL_NETFLIX, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "nflximg.com",              "NetFlix",          NDPI_PROTOCOL_NETFLIX, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "nflximg.net",              "NetFlix",          NDPI_PROTOCOL_NETFLIX, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "nflxvideo.net",            "NetFlix",          NDPI_PROTOCOL_NETFLIX, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-
-  { ".skype.",                  "Skype",            NDPI_PROTOCOL_SKYPE, NDPI_PROTOCOL_CATEGORY_VOIP, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".skypeassets.",            "Skype",            NDPI_PROTOCOL_SKYPE, NDPI_PROTOCOL_CATEGORY_VOIP, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".skypedata.",              "Skype",            NDPI_PROTOCOL_SKYPE, NDPI_PROTOCOL_CATEGORY_VOIP, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".skypeecs-",               "Skype",            NDPI_PROTOCOL_SKYPE, NDPI_PROTOCOL_CATEGORY_VOIP, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".skypeforbusiness.",       "Skype",            NDPI_PROTOCOL_SKYPE, NDPI_PROTOCOL_CATEGORY_VOIP, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".lync.com",                "Skype",            NDPI_PROTOCOL_SKYPE, NDPI_PROTOCOL_CATEGORY_VOIP, NDPI_PROTOCOL_ACCEPTABLE },
-  { "e7768.b.akamaiedge.net",   "Skype",            NDPI_PROTOCOL_SKYPE, NDPI_PROTOCOL_CATEGORY_VOIP, NDPI_PROTOCOL_ACCEPTABLE },
-  { "e4593.dspg.akamaiedge.net","Skype",            NDPI_PROTOCOL_SKYPE, NDPI_PROTOCOL_CATEGORY_VOIP, NDPI_PROTOCOL_ACCEPTABLE },
-  { "e4593.g.akamaiedge.net",   "Skype",            NDPI_PROTOCOL_SKYPE, NDPI_PROTOCOL_CATEGORY_VOIP, NDPI_PROTOCOL_ACCEPTABLE },
-
-  { ".tuenti.com",              "Tuenti",           NDPI_PROTOCOL_TUENTI, NDPI_PROTOCOL_CATEGORY_VOIP, NDPI_PROTOCOL_ACCEPTABLE },
-
-  { ".twttr.com",               "Twitter",          NDPI_PROTOCOL_TWITTER, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
-  { "twitter.",                 "Twitter",          NDPI_PROTOCOL_TWITTER, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
-  { "twimg.com",                "Twitter",          NDPI_PROTOCOL_TWITTER, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
-
-  { ".viber.com",               "Viber",            NDPI_PROTOCOL_VIBER, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".cdn.viber.com",           "Viber",            NDPI_PROTOCOL_VIBER, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_ACCEPTABLE },
-
-  { "wikipedia.",               "Wikipedia",        NDPI_PROTOCOL_WIKIPEDIA, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-  { "wikimedia.",               "Wikipedia",        NDPI_PROTOCOL_WIKIPEDIA, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-  { "mediawiki.",               "Wikipedia",        NDPI_PROTOCOL_WIKIPEDIA, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-  { "wikimediafoundation.",     "Wikipedia",        NDPI_PROTOCOL_WIKIPEDIA, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-
-  { ".whatsapp.",               "WhatsApp",         NDPI_PROTOCOL_WHATSAPP, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_ACCEPTABLE },
-
-  { ".yahoo.",                  "Yahoo",            NDPI_PROTOCOL_YAHOO, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-  { ".yimg.com",                "Yahoo",            NDPI_PROTOCOL_YAHOO, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-  { "yahooapis.",               "Yahoo",            NDPI_PROTOCOL_YAHOO, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
-
-  { "upload.youtube.com",       "YouTubeUpload",    NDPI_PROTOCOL_YOUTUBE_UPLOAD, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "upload.video.google.com",  "YouTubeUpload",    NDPI_PROTOCOL_YOUTUBE_UPLOAD, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "youtube.",                 "YouTube",          NDPI_PROTOCOL_YOUTUBE, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "youtu.be.",                "YouTube",          NDPI_PROTOCOL_YOUTUBE, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "yt3.ggpht.com",            "YouTube",          NDPI_PROTOCOL_YOUTUBE, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { ".googlevideo.com",         "YouTube",          NDPI_PROTOCOL_YOUTUBE, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { ".ytimg.com",               "YouTube",          NDPI_PROTOCOL_YOUTUBE, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "youtube-nocookie.",        "YouTube",          NDPI_PROTOCOL_YOUTUBE, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "ggpht.com",                "YouTube",          NDPI_PROTOCOL_YOUTUBE, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "googleusercontent.com",    "YouTube",          NDPI_PROTOCOL_YOUTUBE, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-
-  { ".vevo.com",                "Vevo",             NDPI_PROTOCOL_VEVO,    NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-
-  { ".spotify.",                "Spotify",          NDPI_PROTOCOL_SPOTIFY, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "audio-fa.scdn.co",         "Spotify",          NDPI_PROTOCOL_SPOTIFY, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { ".push.apple.com", NULL, "\\.push\\.apple" TLD,                   "ApplePush",        NDPI_PROTOCOL_APPLE_PUSH, NDPI_PROTOCOL_CATEGORY_CLOUD, NDPI_PROTOCOL_SAFE },
+  { ".apple-dns.net", NULL, "\\.apple-dns" TLD,                       "Apple",            NDPI_PROTOCOL_APPLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+  { ".mzstatic.com", NULL, "\\.mzstatic" TLD,                         "Apple",            NDPI_PROTOCOL_APPLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+  { ".aaplimg.com", NULL, "\\.aaplimg" TLD,                           "Apple",            NDPI_PROTOCOL_APPLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+  { "aaplimg.com", NULL, "aaplimg" TLD,                               "Apple",            NDPI_PROTOCOL_APPLE, NDPI_PROTOCOL_CATEGORY_SW_UPDATE, NDPI_PROTOCOL_SAFE },
+  { ".apple.com", NULL, "\\.apple" TLD,                               "Apple",            NDPI_PROTOCOL_APPLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+  { ".icloud.com", NULL, "\\.icloud\\.com",                           "AppleiCloud",      NDPI_PROTOCOL_APPLE_ICLOUD, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
+  { "iosapps.itunes.apple.com", NULL, "iosapps\\.itunes\\.apple" TLD, "AppleStore",       NDPI_PROTOCOL_APPLESTORE, NDPI_PROTOCOL_CATEGORY_SW_UPDATE, NDPI_PROTOCOL_SAFE }, /* iOS */
+  { "osxapps.itunes.apple.com", NULL, "osxapps\\.itunes\\.apple" TLD, "AppleStore",       NDPI_PROTOCOL_APPLESTORE, NDPI_PROTOCOL_CATEGORY_SW_UPDATE, NDPI_PROTOCOL_SAFE }, /* MacOS */
+  { "buy.itunes.apple.com", NULL, "buy\\.itunes\\.apple" TLD,         "AppleStore",       NDPI_PROTOCOL_APPLESTORE, NDPI_PROTOCOL_CATEGORY_SW_UPDATE, NDPI_PROTOCOL_SAFE },
+  { "su.itunes.apple.com", NULL, "su\\.itunes\\.apple" TLD,           "AppleStore",       NDPI_PROTOCOL_APPLESTORE, NDPI_PROTOCOL_CATEGORY_SW_UPDATE, NDPI_PROTOCOL_SAFE },
+  { "se.itunes.apple.com", NULL, "se\\.itunes\\.apple" TLD,           "AppleStore",       NDPI_PROTOCOL_APPLESTORE, NDPI_PROTOCOL_CATEGORY_SW_UPDATE, NDPI_PROTOCOL_SAFE },
+  { "myapp.itunes.apple.com", NULL, "myapp\\.itunes\\.apple" TLD,     "AppleStore",       NDPI_PROTOCOL_APPLESTORE, NDPI_PROTOCOL_CATEGORY_SW_UPDATE, NDPI_PROTOCOL_SAFE },
+  { "swscan.apple.com", NULL, "swscan\\.apple" TLD,                   "AppleStore",       NDPI_PROTOCOL_APPLESTORE, NDPI_PROTOCOL_CATEGORY_SW_UPDATE, NDPI_PROTOCOL_SAFE },
+  { "itunes-apple.com", NULL, "itunes-apple" TLD,                     "AppleStore",       NDPI_PROTOCOL_APPLESTORE, NDPI_PROTOCOL_CATEGORY_SW_UPDATE, NDPI_PROTOCOL_SAFE },
+  { "itunes.apple.com", NULL, "itunes\\.apple" TLD,                   "AppleiTunes",      NDPI_PROTOCOL_APPLE_ITUNES, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+  { "tlnk.io", NULL, "tlnk" TLD,         	                      "AppleiTunes",      NDPI_PROTOCOL_APPLE_ITUNES, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
 
 
-  { ".pandora.com",             "Pandora",          NDPI_PROTOCOL_PANDORA,  NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { ".cnn.c", NULL, "\\.cnn" TLD,           "CNN",              NDPI_PROTOCOL_CNN, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+  { ".cnn.net", NULL, NULL,                 "CNN",              NDPI_PROTOCOL_CNN, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
 
-  { ".torproject.org",          "Tor",              NDPI_PROTOCOL_TOR, NDPI_PROTOCOL_CATEGORY_VPN, NDPI_PROTOCOL_POTENTIALLY_DANGEROUS },
+  { ".dropbox.com", NULL, "\\.dropbox" TLD,             "DropBox",          NDPI_PROTOCOL_DROPBOX, NDPI_PROTOCOL_CATEGORY_CLOUD, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".dropboxstatic.com", NULL, "\\.dropboxstatic" TLD, "DropBox",          NDPI_PROTOCOL_DROPBOX, NDPI_PROTOCOL_CATEGORY_CLOUD, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".dropbox-dns.com", NULL, "\\.dropbox-dns" TLD,     "DropBox",          NDPI_PROTOCOL_DROPBOX, NDPI_PROTOCOL_CATEGORY_CLOUD, NDPI_PROTOCOL_ACCEPTABLE },
+  { "log.getdropbox.com", NULL, "log\\.getdropbox" TLD, "DropBox",          NDPI_PROTOCOL_DROPBOX, NDPI_PROTOCOL_CATEGORY_CLOUD, NDPI_PROTOCOL_ACCEPTABLE },
 
-  { ".kakao.com",               "KakaoTalk",        NDPI_PROTOCOL_KAKAOTALK, NDPI_PROTOCOL_CATEGORY_VOIP, NDPI_PROTOCOL_ACCEPTABLE },
-
-  { "ttvnw.net",                "Twitch",           NDPI_PROTOCOL_TWITCH, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "static-cdn.jtvnw.net",     "Twitch",           NDPI_PROTOCOL_TWITCH, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "www-cdn.jtvnw.net",        "Twitch",           NDPI_PROTOCOL_TWITCH, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-
-  { "quickplay.com",            "QuickPlay",        NDPI_PROTOCOL_QUICKPLAY, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-
-  { ".qq.com",                  "QQ",               NDPI_PROTOCOL_QQ, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
-  { ".gtimg.com",               "QQ",               NDPI_PROTOCOL_QQ, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
-
-  { ".weibo.com",               "Sina(Weibo)",      NDPI_PROTOCOL_SINA, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
-  { ".sinaimg.cn",              "Sina",             NDPI_PROTOCOL_SINA, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
-  { ".sinajs.cn",               "Sina",             NDPI_PROTOCOL_SINA, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
-  { ".sina.cn",                 "Sina",             NDPI_PROTOCOL_SINA, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
-  { ".sina.com.cn",             "Sina",             NDPI_PROTOCOL_SINA, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
-
-  /* https://support.cipafilter.com/index.php?/Knowledgebase/Article/View/117/0/snapchat---how-to-block */
-  { "feelinsonice.appspot.com",     "Snapchat",     NDPI_PROTOCOL_SNAPCHAT, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
-  { "feelinsonice-hrd.appspot.com", "Snapchat",     NDPI_PROTOCOL_SNAPCHAT, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
-  { "feelinsonice.com",             "Snapchat",     NDPI_PROTOCOL_SNAPCHAT, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
-  { ".snapchat.",                   "Snapchat",     NDPI_PROTOCOL_SNAPCHAT, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
-  { ".snapads.",                    "Snapchat",     NDPI_PROTOCOL_SNAPCHAT, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
+  { ".ebay.", NULL, "\\.ebay" TLD,                      "eBay",             NDPI_PROTOCOL_EBAY, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },  /* or FUN */
+  { ".ebay.com", NULL, NULL,                            "eBay",             NDPI_PROTOCOL_EBAY, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+  { ".ebaystatic.com", NULL, "\\.ebaystatic" TLD,       "eBay",             NDPI_PROTOCOL_EBAY, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+  { ".ebaydesc.com", NULL, "\\.ebaydesc" TLD,           "eBay",             NDPI_PROTOCOL_EBAY, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+  { ".ebayrtm.com", NULL, "\\.ebayrtm" TLD,             "eBay",             NDPI_PROTOCOL_EBAY, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+  { ".ebaystratus.com", NULL, "\\.ebaystratus" TLD,     "eBay",             NDPI_PROTOCOL_EBAY, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+  { ".ebayimg.com", NULL, "\\.ebayimg" TLD,             "eBay",             NDPI_PROTOCOL_EBAY, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
 
   /* Detected "instagram.c10r.facebook.com". Omitted "*amazonaws.com" and "*facebook.com" CDNs e.g. "ig-telegraph-shv-04-frc3.facebook.com" */
-  { ".cdninstagram.com",        "Instagram",        NDPI_PROTOCOL_INSTAGRAM, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
-  { "instagram.",               "Instagram",        NDPI_PROTOCOL_INSTAGRAM, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
-  { ".instagram.",              "Instagram",        NDPI_PROTOCOL_INSTAGRAM, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
-  { "igcdn-photos-",            "Instagram",        NDPI_PROTOCOL_INSTAGRAM, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
-  { "instagramimages-",         "Instagram",        NDPI_PROTOCOL_INSTAGRAM, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
-  { "instagramstatic-",         "Instagram",        NDPI_PROTOCOL_INSTAGRAM, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
+  { ".instagram.", NULL, "\\.instagram" TLD,            "Instagram",        NDPI_PROTOCOL_INSTAGRAM, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
+  { "instagram.", NULL, "instagram" TLD,                "Instagram",        NDPI_PROTOCOL_INSTAGRAM, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
+  { ".cdninstagram.com", NULL, "\\.cdninstagram" TLD,   "Instagram",        NDPI_PROTOCOL_INSTAGRAM, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
 
-  { ".waze.com",                "Waze",             NDPI_PROTOCOL_WAZE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
+  { "igcdn-photos-", NULL, "igcdn-photos-",             "Instagram",        NDPI_PROTOCOL_INSTAGRAM, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
+  { "instagramimages-", NULL, "instagramimages-",       "Instagram",        NDPI_PROTOCOL_INSTAGRAM, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
+  { "instagramstatic-", NULL, "instagramstatic-",       "Instagram",        NDPI_PROTOCOL_INSTAGRAM, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
 
-  { ".deezer.com",              "Deezer",           NDPI_PROTOCOL_DEEZER, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "facebook.com", NULL, "facebook" TLD,                         "Facebook",         NDPI_PROTOCOL_FACEBOOK, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
+  { "fbstatic-a.akamaihd.net", NULL, "fbstatic-a\\.akamaihd" TLD, "Facebook",         NDPI_PROTOCOL_FACEBOOK, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
+  { ".fbcdn.net", NULL, "\\.fbcdn" TLD,                           "Facebook",         NDPI_PROTOCOL_FACEBOOK, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
+  { "fbcdn-", NULL, "fbcdn-",                                     "Facebook",         NDPI_PROTOCOL_FACEBOOK, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
+  { ".facebook.net", NULL, "\\.facebook" TLD,                     "Facebook",         NDPI_PROTOCOL_FACEBOOK, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
+  { ".fbsbx.com", NULL, "\\.fbsbx" TLD,                           "Facebook",         NDPI_PROTOCOL_FACEBOOK, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
 
-  { ".microsoft.com",           "Microsoft",        NDPI_PROTOCOL_MICROSOFT, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-  { "i-msdn.sec.s-msft.com",    "Microsoft",        NDPI_PROTOCOL_MICROSOFT, NDPI_PROTOCOL_CATEGORY_SYSTEM_OS, NDPI_PROTOCOL_ACCEPTABLE },
-  { "i2-msdn.sec.s-msft.com",   "Microsoft",        NDPI_PROTOCOL_MICROSOFT, NDPI_PROTOCOL_CATEGORY_SYSTEM_OS, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".webtrends.com",           "Microsoft",        NDPI_PROTOCOL_MICROSOFT, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".msecnd.net",              "Microsoft",        NDPI_PROTOCOL_MICROSOFT, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
-  { "bing.com",                 "Microsoft",        NDPI_PROTOCOL_MICROSOFT, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
-  { ".visualstudio.com",        "Microsoft",        NDPI_PROTOCOL_MICROSOFT, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_SAFE },
+  { "speedtest.", NULL, "speedtest\\." TLD,                       "Ookla",            NDPI_PROTOCOL_OOKLA, NDPI_PROTOCOL_CATEGORY_NETWORK, NDPI_PROTOCOL_SAFE },
+  { ".ooklaserver.net", NULL, "\\.ooklaserver\\.net" TLD,         "Ookla",            NDPI_PROTOCOL_OOKLA, NDPI_PROTOCOL_CATEGORY_NETWORK, NDPI_PROTOCOL_SAFE },
 
-  { "bn1301.storage.live.com",      "MS_OneDrive",  NDPI_PROTOCOL_MS_ONE_DRIVE,NDPI_PROTOCOL_CATEGORY_CLOUD,  NDPI_PROTOCOL_ACCEPTABLE },
-  { "*.gateway.messenger.live.com", "MS_OneDrive",  NDPI_PROTOCOL_MS_ONE_DRIVE, NDPI_PROTOCOL_CATEGORY_CLOUD, NDPI_PROTOCOL_ACCEPTABLE },
-  { "skyapi.live.net",              "MS_OneDrive",  NDPI_PROTOCOL_MS_ONE_DRIVE, NDPI_PROTOCOL_CATEGORY_CLOUD, NDPI_PROTOCOL_ACCEPTABLE },
-  { "d.docs.live.net",              "MS_OneDrive",  NDPI_PROTOCOL_MS_ONE_DRIVE, NDPI_PROTOCOL_CATEGORY_CLOUD, NDPI_PROTOCOL_ACCEPTABLE },
+  { "ntop.org", NULL, "ntop\\.org$",                     "ntop",         NDPI_PROTOCOL_NTOP, NDPI_PROTOCOL_CATEGORY_NETWORK, NDPI_PROTOCOL_SAFE },
 
-  { "update.microsoft.com",     "WindowsUpdate",    NDPI_PROTOCOL_WINDOWS_UPDATE, NDPI_PROTOCOL_CATEGORY_SW_UPDATE, NDPI_PROTOCOL_SAFE },
-  { ".windowsupdate.com",       "WindowsUpdate",    NDPI_PROTOCOL_WINDOWS_UPDATE, NDPI_PROTOCOL_CATEGORY_SW_UPDATE, NDPI_PROTOCOL_SAFE },
+  { "docs.googleusercontent.com", NULL, "docs.googleusercontent" TLD,   "GoogleDocs",     NDPI_PROTOCOL_GOOGLE_DOCS, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_ACCEPTABLE },
+  { "docs.google.com",            NULL, "docs.google" TLD,              "GoogleDocs",     NDPI_PROTOCOL_GOOGLE_DOCS, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_ACCEPTABLE },
 
-  { "worldofwarcraft.com",      "WorldOfWarcraft",  NDPI_PROTOCOL_WORLDOFWARCRAFT, NDPI_PROTOCOL_CATEGORY_GAME, NDPI_PROTOCOL_FUN },
+  { "drive-thirdparty.googleusercontent.com", NULL, "drive-thirdparty\\.googleusercontent" TLD,  "GoogleDrive",      NDPI_PROTOCOL_GOOGLE_DRIVE, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { "drive.google.com",                       NULL, "drive.google" TLD,                          "GoogleDrive",      NDPI_PROTOCOL_GOOGLE_DRIVE, NDPI_PROTOCOL_CATEGORY_CLOUD, NDPI_PROTOCOL_ACCEPTABLE },
 
-  { ".anchorfree.",             "HotspotShield",    NDPI_PROTOCOL_HOTSPOT_SHIELD, NDPI_PROTOCOL_CATEGORY_VPN, NDPI_PROTOCOL_POTENTIALLY_DANGEROUS },
-  { "hotspotshield.com",        "HotspotShield",    NDPI_PROTOCOL_HOTSPOT_SHIELD, NDPI_PROTOCOL_CATEGORY_VPN, NDPI_PROTOCOL_POTENTIALLY_DANGEROUS },
+  { "android.clients.google.com", NULL, "android\\.clients\\.google" TLD,   "PlayStore",    NDPI_PROTOCOL_PLAYSTORE, NDPI_PROTOCOL_CATEGORY_SW_UPDATE, NDPI_PROTOCOL_SAFE },
 
-  { ".webex.com",               "Webex",            NDPI_PROTOCOL_WEBEX, NDPI_PROTOCOL_CATEGORY_VOIP, NDPI_PROTOCOL_ACCEPTABLE },
+  /*
+    See https://better.fyi/trackers/
 
-  { ".ocsdomain.com",           "OCS",              NDPI_PROTOCOL_OCS, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "ocs.fr",                   "OCS",              NDPI_PROTOCOL_OCS, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { ".ocs.fr",                  "OCS",              NDPI_PROTOCOL_OCS, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { ".labgency.ws",             "OCS",              NDPI_PROTOCOL_OCS, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+    DoubleClick by Google (2mdn.net)
+    DoubleClick by Google (doubleclick.net)
+    DoubleClick by Google, Inc. (dmtry.com)
+    Google AdSense by Google (google.com)
+    Google AdSense by Google (google.se)
+    Google AdSense by Google (googleadservices.com)
+    Google Analytics by Google (google-analytics.com)
+    Google APIs by Google (ajax.googleapis.com)
+    Google Fonts by Google (fonts.googleapis.com)
+    Google Interactive Media Ads (imasdk.googleapis.com)
+    Google Syndication (googlesyndication.com)
+    Google Tag Manager by Google (googletagmanager.com)
+    Google Tag Manager by Google (googletagservices.com)
+    Gstatic by Google (gstatic.com)
+  */
 
-  { ".iflix.com",               "IFLIX",            NDPI_PROTOCOL_IFLIX, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { ".app.iflixcorp.com",       "IFLIX",            NDPI_PROTOCOL_IFLIX, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { ".images.iflixassets.com",  "IFLIX",            NDPI_PROTOCOL_IFLIX, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
 
-  { "crl.microsoft.com",            "Office365",    NDPI_PROTOCOL_OFFICE_365, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
-  { "evsecure-ocsp.verisign.com",   "Office365",    NDPI_PROTOCOL_OFFICE_365, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
-  { "evsecure-aia.verisign.com",    "Office365",    NDPI_PROTOCOL_OFFICE_365, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
-  { "evsecure-crl.verisign.com",    "Office365",    NDPI_PROTOCOL_OFFICE_365, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".omniroot.com",                "Office365",    NDPI_PROTOCOL_OFFICE_365, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".microsoftonline.com",         "Office365",    NDPI_PROTOCOL_OFFICE_365, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".office365.com",               "Office365",    NDPI_PROTOCOL_OFFICE_365, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".office.com",                  "Office365",    NDPI_PROTOCOL_OFFICE_365, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".msocsp.com",                  "Office365",    NDPI_PROTOCOL_OFFICE_365, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".msocdn.com",                  "Office365",    NDPI_PROTOCOL_OFFICE_365, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+
+  /* Google Advertisements */
+  { ".googlesyndication.com", NULL, "\\.googlesyndication" TLD,   "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_TRACKER_ADS },
+  { "googleads.", NULL, "googleads\\.",                           "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_TRACKER_ADS },
+  { ".doubleclick.net", NULL, "\\.doubleclick" TLD,               "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_TRACKER_ADS },
+  { "googleadservices.", NULL, "googleadservices\\.",             "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_TRACKER_ADS },
+  { ".2mdn.net", NULL, "\\.2mdn" TLD,                             "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_TRACKER_ADS },
+  { ".dmtry.com", NULL, "\\.dmtry" TLD,                           "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_TRACKER_ADS },
+  { "google-analytics.", NULL, "google-analytics\\.",             "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_TRACKER_ADS },
+  { "gtv1.com", NULL, "gtv1" TLD,                                 "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
+
+  /* Google Hangout */
+  { "images2-hangout-opensocial.googleusercontent.com", NULL, "images2-hangout-opensocial\\.googleusercontent" TLD, "GoogleHangout", NDPI_PROTOCOL_HANGOUT, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_ACCEPTABLE },
+
+  /* Google Services */
+  { "googleapis.com", NULL, "googleapis" TLD,                     "GoogleServices",   NDPI_PROTOCOL_GOOGLE_SERVICES, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".googletagservices.com", NULL, "\\.googletagservices" TLD,   "GoogleServices",   NDPI_PROTOCOL_GOOGLE_SERVICES, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
+  { "mtalk.google.com", NULL, "mtalk\\.google" TLD,               "GoogleServices",   NDPI_PROTOCOL_GOOGLE_SERVICES, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
+
+  { "plus.google.com", NULL, "plus\\.google" TLD,                 "GooglePlus",       NDPI_PROTOCOL_GOOGLE_PLUS, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
+  { "plus.url.google.com", NULL, "plus\\.url\\.google" TLD,       "GooglePlus",       NDPI_PROTOCOL_GOOGLE_PLUS, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
+
+  /* http://check.googlezip.net/connect [check browser connectivity] */
+  { ".googlezip.net", NULL, "\\.googlezip" TLD,                   "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+
+  { "googleusercontent.com", NULL, "googleusercontent" TLD,       "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
+  { "1e100.net", NULL, "1e100" TLD,                               "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
+
+  { "maps.google.", NULL, "maps\\.google" TLD,                    "GoogleMaps",       NDPI_PROTOCOL_GOOGLE_MAPS, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+  { "maps.gstatic.com", NULL, "maps\\.gstatic" TLD,               "GoogleMaps",       NDPI_PROTOCOL_GOOGLE_MAPS, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+
+  { ".gmail.", NULL, "\\.gmail" TLD,                              "GMail",            NDPI_PROTOCOL_GMAIL, NDPI_PROTOCOL_CATEGORY_MAIL, NDPI_PROTOCOL_ACCEPTABLE },
+  { "mail.google.", NULL, "mail\\.google" TLD,                    "GMail",            NDPI_PROTOCOL_GMAIL, NDPI_PROTOCOL_CATEGORY_MAIL, NDPI_PROTOCOL_ACCEPTABLE },
+
+  { "google.", NULL, "google" TLD,                                "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+  { ".google.", NULL, NULL,                                       "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+  { ".gstatic.com", NULL, "\\.gstatic" TLD,                       "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+  { "ggpht.com", NULL, "ggpht" TLD,                               "Google",           NDPI_PROTOCOL_GOOGLE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+
+  { "mail.outlook.com", NULL, "mail\\.outlook" TLD,               "Hotmail",          NDPI_PROTOCOL_HOTMAIL, NDPI_PROTOCOL_CATEGORY_MAIL, NDPI_PROTOCOL_ACCEPTABLE },
+
+  { ".last.fm", NULL, "\\.last\\.fm$",                            "LastFM",           NDPI_PROTOCOL_LASTFM, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+
+  { "msn.com", NULL, "msn" TLD,                                   "MSN",              NDPI_PROTOCOL_MSN, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE }, /* News site */
+
+  { "netflix.com", NULL, "netflix" TLD,                           "NetFlix",          NDPI_PROTOCOL_NETFLIX, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+  { "nflxext.com", NULL, "nflxext" TLD,                           "NetFlix",          NDPI_PROTOCOL_NETFLIX, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+  { "nflximg.com", NULL, "nflximg" TLD,                           "NetFlix",          NDPI_PROTOCOL_NETFLIX, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+  { "nflximg.net", NULL, "nflximg" TLD,                           "NetFlix",          NDPI_PROTOCOL_NETFLIX, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+  { "nflxvideo.net", NULL, "nflxvideo" TLD,                       "NetFlix",          NDPI_PROTOCOL_NETFLIX, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+  { "nflxso.net", NULL, "nflxso" TLD,                             "NetFlix",          NDPI_PROTOCOL_NETFLIX, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+
+  { ".skype.", NULL, "\\.skype\\.",                                    "Skype",            NDPI_PROTOCOL_SKYPE, NDPI_PROTOCOL_CATEGORY_VOIP, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".skypeassets.", NULL, "\\.skypeassets\\.",                        "Skype",            NDPI_PROTOCOL_SKYPE, NDPI_PROTOCOL_CATEGORY_VOIP, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".skypedata.", NULL, "\\.skypedata\\.",                            "Skype",            NDPI_PROTOCOL_SKYPE, NDPI_PROTOCOL_CATEGORY_VOIP, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".skypeecs-", NULL, "\\.skypeecs-",                                "Skype",            NDPI_PROTOCOL_SKYPE, NDPI_PROTOCOL_CATEGORY_VOIP, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".skypeforbusiness.", NULL, "\\.skypeforbusiness\\.",              "Skype",            NDPI_PROTOCOL_SKYPE, NDPI_PROTOCOL_CATEGORY_VOIP, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".lync.com", NULL, "\\.lync" TLD,                                  "Skype",            NDPI_PROTOCOL_SKYPE, NDPI_PROTOCOL_CATEGORY_VOIP, NDPI_PROTOCOL_ACCEPTABLE },
+  { "e7768.b.akamaiedge.net", NULL, "e7768\\.b\\.akamaiedge" TLD,      "Skype",            NDPI_PROTOCOL_SKYPE, NDPI_PROTOCOL_CATEGORY_VOIP, NDPI_PROTOCOL_ACCEPTABLE },
+  { "e4593.dspg.akamaiedge.net", NULL, "e4593\\.dspg\\.akamaiedge" TLD,"Skype",            NDPI_PROTOCOL_SKYPE, NDPI_PROTOCOL_CATEGORY_VOIP, NDPI_PROTOCOL_ACCEPTABLE },
+  { "e4593.g.akamaiedge.net", NULL, "e4593\\.g\\.akamaiedge" TLD,      "Skype",            NDPI_PROTOCOL_SKYPE, NDPI_PROTOCOL_CATEGORY_VOIP, NDPI_PROTOCOL_ACCEPTABLE },
+
+  { ".tuenti.com", NULL, "\\.tuenti" TLD,                              "Tuenti",           NDPI_PROTOCOL_TUENTI, NDPI_PROTOCOL_CATEGORY_VOIP, NDPI_PROTOCOL_ACCEPTABLE },
+
+  { ".twttr.com", NULL, "\\.twttr" TLD,                                "Twitter",          NDPI_PROTOCOL_TWITTER, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
+  { "twitter.", NULL, "twitter" TLD,                                   "Twitter",          NDPI_PROTOCOL_TWITTER, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
+  { "twimg.com", NULL, "twimg" TLD,                                    "Twitter",          NDPI_PROTOCOL_TWITTER, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
+
+  { ".viber.com", NULL, "\\.viber" TLD,                                "Viber",            NDPI_PROTOCOL_VIBER, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".cdn.viber.com", NULL, NULL,                                      "Viber",            NDPI_PROTOCOL_VIBER, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".viber.it", NULL, NULL,                                           "Viber",            NDPI_PROTOCOL_VIBER, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_ACCEPTABLE },
+
+  { "wikipedia.", NULL, "wikipedia" TLD,                               "Wikipedia",        NDPI_PROTOCOL_WIKIPEDIA, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+  { "wikimedia.", NULL, "wikimedia" TLD,                               "Wikipedia",        NDPI_PROTOCOL_WIKIPEDIA, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+  { "mediawiki.", NULL, "mediawiki" TLD,                               "Wikipedia",        NDPI_PROTOCOL_WIKIPEDIA, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+  { "wikimediafoundation.", NULL, "wikimediafoundation" TLD,           "Wikipedia",        NDPI_PROTOCOL_WIKIPEDIA, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+
+  { "mmg-fna.whatsapp.net", NULL, "mmg-fna\\.whatsapp" TLD,            "WhatsAppFiles",    NDPI_PROTOCOL_WHATSAPP_FILES, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".whatsapp.", NULL, "\\.whatsapp" TLD,                             "WhatsApp",         NDPI_PROTOCOL_WHATSAPP, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_ACCEPTABLE },
+
+  { ".yahoo.", NULL, "\\.yahoo" TLD,                                   "Yahoo",            NDPI_PROTOCOL_YAHOO, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+  { ".yimg.com", NULL, "\\.yimg" TLD,                                  "Yahoo",            NDPI_PROTOCOL_YAHOO, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+  { "yahooapis.", NULL, "yahooapis" TLD,                               "Yahoo",            NDPI_PROTOCOL_YAHOO, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
+
+  { "upload.youtube.com", NULL, "upload\\.youtube" TLD,                "YouTubeUpload",    NDPI_PROTOCOL_YOUTUBE_UPLOAD, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "upload.video.google.com", NULL, "upload\\.video\\.google" TLD,    "YouTubeUpload",    NDPI_PROTOCOL_YOUTUBE_UPLOAD, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "youtubei.googleapis.com", NULL, "youtubei\\.googleapis" TLD,      "YouTube",          NDPI_PROTOCOL_YOUTUBE, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "youtube.", NULL, "youtube" TLD,                                   "YouTube",          NDPI_PROTOCOL_YOUTUBE, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "youtu.be.", NULL, "youtu\\.be" TLD,                               "YouTube",          NDPI_PROTOCOL_YOUTUBE, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "yt3.ggpht.com", NULL, "yt3\\.ggpht" TLD,                          "YouTube",          NDPI_PROTOCOL_YOUTUBE, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { ".googlevideo.com", NULL, "\\.googlevideo" TLD,                    "YouTube",          NDPI_PROTOCOL_YOUTUBE, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { ".ytimg.com", NULL, "\\.ytimg" TLD,                                "YouTube",          NDPI_PROTOCOL_YOUTUBE, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "youtube-nocookie.", NULL, "youtube-nocookie" TLD,                 "YouTube",          NDPI_PROTOCOL_YOUTUBE, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+
+  { ".vevo.com", NULL, "\\.vevo" TLD,                                  "Vevo",             NDPI_PROTOCOL_VEVO,    NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+
+  { ".spotify.", NULL, "\\.spotify" TLD,                               "Spotify",          NDPI_PROTOCOL_SPOTIFY, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "audio-fa.scdn.co", NULL, "audio-fa\\.scdn" TLD,                   "Spotify",          NDPI_PROTOCOL_SPOTIFY, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+
+  { "edge-mqtt.facebook.com", NULL, "edge-mqtt\\.facebook" TLD,        "Messenger",        NDPI_PROTOCOL_MESSENGER, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
+  { "messenger.com", NULL, "messenger\\.com" TLD,                      "Messenger",        NDPI_PROTOCOL_MESSENGER, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
+
+  { ".pandora.com", NULL, "\\.pandora" TLD,                            "Pandora",          NDPI_PROTOCOL_PANDORA,  NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+
+  { ".torproject.org", NULL, "\\.torproject\\.org$",                   "Tor",              NDPI_PROTOCOL_TOR, NDPI_PROTOCOL_CATEGORY_VPN, NDPI_PROTOCOL_POTENTIALLY_DANGEROUS },
+
+  { ".kakao.com", NULL, "\\.kakao" TLD,                                "KakaoTalk",        NDPI_PROTOCOL_KAKAOTALK, NDPI_PROTOCOL_CATEGORY_VOIP, NDPI_PROTOCOL_ACCEPTABLE },
+
+  { "ttvnw.net", NULL, "ttvnw" TLD,                                    "Twitch",           NDPI_PROTOCOL_TWITCH, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "static-cdn.jtvnw.net", NULL, "static-cdn\\.jtvnw" TLD,            "Twitch",           NDPI_PROTOCOL_TWITCH, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "www-cdn.jtvnw.net", NULL, "www-cdn\\.jtvnw" TLD,                  "Twitch",           NDPI_PROTOCOL_TWITCH, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+
+  { ".qq.com", NULL, "\\.qq" TLD,                                      "QQ",               NDPI_PROTOCOL_QQ, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
+  { ".gtimg.com", NULL, "\\.gtimg" TLD,                                "QQ",               NDPI_PROTOCOL_QQ, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
+
+  { ".weibo.com", NULL, "\\.weibo" TLD,                                "Sina(Weibo)",      NDPI_PROTOCOL_SINA, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
+  { ".weibo.cn", NULL, NULL,                                           "Sina(Weibo)",      NDPI_PROTOCOL_SINA, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
+  { ".sinaimg.cn", NULL, "\\.sinaimg" TLD,                             "Sina",             NDPI_PROTOCOL_SINA, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
+  { ".sinajs.cn", NULL, "\\.sinajs" TLD,                               "Sina",             NDPI_PROTOCOL_SINA, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
+  { ".sina.cn", NULL, "\\.sina" TLD,                                   "Sina",             NDPI_PROTOCOL_SINA, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
+  { ".sina.com.cn", NULL, "\\.sina\\.com\\.cn$",                       "Sina",             NDPI_PROTOCOL_SINA, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
+
+  /* https://support.cipafilter.com/index.php?/Knowledgebase/Article/View/117/0/snapchat---how-to-block */
+  { "feelinsonice.appspot.com", NULL, "\\.appspot" TLD,                     "Snapchat",     NDPI_PROTOCOL_SNAPCHAT, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
+  { "feelinsonice-hrd.appspot.com", NULL, "feelinsonice-hrd\\.appspot" TLD, "Snapchat",     NDPI_PROTOCOL_SNAPCHAT, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
+  { "feelinsonice.com", NULL, "\\.feelsonice" TLD,                          "Snapchat",     NDPI_PROTOCOL_SNAPCHAT, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
+  { ".snapchat.", NULL, "\\.snapchat" TLD,                                  "Snapchat",     NDPI_PROTOCOL_SNAPCHAT, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
+  { ".snapads.", NULL, "\\.snapads" TLD,                                    "Snapchat",     NDPI_PROTOCOL_SNAPCHAT, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
+
+  { ".waze.com", NULL, "\\.waze" TLD,                                  "Waze",             NDPI_PROTOCOL_WAZE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
+
+  { ".deezer.com", NULL, "\\.deezer" TLD,                              "Deezer",           NDPI_PROTOCOL_DEEZER, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+
+  { ".microsoft.com", NULL, "\\.microsoft" TLD,                        "Microsoft",        NDPI_PROTOCOL_MICROSOFT, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+  { "i-msdn.sec.s-msft.com", NULL, "i-msdn.sec\\.s-msft" TLD,          "Microsoft",        NDPI_PROTOCOL_MICROSOFT, NDPI_PROTOCOL_CATEGORY_SYSTEM_OS, NDPI_PROTOCOL_ACCEPTABLE },
+  { "i2-msdn.sec.s-msft.com", NULL, "i2-msdn\\.sec\\.s-msft" TLD,      "Microsoft",        NDPI_PROTOCOL_MICROSOFT, NDPI_PROTOCOL_CATEGORY_SYSTEM_OS, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".webtrends.com", NULL, "\\.webtrends" TLD,                        "Microsoft",        NDPI_PROTOCOL_MICROSOFT, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".msecnd.net", NULL, "\\.msecnd" TLD,                              "Microsoft",        NDPI_PROTOCOL_MICROSOFT, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
+  { "bing.com", NULL, "bing" TLD,                                      "Microsoft",        NDPI_PROTOCOL_MICROSOFT, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+  { ".visualstudio.com", NULL, "\\.visualstudio" TLD,                  "Microsoft",        NDPI_PROTOCOL_MICROSOFT, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_SAFE },
+  { "login.live.com", NULL, "login\\.live" TLD,                        "Microsoft",        NDPI_PROTOCOL_MICROSOFT, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_SAFE },
+
+  { "bn1301.storage.live.com", NULL, "bn1301\\.storage\\.live" TLD,               "MS_OneDrive",  NDPI_PROTOCOL_MS_ONE_DRIVE,NDPI_PROTOCOL_CATEGORY_CLOUD,  NDPI_PROTOCOL_ACCEPTABLE },
+  { "*.gateway.messenger.live.com", NULL, "\\*\\.gateway\\.messenger\\.live" TLD, "MS_OneDrive",  NDPI_PROTOCOL_MS_ONE_DRIVE, NDPI_PROTOCOL_CATEGORY_CLOUD, NDPI_PROTOCOL_ACCEPTABLE },
+  { "skyapi.live.net", NULL, "skyapi\\.live" TLD,                                 "MS_OneDrive",  NDPI_PROTOCOL_MS_ONE_DRIVE, NDPI_PROTOCOL_CATEGORY_CLOUD, NDPI_PROTOCOL_ACCEPTABLE },
+  { "d.docs.live.net", NULL, "d\\.docs\\.live" TLD,                               "MS_OneDrive",  NDPI_PROTOCOL_MS_ONE_DRIVE, NDPI_PROTOCOL_CATEGORY_CLOUD, NDPI_PROTOCOL_ACCEPTABLE },
+  { "onedrive.live.com", NULL, "onedrive\\.live" TLD,                             "MS_OneDrive",  NDPI_PROTOCOL_MS_ONE_DRIVE, NDPI_PROTOCOL_CATEGORY_CLOUD, NDPI_PROTOCOL_ACCEPTABLE },
+
+  { "update.microsoft.com", NULL, "update\\.microsoft" TLD,            "WindowsUpdate",    NDPI_PROTOCOL_WINDOWS_UPDATE, NDPI_PROTOCOL_CATEGORY_SW_UPDATE, NDPI_PROTOCOL_SAFE },
+  { ".windowsupdate.com", NULL, "\\.windowsupdate" TLD,                "WindowsUpdate",    NDPI_PROTOCOL_WINDOWS_UPDATE, NDPI_PROTOCOL_CATEGORY_SW_UPDATE, NDPI_PROTOCOL_SAFE },
+
+  { "worldofwarcraft.com", NULL, "worldofwarcraft" TLD,                "WorldOfWarcraft",  NDPI_PROTOCOL_WORLDOFWARCRAFT, NDPI_PROTOCOL_CATEGORY_GAME, NDPI_PROTOCOL_FUN },
+
+  { ".anchorfree.", NULL, "\\.anchorfree" TLD,                         "HotspotShield",    NDPI_PROTOCOL_HOTSPOT_SHIELD, NDPI_PROTOCOL_CATEGORY_VPN, NDPI_PROTOCOL_POTENTIALLY_DANGEROUS },
+  { "hotspotshield.com", NULL, "hotspotshield" TLD,                    "HotspotShield",    NDPI_PROTOCOL_HOTSPOT_SHIELD, NDPI_PROTOCOL_CATEGORY_VPN, NDPI_PROTOCOL_POTENTIALLY_DANGEROUS },
+  { ".northghost.com", NULL, "\\.northghost" TLD,                      "HotspotShield",    NDPI_PROTOCOL_HOTSPOT_SHIELD, NDPI_PROTOCOL_CATEGORY_VPN, NDPI_PROTOCOL_POTENTIALLY_DANGEROUS },
+
+  { ".webex.com", NULL, "\\.webex" TLD,                                "Webex",            NDPI_PROTOCOL_WEBEX, NDPI_PROTOCOL_CATEGORY_VOIP, NDPI_PROTOCOL_ACCEPTABLE },
+
+  { ".ocsdomain.com", NULL, "\\.ocsdomain" TLD,                        "OCS",              NDPI_PROTOCOL_OCS, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "ocs.fr", NULL, "ocs" TLD,                                         "OCS",              NDPI_PROTOCOL_OCS, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { ".ocs.fr", NULL, NULL,                                             "OCS",              NDPI_PROTOCOL_OCS, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { ".labgency.ws", NULL, ".labgency" TLD,                             "OCS",              NDPI_PROTOCOL_OCS, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+
+  { ".iflix.com", NULL, "\\.iflix" TLD,                                "IFLIX",            NDPI_PROTOCOL_IFLIX, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { ".app.iflixcorp.com", NULL, "\\.app\\.iflixcorp" TLD,              "IFLIX",            NDPI_PROTOCOL_IFLIX, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { ".images.iflixassets.com", NULL, "\\.images\\.iflixassets" TLD,    "IFLIX",            NDPI_PROTOCOL_IFLIX, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+
+  { "crl.microsoft.com", NULL, "crl\\.microsoft" TLD,                  "Office365",    NDPI_PROTOCOL_OFFICE_365, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { "evsecure-ocsp.verisign.com", NULL, "evsecure-ocsp\\.verisign" TLD,"Office365",    NDPI_PROTOCOL_OFFICE_365, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { "evsecure-aia.verisign.com", NULL, "evsecure-aia\\.verisign" TLD,  "Office365",    NDPI_PROTOCOL_OFFICE_365, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { "evsecure-crl.verisign.com", NULL, "evsecure-crl\\.verisign" TLD,  "Office365",    NDPI_PROTOCOL_OFFICE_365, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".omniroot.com", NULL, "\\.omniroot" TLD,                          "Office365",    NDPI_PROTOCOL_OFFICE_365, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".microsoftonline.com", NULL, "\\.microsoftonline" TLD,            "Office365",    NDPI_PROTOCOL_OFFICE_365, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".office365.com", NULL, "\\.office365" TLD,                        "Office365",    NDPI_PROTOCOL_OFFICE_365, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".office.com", NULL, "\\.office" TLD,                              "Office365",    NDPI_PROTOCOL_OFFICE_365, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { "office.net", NULL, NULL,                                          "Office365",    NDPI_PROTOCOL_OFFICE_365, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".msocsp.com", NULL, "\\.msocsp" TLD,                              "Office365",    NDPI_PROTOCOL_OFFICE_365, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".msocdn.com", NULL, "\\.msocdn" TLD,                              "Office365",    NDPI_PROTOCOL_OFFICE_365, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { "officeapps.live.com", NULL, "officeapps\\.live" TLD,              "Office365",    NDPI_PROTOCOL_OFFICE_365, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { "outlook.live.com", NULL, "outlook\\.live" TLD,                    "Office365",    NDPI_PROTOCOL_OFFICE_365, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { "office.live.com", NULL, "office\\.live" TLD,                      "Office365",    NDPI_PROTOCOL_OFFICE_365, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".onenote.", NULL, "\\.onenote" TLD,                               "Office365",    NDPI_PROTOCOL_OFFICE_365, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
 
   /* http://www.urlquery.net/report.php?id=1453233646161 */
-  { "lifedom.top",              "Cloudflare",       NDPI_PROTOCOL_CLOUDFLARE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
-  { "coby.ns.cloudflare.com",   "Cloudflare",       NDPI_PROTOCOL_CLOUDFLARE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
-  { "amanda.ns.cloudflare.com", "Cloudflare",       NDPI_PROTOCOL_CLOUDFLARE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
+  { "lifedom.top", NULL, "lifedom" TLD,                                "Cloudflare",       NDPI_PROTOCOL_CLOUDFLARE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
+  { "coby.ns.cloudflare.com", NULL, "coby\\.ns\\.cloudflare" TLD,      "Cloudflare",       NDPI_PROTOCOL_CLOUDFLARE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
+  { "amanda.ns.cloudflare.com", NULL, "amanda\\.ns\\.cloudflare" TLD,  "Cloudflare",       NDPI_PROTOCOL_CLOUDFLARE, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
 
-  { "d295hzzivaok4k.cloudfront.net","OpenDNS",      NDPI_PROTOCOL_OPENDNS, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".opendns.com",                 "OpenDNS",      NDPI_PROTOCOL_OPENDNS, NDPI_PROTOCOL_CATEGORY_NETWORK, NDPI_PROTOCOL_ACCEPTABLE },
+  { "d295hzzivaok4k.cloudfront.net", NULL, "d295hzzivaok4k\\.cloudfront" TLD,"OpenDNS",      NDPI_PROTOCOL_OPENDNS, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".opendns.com", NULL, "\\.opendns" TLD,                                  "OpenDNS",      NDPI_PROTOCOL_OPENDNS, NDPI_PROTOCOL_CATEGORY_NETWORK, NDPI_PROTOCOL_ACCEPTABLE },
 
   /* https://get.slack.help/hc/en-us/articles/205138367-Troubleshooting-Slack-connection-issues */
-  { "slack.com",                "Slack",            NDPI_PROTOCOL_SLACK, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".slack-msgs.com",          "Slack",            NDPI_PROTOCOL_SLACK, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
-  { "slack-files.com",          "Slack",            NDPI_PROTOCOL_SLACK, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
-  { "slack-imgs.com",           "Slack",            NDPI_PROTOCOL_SLACK, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".slack-edge.com",          "Slack",            NDPI_PROTOCOL_SLACK, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".slack-core.com",          "Slack",            NDPI_PROTOCOL_SLACK, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
-  { "slack-redir.net",          "Slack",            NDPI_PROTOCOL_SLACK, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { "slack.com", NULL, "slack" TLD,                                    "Slack",            NDPI_PROTOCOL_SLACK, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".slack-msgs.com", NULL, "\\.slack-msgs" TLD,                      "Slack",            NDPI_PROTOCOL_SLACK, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { "slack-files.com", NULL, "slack-files" TLD,                        "Slack",            NDPI_PROTOCOL_SLACK, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { "slack-imgs.com", NULL, "slack-imgs" TLD,                          "Slack",            NDPI_PROTOCOL_SLACK, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".slack-edge.com", NULL, "\\.slack-edge" TLD,                      "Slack",            NDPI_PROTOCOL_SLACK, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".slack-core.com", NULL, "\\.slack-core" TLD,                      "Slack",            NDPI_PROTOCOL_SLACK, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { "slack-redir.net", NULL, "slack-redir" TLD,                        "Slack",            NDPI_PROTOCOL_SLACK, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
   /* Detected "slack-assets2.s3-us-west-2.amazonaws.com.". Omitted "*amazonaws.com" CDN, but no generic pattern to use on first part */
-  { "slack-assets2.s3-",        "Slack",            NDPI_PROTOCOL_SLACK, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { "slack-assets2.s3-", NULL, "slack-assets2\\.s3-",                  "Slack",            NDPI_PROTOCOL_SLACK, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
 
-  { "github.com",               "Github",           NDPI_PROTOCOL_GITHUB, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".github.com",              "Github",           NDPI_PROTOCOL_GITHUB, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
-  { "github.io",                "Github",           NDPI_PROTOCOL_GITHUB, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".github.io",               "Github",           NDPI_PROTOCOL_GITHUB, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
-  { "githubusercontent.com",    "Github",           NDPI_PROTOCOL_GITHUB, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
-  { ".githubusercontent.com",   "Github",           NDPI_PROTOCOL_GITHUB, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { "wechat.com", NULL, "wechat\\.com" TLD,                            "WeChat",           NDPI_PROTOCOL_WECHAT, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
 
-  { ".iqiyi.com",               "iQIYI",            NDPI_PROTOCOL_IQIYI, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { ".qiyi.com",                "iQIYI",            NDPI_PROTOCOL_IQIYI, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { ".71.am",                   "iQIYI",            NDPI_PROTOCOL_IQIYI, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { ".qiyipic.com",             "iQIYI",            NDPI_PROTOCOL_IQIYI, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "github.com", NULL, "github" TLD,                                  "Github",           NDPI_PROTOCOL_GITHUB, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".github.com", NULL, "\\.github" TLD,                              "Github",           NDPI_PROTOCOL_GITHUB, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { "github.io", NULL, NULL,                                           "Github",           NDPI_PROTOCOL_GITHUB, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".github.io", NULL, NULL,                                          "Github",           NDPI_PROTOCOL_GITHUB, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { "githubusercontent.com", NULL, "githubusercontent" TLD,            "Github",           NDPI_PROTOCOL_GITHUB, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".githubusercontent.com", NULL, "\\.githubusercontent" TLD,        "Github",           NDPI_PROTOCOL_GITHUB, NDPI_PROTOCOL_CATEGORY_COLLABORATIVE, NDPI_PROTOCOL_ACCEPTABLE },
 
-  { ".ppstream.com",            "PPStream",         NDPI_PROTOCOL_PPSTREAM, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { ".pps.tv",                  "PPStream",         NDPI_PROTOCOL_PPSTREAM, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { ".steampowered.com", NULL, "\\.steampowered" TLD,                        "Steam",        NDPI_PROTOCOL_STEAM, NDPI_PROTOCOL_CATEGORY_GAME, NDPI_PROTOCOL_FUN },
+  { "steamcommunity.com", NULL, "steamcommunity" TLD,                        "Steam",        NDPI_PROTOCOL_STEAM, NDPI_PROTOCOL_CATEGORY_GAME, NDPI_PROTOCOL_FUN },
+  { ".steamcontent.com", NULL, "\\.steamcontent" TLD,                        "Steam",        NDPI_PROTOCOL_STEAM, NDPI_PROTOCOL_CATEGORY_GAME, NDPI_PROTOCOL_FUN },
+  { ".steamstatic.com", NULL, "\\.steamstatic" TLD,                          "Steam",        NDPI_PROTOCOL_STEAM, NDPI_PROTOCOL_CATEGORY_GAME, NDPI_PROTOCOL_FUN },
+  { "steamcommunity-a.akamaihd.net", NULL, "steamcommunity-a\\.akamaihd" TLD,"Steam",        NDPI_PROTOCOL_STEAM, NDPI_PROTOCOL_CATEGORY_GAME, NDPI_PROTOCOL_FUN },
 
-  { ".1kxun.",                  "1kxun",            NDPI_PROTOCOL_1KXUN, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "tcad.wedolook.com",        "1kxun",            NDPI_PROTOCOL_1KXUN, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { ".wechat.com", NULL, "\\.wechat\\.com",                            "WeChat",           NDPI_PROTOCOL_WECHAT, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
+  { ".wechat.org", NULL, "\\.wechat\\.org",                            "WeChat",           NDPI_PROTOCOL_WECHAT, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
+  { ".wechatapp.com", NULL, "\\.wechatapp" TLD,                        "WeChat",           NDPI_PROTOCOL_WECHAT, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
+  { ".we.chat", NULL, "\\.we\\.chat",                                  "WeChat",           NDPI_PROTOCOL_WECHAT, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
+  { ".wx.", NULL, "\\.wx\\.",                                          "WeChat",           NDPI_PROTOCOL_WECHAT, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
+  { ".weixin.", NULL, "\\.weixin\\.",                                  "WeChat",           NDPI_PROTOCOL_WECHAT, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
+  { ".mmsns.qpic.cn", NULL, "\\.mmsns\\.qpic" TLD,                     "WeChat",           NDPI_PROTOCOL_WECHAT, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
 
-  { ".steampowered.com",            "Steam",        NDPI_PROTOCOL_STEAM, NDPI_PROTOCOL_CATEGORY_GAME, NDPI_PROTOCOL_FUN },
-  { "steamcommunity.com",           "Steam",        NDPI_PROTOCOL_STEAM, NDPI_PROTOCOL_CATEGORY_GAME, NDPI_PROTOCOL_FUN },
-  { ".steamcontent.com",            "Steam",        NDPI_PROTOCOL_STEAM, NDPI_PROTOCOL_CATEGORY_GAME, NDPI_PROTOCOL_FUN },
-  { ".steamstatic.com",             "Steam",        NDPI_PROTOCOL_STEAM, NDPI_PROTOCOL_CATEGORY_GAME, NDPI_PROTOCOL_FUN },
-  { "steamcommunity-a.akamaihd.net","Steam",        NDPI_PROTOCOL_STEAM, NDPI_PROTOCOL_CATEGORY_GAME, NDPI_PROTOCOL_FUN },
+  { "dnscrypt.org", NULL, "dnscrypt\\.org$",                           "DNScrypt",         NDPI_PROTOCOL_DNSCRYPT, NDPI_PROTOCOL_CATEGORY_NETWORK, NDPI_PROTOCOL_ACCEPTABLE },
 
-  { ".wechat.com",              "WeChat",           NDPI_PROTOCOL_WECHAT, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
-  { ".wechat.org",              "WeChat",           NDPI_PROTOCOL_WECHAT, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
-  { ".wechatapp.com",           "WeChat",           NDPI_PROTOCOL_WECHAT, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
-  { ".we.chat",                 "WeChat",           NDPI_PROTOCOL_WECHAT, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
-  { ".wx.",                     "WeChat",           NDPI_PROTOCOL_WECHAT, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
-  { ".weixin.",                 "WeChat",           NDPI_PROTOCOL_WECHAT, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
-  { ".mmsns.qpic.cn",           "WeChat",           NDPI_PROTOCOL_WECHAT, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_FUN },
+  { "torrent.", NULL, "torrent" TLD,                                   "BitTorrent",       NDPI_PROTOCOL_BITTORRENT, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_UNSAFE },
+  { "torrents.", NULL, "torrents" TLD,                                 "BitTorrent",       NDPI_PROTOCOL_BITTORRENT, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_UNSAFE },
+  { "torrentz.", NULL, "torrentz" TLD,                                 "BitTorrent",       NDPI_PROTOCOL_BITTORRENT, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_UNSAFE },
 
-  { "dnscrypt.org",             "DNScrypt",         NDPI_PROTOCOL_DNSCRYPT, NDPI_PROTOCOL_CATEGORY_NETWORK, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".nintendo.net", NULL, "\\.nintendo" TLD,                          "Nintendo",         NDPI_PROTOCOL_NINTENDO, NDPI_PROTOCOL_CATEGORY_GAME, NDPI_PROTOCOL_FUN },
+  { ".nintendo.com", NULL, NULL,                                       "Nintendo",         NDPI_PROTOCOL_NINTENDO, NDPI_PROTOCOL_CATEGORY_GAME, NDPI_PROTOCOL_FUN },
 
-  { "torrent.",                 "BitTorrent",       NDPI_PROTOCOL_BITTORRENT, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_UNSAFE },
-  { "torrents.",                "BitTorrent",       NDPI_PROTOCOL_BITTORRENT, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_UNSAFE },
-  { "torrentz.",                "BitTorrent",       NDPI_PROTOCOL_BITTORRENT, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_UNSAFE },
+  { ".playstation.net", NULL, "\\.playstation" TLD,                          "Playstation",  NDPI_PROTOCOL_PLAYSTATION, NDPI_PROTOCOL_CATEGORY_GAME, NDPI_PROTOCOL_FUN },
+  { ".playstation.com", NULL, NULL,                                          "Playstation",  NDPI_PROTOCOL_PLAYSTATION, NDPI_PROTOCOL_CATEGORY_GAME, NDPI_PROTOCOL_FUN },
+  { ".sonyentertainmentnetwork.com", NULL, "\\.sonyentertainmentnetwork" TLD,"Playstation",  NDPI_PROTOCOL_PLAYSTATION, NDPI_PROTOCOL_CATEGORY_GAME, NDPI_PROTOCOL_FUN },
 
-  { ".nintendo.net",            "Nintendo",         NDPI_PROTOCOL_NINTENDO, NDPI_PROTOCOL_CATEGORY_GAME, NDPI_PROTOCOL_FUN },
-  { ".nintendo.com",            "Nintendo",         NDPI_PROTOCOL_NINTENDO, NDPI_PROTOCOL_CATEGORY_GAME, NDPI_PROTOCOL_FUN },
-  { ".playstation.net",             "Playstation",  NDPI_PROTOCOL_PLAYSTATION, NDPI_PROTOCOL_CATEGORY_GAME, NDPI_PROTOCOL_FUN },
-  { ".playstation.com",             "Playstation",  NDPI_PROTOCOL_PLAYSTATION, NDPI_PROTOCOL_CATEGORY_GAME, NDPI_PROTOCOL_FUN },
-  { ".sonyentertainmentnetwork.com","Playstation",  NDPI_PROTOCOL_PLAYSTATION, NDPI_PROTOCOL_CATEGORY_GAME, NDPI_PROTOCOL_FUN },
+  { ".linkedin.com", NULL, "\\.linkedin" TLD,                          "LinkedIn",         NDPI_PROTOCOL_LINKEDIN, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
+  { ".licdn.com", NULL, "\\.licdn" TLD,                                "LinkedIn",         NDPI_PROTOCOL_LINKEDIN, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
 
-  { ".pastebin.com",            "Pastebin",         NDPI_PROTOCOL_PASTEBIN, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_POTENTIALLY_DANGEROUS },
+  { ".sndcdn.com", NULL, "\\.sndcdn" TLD,                              "SoundCloud",       NDPI_PROTOCOL_SOUNDCLOUD, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+  { ".soundcloud.com", NULL, "\\.soundcloud" TLD,                      "SoundCloud",       NDPI_PROTOCOL_SOUNDCLOUD, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+  { "getrockerbox.com", NULL, "getrockerbox" TLD,                      "SoundCloud",       NDPI_PROTOCOL_SOUNDCLOUD, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
 
-  { ".linkedin.com",            "LinkedIn",         NDPI_PROTOCOL_LINKEDIN, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
-  { ".licdn.com",               "LinkedIn",         NDPI_PROTOCOL_LINKEDIN, NDPI_PROTOCOL_CATEGORY_SOCIAL_NETWORK, NDPI_PROTOCOL_FUN },
+  { "web.telegram.org", NULL, "web\\.telegram" TLD,                    "Telegram",         NDPI_PROTOCOL_TELEGRAM, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_ACCEPTABLE },
+  { "tdesktop.com", NULL, "tdesktop" TLD,                              "Telegram",         NDPI_PROTOCOL_TELEGRAM, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_ACCEPTABLE },
+  { "tupdate.com", NULL, "tupdate" TLD,                                "Telegram",         NDPI_PROTOCOL_TELEGRAM, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_ACCEPTABLE },
 
-  { ".sndcdn.com",              "SoundCloud",       NDPI_PROTOCOL_SOUNDCLOUD, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { ".soundcloud.com",          "SoundCloud",       NDPI_PROTOCOL_SOUNDCLOUD, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "getrockerbox.com",         "SoundCloud",       NDPI_PROTOCOL_SOUNDCLOUD, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { ".pastebin.com", NULL, "\\.pastebin" TLD,                          "Pastebin",         NDPI_PROTOCOL_PASTEBIN, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_POTENTIALLY_DANGEROUS },
 
-  { "web.telegram.org",         "Telegram",         NDPI_PROTOCOL_TELEGRAM, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_ACCEPTABLE },
-  { "tdesktop.com",             "Telegram",         NDPI_PROTOCOL_TELEGRAM, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_ACCEPTABLE },
-  { "tupdate.com",              "Telegram",         NDPI_PROTOCOL_TELEGRAM, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".ppstream.com", NULL, "\\.ppstream" TLD,                          "PPStream",         NDPI_PROTOCOL_PPSTREAM, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+  { ".pps.tv", NULL, "\\.pps\\.tv$",                                   "PPStream",         NDPI_PROTOCOL_PPSTREAM, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
 
-  { ".icq.",                    "ICQ",              NDPI_PROTOCOL_ICQ, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_ACCEPTABLE },
-  { "icq.",                     "ICQ",              NDPI_PROTOCOL_ICQ, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_ACCEPTABLE },
+  /*
+    VidTO streaming service
+    NOTE: this is a possible candidate for NDPI_PROTOCOL_GENERIC
+  */
+  { ".vidto.me", NULL, "\\.vidto" TLD,                                 "VidTO",            NDPI_PROTOCOL_PPSTREAM, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+  { ".vidto.se", NULL, NULL,                                           "VidTO",            NDPI_PROTOCOL_PPSTREAM, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
 
-  { NULL, 0 }
+  /*
+    Not so popular services without a protocl dissector (and thus not worth a protocolId) that are handled/detected by categpory rather
+    than by protocol id. They are bound to a generic protocol (NDPI_PROTOCOL_GENERIC) and placed onto the right category
+  */
+  { "quickplay.com", NULL, "quickplay" TLD,                            "QuickPlay",        NDPI_PROTOCOL_GENERIC, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+
+  { ".iqiyi.com", NULL, "\\.iqiyi" TLD,                                "iQIYI",            NDPI_PROTOCOL_GENERIC, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+  { ".qiyi.com", NULL, "\\.qiyi" TLD,                                  "iQIYI",            NDPI_PROTOCOL_GENERIC, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+  { ".71.am", NULL, "\\.71" TLD,                                       "iQIYI",            NDPI_PROTOCOL_GENERIC, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+  { ".qiyipic.com", NULL, "\\.qiyipic" TLD,                            "iQIYI",            NDPI_PROTOCOL_GENERIC, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+
+  { ".1kxun.", NULL, "\\.1kxun\\.",                                    "1kxun",            NDPI_PROTOCOL_GENERIC, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+  { "tcad.wedolook.com", NULL, "tcad\\.wedolook" TLD,                  "1kxun",            NDPI_PROTOCOL_GENERIC, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+
+  { "baidu.com", NULL, "baidu" TLD,                                    "baidu",            NDPI_PROTOCOL_GENERIC, NDPI_PROTOCOL_CATEGORY_WEB, NDPI_PROTOCOL_FUN },
+
+  { "icq.", NULL, "icq" TLD,                                           "ICQ",              NDPI_PROTOCOL_GENERIC, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_ACCEPTABLE },
+  { ".icq.", NULL, NULL,                                               "ICQ",              NDPI_PROTOCOL_GENERIC, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_ACCEPTABLE },
+
+
+  /* RapidVideo streaming */
+  { ".rapidvideo.com", NULL, "\\.rapidvideo" TLD,                      "RapidVideo",       NDPI_PROTOCOL_GENERIC, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+  { ".playercdn.net", NULL, "\\.playercdn" TLD,                        "RapidVideo",       NDPI_PROTOCOL_GENERIC, NDPI_PROTOCOL_CATEGORY_STREAMING, NDPI_PROTOCOL_FUN },
+
+  /* showmax.com video streaming */
+  { "showmax.com", NULL, "showmax" TLD,                                "Showmax",          NDPI_PROTOCOL_GENERIC, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "showmax.akamaized.net", NULL, "showmax\\.akamaized" TLD,          "Showmax",          NDPI_PROTOCOL_GENERIC, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+
+  { "snapcraft.io", NULL, "snapcraft\\.io" TLD,                        "UbuntuONE",        NDPI_PROTOCOL_UBUNTUONE, NDPI_PROTOCOL_CATEGORY_CLOUD, NDPI_PROTOCOL_ACCEPTABLE },
+  { "ubuntu.com", NULL, "ubuntu\\.com" TLD,                            "UbuntuONE",        NDPI_PROTOCOL_UBUNTUONE, NDPI_PROTOCOL_CATEGORY_CLOUD, NDPI_PROTOCOL_ACCEPTABLE },
+
+  { "signal.org", NULL, "signal\\.org" TLD,                            "Signal",           NDPI_PROTOCOL_SIGNAL, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_ACCEPTABLE },
+  { "whispersystems.org", NULL, "whispersystems\\.org" TLD,            "Signal",           NDPI_PROTOCOL_SIGNAL, NDPI_PROTOCOL_CATEGORY_CHAT, NDPI_PROTOCOL_ACCEPTABLE },
+  { NULL, NULL, NULL, 0 }
 };
 
 
@@ -8325,57 +8430,56 @@ ndpi_protocol_match host_match[] = {
   Mime-type content match match
 */
 ndpi_protocol_match content_match[] = {
-  { "audio/mpeg",                   NULL,           NDPI_CONTENT_MPEG, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "audio/x-mpeg",                 NULL,           NDPI_CONTENT_MPEG, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "audio/mpeg3",                  NULL,           NDPI_CONTENT_MPEG, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "audio/mp4a",                   NULL,           NDPI_CONTENT_MPEG, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "video/mpeg",                   NULL,           NDPI_CONTENT_MPEG, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "video/nsv",                    NULL,           NDPI_CONTENT_MPEG, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "misc/ultravox",                NULL,           NDPI_CONTENT_MPEG, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "audio/ogg",                    NULL,           NDPI_CONTENT_OGG, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "video/ogg",                    NULL,           NDPI_CONTENT_OGG, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "application/ogg",              NULL,           NDPI_CONTENT_OGG, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { ".adobe.",                      NULL,           NDPI_CONTENT_FLASH, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "video/flv",                    NULL,           NDPI_CONTENT_FLASH, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "video/x-flv",                  NULL,           NDPI_CONTENT_FLASH, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "application/x-fcs",            NULL,           NDPI_CONTENT_FLASH, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "application/x-shockwave-flash",NULL,           NDPI_CONTENT_FLASH, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_ACCEPTABLE },
-  { "video/flash",                  NULL,           NDPI_CONTENT_FLASH, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "application/flv",              NULL,           NDPI_CONTENT_FLASH, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "flv-application/octet-stream", NULL,           NDPI_CONTENT_FLASH, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "application/futuresplash",     NULL,           NDPI_CONTENT_FLASH, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "video/quicktime",              NULL,           NDPI_CONTENT_QUICKTIME, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "video/mp4",                    NULL,           NDPI_CONTENT_QUICKTIME, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "video/x-m4v",                  NULL,           NDPI_CONTENT_QUICKTIME, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "audio/x-pn-realaudio",         NULL,           NDPI_CONTENT_REALMEDIA, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "application/vnd.rn-realmedia", NULL,           NDPI_CONTENT_REALMEDIA, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "video/x-ms-",                  NULL,           NDPI_CONTENT_WINDOWSMEDIA, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "asf",                          NULL,           NDPI_CONTENT_WINDOWSMEDIA, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "asx",                          NULL,           NDPI_CONTENT_WINDOWSMEDIA, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "video/x-msvideo",              NULL,           NDPI_CONTENT_WINDOWSMEDIA, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "audio/x-wav",                  NULL,           NDPI_CONTENT_WINDOWSMEDIA, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "application/vnd.ms.wms-hdr.asfv1", NULL,       NDPI_CONTENT_WINDOWSMEDIA, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "NSPlayer/",                    NULL,           NDPI_CONTENT_WINDOWSMEDIA, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "application/x-mms-framed",     NULL,           NDPI_CONTENT_MMS, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "Xbox Live Client/",            NULL,           NDPI_PROTOCOL_XBOX, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "Windows-Update-Agent",         NULL,           NDPI_PROTOCOL_WINDOWS_UPDATE, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_ACCEPTABLE },
-  { "audio/webm",                   NULL,           NDPI_CONTENT_WEBM, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "video/webm",                   NULL,           NDPI_CONTENT_WEBM, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "application/x-rtsp-tunnelled", NULL,           NDPI_PROTOCOL_RTSP, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "application/vnd.apple.mpegurl",NULL,           NDPI_CONTENT_MPEG, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
-  { "application/x-tar",            NULL,           NDPI_PROTOCOL_HTTP_DOWNLOAD, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_ACCEPTABLE },
-  { "application/octet-stream",     NULL,           NDPI_PROTOCOL_HTTP_DOWNLOAD, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_ACCEPTABLE },
-  { "application/mac-binary",       NULL,           NDPI_PROTOCOL_HTTP_DOWNLOAD, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_ACCEPTABLE },
-  { "/x-bzip",                      NULL,           NDPI_PROTOCOL_HTTP_DOWNLOAD, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_ACCEPTABLE },
-  { "/x-gzip",                      NULL,           NDPI_PROTOCOL_HTTP_DOWNLOAD, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_ACCEPTABLE },
-  { "/x-zip",                       NULL,           NDPI_PROTOCOL_HTTP_DOWNLOAD, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_ACCEPTABLE },
-  { "/zip",                         NULL,           NDPI_PROTOCOL_HTTP_DOWNLOAD, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_ACCEPTABLE },
-  { "binhex",                       NULL,           NDPI_PROTOCOL_HTTP_DOWNLOAD, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_ACCEPTABLE },
-  { "/base64",                      NULL,           NDPI_PROTOCOL_HTTP_DOWNLOAD, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_ACCEPTABLE },
-  { "application/gnutar",           NULL,           NDPI_PROTOCOL_HTTP_DOWNLOAD, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_ACCEPTABLE },
-  { "application/x-compressed",     NULL,           NDPI_PROTOCOL_HTTP_DOWNLOAD, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_ACCEPTABLE },
+  { "audio/mpeg",                   NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_MPEG, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "audio/x-mpeg",                 NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_MPEG, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "audio/mpeg3",                  NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_MPEG, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "audio/mp4a",                   NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_MPEG, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "video/mpeg",                   NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_MPEG, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "video/nsv",                    NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_MPEG, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "misc/ultravox",                NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_MPEG, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "audio/ogg",                    NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_OGG, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "video/ogg",                    NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_OGG, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "application/ogg",              NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_OGG, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { ".adobe.",                      NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_FLASH, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "video/flv",                    NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_FLASH, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "video/x-flv",                  NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_FLASH, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "application/x-fcs",            NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_FLASH, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "application/x-shockwave-flash",NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_FLASH, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_ACCEPTABLE },
+  { "video/flash",                  NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_FLASH, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "application/flv",              NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_FLASH, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "flv-application/octet-stream", NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_FLASH, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "application/futuresplash",     NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_FLASH, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "video/quicktime",              NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_QUICKTIME, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "video/mp4",                    NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_QUICKTIME, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "video/x-m4v",                  NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_QUICKTIME, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "audio/x-pn-realaudio",         NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_REALMEDIA, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "application/vnd.rn-realmedia", NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_REALMEDIA, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "video/x-ms-",                  NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_WINDOWSMEDIA, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "asf",                          NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_WINDOWSMEDIA, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "asx",                          NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_WINDOWSMEDIA, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "video/x-msvideo",              NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_WINDOWSMEDIA, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "audio/x-wav",                  NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_WINDOWSMEDIA, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "application/vnd.ms.wms-hdr.asfv1", NULL, NULL, NULL,       NDPI_CONTENT_CATEGORY_WINDOWSMEDIA, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "NSPlayer/",                    NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_WINDOWSMEDIA, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "Xbox Live Client/",            NULL, NULL, NULL,           NDPI_PROTOCOL_XBOX, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "Windows-Update-Agent",         NULL, NULL, NULL,           NDPI_PROTOCOL_WINDOWS_UPDATE, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_ACCEPTABLE },
+  { "audio/webm",                   NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_WEBM, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "video/webm",                   NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_WEBM, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "application/x-rtsp-tunnelled", NULL, NULL, NULL,           NDPI_PROTOCOL_RTSP, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "application/vnd.apple.mpegurl",NULL, NULL, NULL,           NDPI_CONTENT_CATEGORY_MPEG, NDPI_PROTOCOL_CATEGORY_MEDIA, NDPI_PROTOCOL_FUN },
+  { "application/x-tar",            NULL, NULL, NULL,           NDPI_PROTOCOL_HTTP_DOWNLOAD, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_ACCEPTABLE },
+  { "application/octet-stream",     NULL, NULL, NULL,           NDPI_PROTOCOL_HTTP_DOWNLOAD, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_ACCEPTABLE },
+  { "application/mac-binary",       NULL, NULL, NULL,           NDPI_PROTOCOL_HTTP_DOWNLOAD, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_ACCEPTABLE },
+  { "/x-bzip",                      NULL, NULL, NULL,           NDPI_PROTOCOL_HTTP_DOWNLOAD, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_ACCEPTABLE },
+  { "/x-gzip",                      NULL, NULL, NULL,           NDPI_PROTOCOL_HTTP_DOWNLOAD, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_ACCEPTABLE },
+  { "/x-zip",                       NULL, NULL, NULL,           NDPI_PROTOCOL_HTTP_DOWNLOAD, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_ACCEPTABLE },
+  { "/zip",                         NULL, NULL, NULL,           NDPI_PROTOCOL_HTTP_DOWNLOAD, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_ACCEPTABLE },
+  { "binhex",                       NULL, NULL, NULL,           NDPI_PROTOCOL_HTTP_DOWNLOAD, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_ACCEPTABLE },
+  { "/base64",                      NULL, NULL, NULL,           NDPI_PROTOCOL_HTTP_DOWNLOAD, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_ACCEPTABLE },
+  { "application/gnutar",           NULL, NULL, NULL,           NDPI_PROTOCOL_HTTP_DOWNLOAD, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_ACCEPTABLE },
+  { "application/x-compressed",     NULL, NULL, NULL,           NDPI_PROTOCOL_HTTP_DOWNLOAD, NDPI_PROTOCOL_CATEGORY_DOWNLOAD_FT, NDPI_PROTOCOL_ACCEPTABLE },
 
-  { NULL, 0 }
+  { NULL, NULL, NULL, 0 }
 };
 
 /* ****************************************************** */
@@ -8442,12 +8546,13 @@ static const char *ndpi_en_bigrams[] = {
 
 static const char *ndpi_en_impossible_bigrams[] = {
   "bk", "bq", "bx", "cb", "cf", "cg", "cj", "cp", "cv", "cw", "cx", "dx", "fk", "fq", "fv", "fx", /* "ee", removed it can be found in 'meeting' */
-  "fz", "gq", "gv", "gx", "hh", "hk", "hv", "hx", "hz", "iy", "jb", "jc", "jd", "jf", "jg", "jh", "jk",
+  "fz", "gq", "gv", "gx", "hh", "hk", "hv", "hx", "hz", "iy", "jb", /* "jc", jcrew.com */ "jd", "jf", "jg", "jh", "jk",
   "jl", "jm", "jn", "jp", "jq", "jr", /* "js", */ "jt", "jv", "jw", "jx", "jy", "jz", "kg", "kq", "kv", "kx",
-  "kz", "lq", "lx", "mg", "mj", "mq", "mx", "mz", "pq", "pv", "px", "qb", "qc", "qd", "qe", "qf", "ii",
+  "kz", "lq", "lx", /* "mg" tamgrt.com , */ "mj", "mq", "mx", "mz", "pq", "pv", "px", "qb", "qc", "qd", "qe", "qf", "ii",
   "qg", "qh", "qj", "qk", "ql", "qm", "qn", "qo", "qp", "qr", "qs", "qt", "qv", "qw", "qx", "qy", "uu",
   "qz", "sx", "sz", "tq", "tx", "vb", "vc", "vd", "vf", "vg", "vh", "vj", "vm", "vn", "vp", "bw", /* "vk", "zr" Removed for kavkazr */
-  "vq", "vt", "vw", "vx", "vz", "wq", "wv", "wx", "wz", "xb", "xg", "xj", "xk", "xv", "xz", "xw", "yd", /*"yp", Removed for paypal */
+  "vq", "vt", "vw", "vx", "vz", "wq", "wv", "wx", "wz", /* "xb", foxbusiness.com */
+  	"xg", "xj", "xk", "xv", "xz", "xw", "yd", /*"yp", Removed for paypal */
   "yj", "yq", "yv", "yz", "yw", "zb", "zc", "zg", "zh", "zj", "zn", "zq", "zs", "zx", "wh", "wk",
   "wb", "zk", "kp", "zk", "xy",
   NULL };

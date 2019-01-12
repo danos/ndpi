@@ -1,7 +1,7 @@
 /*
  * whoisdas.c
  *
- * Copyright (C) 2016 - ntop.org
+ * Copyright (C) 2016-18 - ntop.org
  *
  * nDPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -17,14 +17,19 @@
  * along with nDPI.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#include "ndpi_protocols.h"
 
-#ifdef NDPI_PROTOCOL_WHOIS_DAS
+#include "ndpi_protocol_ids.h"
+
+#define NDPI_CURRENT_PROTO NDPI_PROTOCOL_WHOIS_DAS
+
+#include "ndpi_api.h"
+
 
 void ndpi_search_whois_das(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 {
   struct ndpi_packet_struct *packet = &flow->packet;
 
+  NDPI_LOG_DBG(ndpi_struct, "search WHOIS/DAS\n");
   if(packet->tcp != NULL) {
     u_int16_t sport = ntohs(packet->tcp->source), dport = ntohs(packet->tcp->dest);
     
@@ -34,26 +39,26 @@ void ndpi_search_whois_das(struct ndpi_detection_module_struct *ndpi_struct, str
 	
 	u_int max_len = sizeof(flow->host_server_name) - 1;
 	u_int i, j;
-	
-	for(i=strlen((const char *)flow->host_server_name), j=0; (i<max_len) && (j<packet->payload_packet_len); i++, j++) {
 
-	  if((packet->payload[j] == '\n') || (packet->payload[j] == '\r')) break;
+	if(!ndpi_struct->disable_metadata_export) {
+	  for(i=strlen((const char *)flow->host_server_name), j=0; (i<max_len) && (j<packet->payload_packet_len); i++, j++) {
+	    if((packet->payload[j] == '\n') || (packet->payload[j] == '\r')) break;	  
+	    flow->host_server_name[i] = packet->payload[j];
+	  }
 	  
-	  flow->host_server_name[i] = packet->payload[j];
+	  flow->host_server_name[i] = '\0';
 	}
 	
-	flow->host_server_name[i] = '\0';
 	flow->server_id = ((sport == 43) || (sport == 4343)) ? flow->src : flow->dst;
 	
-	NDPI_LOG(NDPI_PROTOCOL_WHOIS_DAS, ndpi_struct, NDPI_LOG_DEBUG, "[WHOIS/DAS] %s\n", flow->host_server_name);
+	NDPI_LOG_INFO(ndpi_struct, "[WHOIS/DAS] %s\n", flow->host_server_name);
 	ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_WHOIS_DAS, NDPI_PROTOCOL_UNKNOWN);
 	return;
       }
     }
   }
-  /* exclude WHOIS */
-  NDPI_LOG(NDPI_PROTOCOL_WHOIS_DAS, ndpi_struct, NDPI_LOG_TRACE, "WHOIS Excluded.\n");
-  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_WHOIS_DAS);
+
+  NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
 }
 
 
@@ -68,5 +73,3 @@ void init_whois_das_dissector(struct ndpi_detection_module_struct *ndpi_struct, 
 
   *id += 1;
 }
-
-#endif
