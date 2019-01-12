@@ -1,6 +1,0 @@
-json-c-use-system.patch
-example-link-dynamic.patch
-bump-soname.patch
-export-additional-symbols.patch
-no-configure-after-autogen.patch
-embed-libcache_h.patch
