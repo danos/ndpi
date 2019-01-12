@@ -1,7 +1,7 @@
 /*
  * amqp.c
  *
- * Copyright (C) 2011-17 - ntop.org
+ * Copyright (C) 2011-18 - ntop.org
  *
  * nDPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -18,9 +18,12 @@
  *
  */
 
+#include "ndpi_protocol_ids.h"
 
-#include "ndpi_protocols.h"
-#ifdef NDPI_PROTOCOL_AMQP
+#define NDPI_CURRENT_PROTO NDPI_PROTOCOL_AMQP
+
+#include "ndpi_api.h"
+
 
 PACK_ON
 struct amqp_header {
@@ -39,7 +42,7 @@ static void ndpi_int_amqp_add_connection(struct ndpi_detection_module_struct *nd
 void ndpi_search_amqp(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow) {
 	struct ndpi_packet_struct *packet = &flow->packet;
 
-	NDPI_LOG(NDPI_PROTOCOL_AMQP, ndpi_struct, NDPI_LOG_DEBUG, "search amqp.  \n");
+	NDPI_LOG_DBG(ndpi_struct, "search amqp\n");
 
 	if (packet->tcp != NULL) {
 		if(packet->payload_packet_len > sizeof(struct amqp_header)) {
@@ -57,7 +60,7 @@ void ndpi_search_amqp(struct ndpi_detection_module_struct *ndpi_struct, struct n
 						u_int16_t method = htons(h->method);
 
 						if(method <= 120 /* Method basic NACK */) {
-							NDPI_LOG(NDPI_PROTOCOL_AMQP, ndpi_struct, NDPI_LOG_DEBUG, "found amqp over tcp.  \n");
+							NDPI_LOG_INFO(ndpi_struct, "found amqp over tcp\n");
 							ndpi_int_amqp_add_connection(ndpi_struct, flow);
 							return;
 						}
@@ -65,6 +68,8 @@ void ndpi_search_amqp(struct ndpi_detection_module_struct *ndpi_struct, struct n
 				}
 			}
 		}
+	} else {
+		NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
 	}
 }
 
@@ -80,4 +85,3 @@ void init_amqp_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int
 	*id += 1;
 }
 
-#endif

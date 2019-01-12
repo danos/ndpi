@@ -1,7 +1,7 @@
 /*
  * btlib.c
  *
- * Copyright (C) 2011-15 - ntop.org
+ * Copyright (C) 2011-18 - ntop.org
  *               Contributed by Vitaly Lavrov <vel21ripn@gmail.com>
  *
  * This file is part of nDPI, an open source deep packet inspection
@@ -22,6 +22,8 @@
  *
  */
 
+#include "ndpi_api.h"
+
 #ifndef NDPI_NO_STD_INC
 #include <stdlib.h>
 #include <stdio.h>
@@ -29,16 +31,16 @@
 #include <string.h>
 #include <strings.h>
 
+/*
 typedef unsigned char u_int8_t;
 typedef unsigned short int u_int16_t;
 typedef unsigned long long int u_int64_t;
+*/
 
 #include <stdint.h>
 #include <stdlib.h>
 #include <arpa/inet.h>
 #endif
-
-typedef signed long long int i_int64_t;
 
 #include "btlib.h"
 
@@ -90,6 +92,7 @@ static char *print_id_ip6_p(char *s,const struct bt_nodes6_data *b) {
 }
 
 
+#if 0
 void dump_bt_proto_struct(struct bt_parse_protocol *p) {
   char b20h[128];
   int i;
@@ -155,7 +158,9 @@ void dump_bt_proto_struct(struct bt_parse_protocol *p) {
   if(p->interval) printf("\tinterval\t%d\n",p->interval);
   if(p->min_interval) printf("\tmin interval\t%d\n",p->min_interval);
 }
+#endif
 
+#ifdef BTLIB_DEBUG
 static void _print_safe_str(char *msg,char *k,const u_int8_t *s,size_t l) {
   static const char *th="0123456789abcdef?";
   char *buf = (char*)ndpi_malloc((size_t)(l*3+2));
@@ -181,8 +186,13 @@ static void _print_safe_str(char *msg,char *k,const u_int8_t *s,size_t l) {
 static void print_safe_str(char *msg,bt_parse_data_cb_t *cbd) {
   _print_safe_str(msg,cbd->buf,cbd->v.s.s,cbd->v.s.l);
 }
-
 #define DEBUG_TRACE(cmd) { if(bt_parse_debug) cmd; }
+
+#else
+#define DEBUG_TRACE(cmd) ;
+#endif
+
+
 #define STREQ(a,b) !strcmp(a,b)
 
 
@@ -408,8 +418,8 @@ void cb_data(bt_parse_data_cb_t *cbd,int *ret) {
 const u_int8_t *bt_decode(const u_int8_t *b, size_t *l, int *ret, bt_parse_data_cb_t *cbd) {
 
   unsigned int n=0,neg=0;
-  i_int64_t d = 0;
-  register u_int8_t c;
+  int64_t d = 0;
+  u_int8_t c;
 
   if(*l == 0) return NULL;
   if(cbd->level > BDEC_MAXDEPT) goto bad_data;

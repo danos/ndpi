@@ -2,7 +2,7 @@
  * mail_smtp.c
  *
  * Copyright (C) 2009-2011 by ipoque GmbH
- * Copyright (C) 2011-15 - ntop.org
+ * Copyright (C) 2011-18 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -23,9 +23,12 @@
  */
 
 
-#include "ndpi_protocols.h"
+#include "ndpi_protocol_ids.h"
 
-#ifdef NDPI_PROTOCOL_MAIL_SMTP
+#define NDPI_CURRENT_PROTO NDPI_PROTOCOL_MAIL_SMTP
+
+#include "ndpi_api.h"
+
 
 #define SMTP_BIT_220		0x01
 #define SMTP_BIT_250		0x02
@@ -53,12 +56,7 @@ void ndpi_search_mail_smtp_tcp(struct ndpi_detection_module_struct
 {
   struct ndpi_packet_struct *packet = &flow->packet;
 	
-  //  struct ndpi_id_struct         *src=ndpi_struct->src;
-  //  struct ndpi_id_struct         *dst=ndpi_struct->dst;
-
-
-  NDPI_LOG(NDPI_PROTOCOL_MAIL_SMTP, ndpi_struct, NDPI_LOG_DEBUG, "search mail_smtp.\n");
-
+  NDPI_LOG_DBG(ndpi_struct, "search mail_smtp\n");
 
   if (packet->payload_packet_len > 2 && ntohs(get_u_int16_t(packet->payload, packet->payload_packet_len - 2)) == 0x0d0a) {
     u_int8_t a;
@@ -152,11 +150,11 @@ void ndpi_search_mail_smtp_tcp(struct ndpi_detection_module_struct
 	bit_count += (flow->l4.tcp.smtp_command_bitmask >> a) & 0x01;
       }
     }
-    NDPI_LOG(NDPI_PROTOCOL_MAIL_SMTP, ndpi_struct, NDPI_LOG_DEBUG, "seen smtp commands and responses: %u.\n",
+    NDPI_LOG_DBG2(ndpi_struct, "seen smtp commands and responses: %u\n",
 	     bit_count);
 
     if (bit_count >= 3) {
-      NDPI_LOG(NDPI_PROTOCOL_MAIL_SMTP, ndpi_struct, NDPI_LOG_DEBUG, "mail smtp identified\n");
+      NDPI_LOG_INFO(ndpi_struct, "mail smtp identified\n");
       ndpi_int_mail_smtp_add_connection(ndpi_struct, flow);
       return;
     }
@@ -169,12 +167,11 @@ void ndpi_search_mail_smtp_tcp(struct ndpi_detection_module_struct
       packet->payload_packet_len >= 4 &&
       (ntohs(get_u_int16_t(packet->payload, packet->payload_packet_len - 2)) == 0x0d0a
        || memcmp(packet->payload, "220", 3) == 0 || memcmp(packet->payload, "EHLO", 4) == 0)) {
-    NDPI_LOG(NDPI_PROTOCOL_MAIL_SMTP, ndpi_struct, NDPI_LOG_DEBUG, "maybe SMTP, need next packet.\n");
+    NDPI_LOG_DBG2(ndpi_struct, "maybe SMTP, need next packet\n");
     return;
   }
 
-  NDPI_LOG(NDPI_PROTOCOL_MAIL_SMTP, ndpi_struct, NDPI_LOG_DEBUG, "exclude smtp\n");
-  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_MAIL_SMTP);
+  NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
 
 }
 
@@ -190,4 +187,3 @@ void init_mail_smtp_dissector(struct ndpi_detection_module_struct *ndpi_struct, 
   *id += 1;
 }
 
-#endif

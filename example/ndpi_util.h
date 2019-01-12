@@ -1,7 +1,7 @@
 /*
  * ndpi_util.h
  *
- * Copyright (C) 2011-16 - ntop.org
+ * Copyright (C) 2011-18 - ntop.org
  *
  * nDPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -24,12 +24,30 @@
  * If you concern about performance or have to integrate nDPI in your
  * application, you could need to reimplement them yourself.
  *
- * WARNING: this API is unstable! Use it at your own risk!
+ * WARNING: this API is just a demo od nDPI usage: Use it at your own risk!
  */
 #ifndef __NDPI_UTIL_H__
 #define __NDPI_UTIL_H__
 
 #include <pcap.h>
+
+#ifdef USE_DPDK
+#include <rte_eal.h>
+#include <rte_ether.h>
+#include <rte_ethdev.h>
+#include <rte_cycles.h>
+#include <rte_lcore.h>
+#include <rte_mbuf.h>
+
+#define RX_RING_SIZE     128
+#define TX_RING_SIZE     512
+#define NUM_MBUFS       8191
+#define MBUF_CACHE_SIZE  250
+#define BURST_SIZE        32
+#define PREFETCH_OFFSET    3
+
+extern int dpdk_port_init(int port, struct rte_mempool *mbuf_pool);
+#endif
 
 #define MAX_NUM_READER_THREADS     16
 #define IDLE_SCAN_PERIOD           10 /* msec (use TICK_RESOLUTION = 1000) */
@@ -75,11 +93,11 @@ typedef struct ndpi_flow_info {
   ndpi_protocol detected_protocol;
 
   char info[96];
-  char host_server_name[192];
+  char host_server_name[256];
   char bittorent_hash[41];
-
+  
   struct {
-    char client_info[48], server_info[48];
+    char client_info[64], server_info[64];
   } ssh_ssl;
 
   void *src_id, *dst_id;
@@ -179,4 +197,7 @@ int ndpi_workflow_node_cmp(const void *a, const void *b);
 void process_ndpi_collected_info(struct ndpi_workflow * workflow, struct ndpi_flow_info *flow);
 u_int32_t ethernet_crc32(const void* data, size_t n_bytes);
 void ndpi_flow_info_freer(void *node);
+
+extern int nDPI_LogLevel;
+
 #endif

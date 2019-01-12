@@ -1,8 +1,8 @@
 /*
  * afp.c
  *
- * Copyright (C) 2009-2011 by ipoque GmbH
- * Copyright (C) 2011-16 - ntop.org
+ * Copyright (C) 2009-11 by ipoque GmbH
+ * Copyright (C) 2011-18 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -23,9 +23,11 @@
  * 
  */
 
-#include "ndpi_protocols.h"
+#include "ndpi_protocol_ids.h"
 
-#ifdef NDPI_PROTOCOL_AFP
+#define NDPI_CURRENT_PROTO NDPI_PROTOCOL_AFP
+
+#include "ndpi_api.h"
 
 struct afpHeader {
   u_int8_t flags, command;
@@ -42,6 +44,8 @@ static void ndpi_int_afp_add_connection(struct ndpi_detection_module_struct *ndp
 void ndpi_search_afp(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 {
   struct ndpi_packet_struct *packet = &flow->packet;
+
+  NDPI_LOG_DBG(ndpi_struct, "search AFP\n");
 
   if (packet->payload_packet_len >= sizeof(struct afpHeader)) {
     struct afpHeader *h = (struct afpHeader*)packet->payload;
@@ -64,7 +68,7 @@ void ndpi_search_afp(struct ndpi_detection_module_struct *ndpi_struct, struct nd
 	get_u_int32_t(packet->payload, 8) == htonl(packet->payload_packet_len - 16) &&
 	get_u_int32_t(packet->payload, 12) == 0 && get_u_int16_t(packet->payload, 16) == htons(0x0104)) {
 
-      NDPI_LOG(NDPI_PROTOCOL_AFP, ndpi_struct, NDPI_LOG_DEBUG, "AFP: DSI OpenSession detected.\n");
+      NDPI_LOG_INFO(ndpi_struct, "found AFP: DSI OpenSession\n");
       ndpi_int_afp_add_connection(ndpi_struct, flow);
       return;
     }
@@ -73,14 +77,13 @@ void ndpi_search_afp(struct ndpi_detection_module_struct *ndpi_struct, struct nd
        && ((h->command >= 1) && (h->command <= 8))
        && (h->reserved == 0)
        && (packet->payload_packet_len >= (sizeof(struct afpHeader)+ntohl(h->length)))) {
-      NDPI_LOG(NDPI_PROTOCOL_AFP, ndpi_struct, NDPI_LOG_DEBUG, "AFP: DSI detected.\n");
+      NDPI_LOG_INFO(ndpi_struct, "found AFP: DSI\n");
       ndpi_int_afp_add_connection(ndpi_struct, flow);
       return;
     }
   }
 
-  NDPI_LOG(NDPI_PROTOCOL_AFP, ndpi_struct, NDPI_LOG_DEBUG, "AFP excluded.\n");
-  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_AFP);
+  NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
 }
 
 
@@ -95,5 +98,3 @@ void init_afp_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int3
   *id += 1;
 }
 
-
-#endif

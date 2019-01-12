@@ -1,13 +1,16 @@
 /*
  * tor.c
  *
- * Copyright (C) 2016 ntop.org
+ * Copyright (C) 2016-18 ntop.org
  * Copyright (C) 2013 Remy Mudingay <mudingay@ill.fr>
  *
  */
+#include "ndpi_protocol_ids.h"
+
+#define NDPI_CURRENT_PROTO NDPI_PROTOCOL_TOR
+
 #include "ndpi_api.h"
 
-#ifdef NDPI_PROTOCOL_TOR
 
 static void ndpi_int_tor_add_connection(struct ndpi_detection_module_struct
 					*ndpi_struct, struct ndpi_flow_struct *flow) {
@@ -17,7 +20,7 @@ static void ndpi_int_tor_add_connection(struct ndpi_detection_module_struct
 
 int ndpi_is_ssl_tor(struct ndpi_detection_module_struct *ndpi_struct,
 		    struct ndpi_flow_struct *flow, char *certificate) {  
-  int prev_num = 0, numbers_found = 0, num_found = 0, i, len;
+  int prev_num = 0, numbers_found = 0, num_found = 0, i, len, num_impossible = 0;
   char dummy[48], *dot, *name;
 
   if(certificate == NULL)
@@ -26,7 +29,7 @@ int ndpi_is_ssl_tor(struct ndpi_detection_module_struct *ndpi_struct,
     len = strlen(certificate);
 
   /* Check if it ends in .com or .net */
-  if(strcmp(&certificate[len-4], ".com") && strcmp(&certificate[len-4], ".net"))
+  if(len>=4 && strcmp(&certificate[len-4], ".com") && strcmp(&certificate[len-4], ".net"))
     return(0);
   
   if((len < 6)
@@ -68,12 +71,11 @@ int ndpi_is_ssl_tor(struct ndpi_detection_module_struct *ndpi_struct,
       if(ndpi_match_bigram(ndpi_struct, &ndpi_struct->bigrams_automa, &name[i])) {
 	num_found++;
       } else if(ndpi_match_bigram(ndpi_struct, &ndpi_struct->impossible_bigrams_automa, &name[i])) {
-	ndpi_int_tor_add_connection(ndpi_struct, flow);
-	return(1);
+	num_impossible++;
       }
     }
 
-    if(num_found == 0) {
+    if((num_found == 0) || (num_impossible > 1)) {
       ndpi_int_tor_add_connection(ndpi_struct, flow);
       return(1);
     } else {
@@ -96,23 +98,22 @@ void ndpi_search_tor(struct ndpi_detection_module_struct *ndpi_struct, struct nd
   struct ndpi_packet_struct *packet = &flow->packet;
   u_int16_t dport = 0, sport = 0;
 
-  NDPI_LOG(NDPI_PROTOCOL_TOR, ndpi_struct, NDPI_LOG_DEBUG, "search for TOR.\n");
+  NDPI_LOG_DBG(ndpi_struct, "search for TOR\n");
 
   if(packet->tcp != NULL) {
     sport = ntohs(packet->tcp->source), dport = ntohs(packet->tcp->dest);
-    NDPI_LOG(NDPI_PROTOCOL_TOR, ndpi_struct, NDPI_LOG_DEBUG, "calculating TOR over tcp.\n");
+    NDPI_LOG_DBG2(ndpi_struct, "calculating TOR over tcp\n");
 
     if ((((dport == 9001) || (sport == 9001)) || ((dport == 9030) || (sport == 9030)))
 	&& ((packet->payload[0] == 0x17) || (packet->payload[0] == 0x16)) 
 	&& (packet->payload[1] == 0x03) 
 	&& (packet->payload[2] == 0x01) 
 	&& (packet->payload[3] == 0x00)) {
-      NDPI_LOG(NDPI_PROTOCOL_TOR, ndpi_struct, NDPI_LOG_DEBUG, "found tor.\n");
+      NDPI_LOG_INFO(ndpi_struct, "found tor\n");
       ndpi_int_tor_add_connection(ndpi_struct, flow);
     }
   } else {
-    NDPI_LOG(NDPI_PROTOCOL_TOR, ndpi_struct, NDPI_LOG_DEBUG, "exclude TOR.\n");
-    NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_TOR);
+    NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
   }
 }
 
@@ -129,4 +130,3 @@ void init_tor_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int3
   *id += 1;
 }
 
-#endif

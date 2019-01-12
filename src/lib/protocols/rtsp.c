@@ -2,7 +2,7 @@
  * rtsp.c
  *
  * Copyright (C) 2009-2011 by ipoque GmbH
- * Copyright (C) 2011-15 - ntop.org
+ * Copyright (C) 2011-18 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -22,19 +22,12 @@
  *
  */
 
+#include "ndpi_protocol_ids.h"
 
-#include "ndpi_protocols.h"
+#define NDPI_CURRENT_PROTO NDPI_PROTOCOL_RTSP
 
-#ifdef NDPI_PROTOCOL_RTSP
-#ifndef NDPI_PROTOCOL_RTP
-#error RTSP requires RTP detection to work correctly
-#endif
-#ifndef NDPI_PROTOCOL_RTSP
-#error RTSP requires RTSP detection to work correctly
-#endif
-#ifndef NDPI_PROTOCOL_RDP
-#error RTSP requires RDP detection to work correctly
-#endif
+#include "ndpi_api.h"
+
 
 static void ndpi_int_rtsp_add_connection(struct ndpi_detection_module_struct *ndpi_struct,
 					 struct ndpi_flow_struct *flow/* , */
@@ -52,21 +45,19 @@ void ndpi_search_rtsp_tcp_udp(struct ndpi_detection_module_struct
   struct ndpi_id_struct *src = flow->src;
   struct ndpi_id_struct *dst = flow->dst;
 
-  NDPI_LOG(NDPI_PROTOCOL_RTSP, ndpi_struct, NDPI_LOG_TRACE, "RTSP detection...\n");
+  NDPI_LOG_DBG(ndpi_struct, "search RTSP\n");
 
   if (flow->rtsprdt_stage == 0
-#ifdef NDPI_PROTOCOL_RTCP
       && !(packet->detected_protocol_stack[0] == NDPI_PROTOCOL_RTCP)
-#endif
       ) {
     flow->rtsprdt_stage = 1 + packet->packet_direction;
-    NDPI_LOG(NDPI_PROTOCOL_RTSP, ndpi_struct, NDPI_LOG_DEBUG, "maybe handshake 1; need next packet, return.\n");
+    NDPI_LOG_DBG2(ndpi_struct, "maybe handshake 1; need next packet, return\n");
     return;
   }
 
   if (flow->packet_counter < 3 && flow->rtsprdt_stage == 1 + packet->packet_direction) {
 
-    NDPI_LOG(NDPI_PROTOCOL_RTSP, ndpi_struct, NDPI_LOG_DEBUG, "maybe handshake 2; need next packet.\n");
+    NDPI_LOG_DBG2(ndpi_struct, "maybe handshake 2; need next packet\n");
     return;
   }
 
@@ -80,20 +71,20 @@ void ndpi_search_rtsp_tcp_udp(struct ndpi_detection_module_struct
     // RTSP Server Message
     if((memcmp(packet->payload, "RTSP/1.0 ", 9) == 0)
        || (strstr(buf, "rtsp://") != NULL)) {
-      NDPI_LOG(NDPI_PROTOCOL_RTSP, ndpi_struct, NDPI_LOG_TRACE, "found RTSP/1.0 .\n");
+      NDPI_LOG_DBG2(ndpi_struct, "found RTSP/1.0 \n");
       if (dst != NULL) {
-	NDPI_LOG(NDPI_PROTOCOL_RTSP, ndpi_struct, NDPI_LOG_TRACE, "found dst.\n");
+	NDPI_LOG_DBG2(ndpi_struct, "found dst\n");
 	ndpi_packet_src_ip_get(packet, &dst->rtsp_ip_address);
 	dst->rtsp_timer = packet->tick_timestamp;
 	dst->rtsp_ts_set = 1;
       }
       if (src != NULL) {
-	NDPI_LOG(NDPI_PROTOCOL_RTSP, ndpi_struct, NDPI_LOG_TRACE, "found src.\n");
+	NDPI_LOG_DBG2(ndpi_struct, "found src\n");
 	ndpi_packet_dst_ip_get(packet, &src->rtsp_ip_address);
 	src->rtsp_timer = packet->tick_timestamp;
 	src->rtsp_ts_set = 1;
       }
-      NDPI_LOG(NDPI_PROTOCOL_RTSP, ndpi_struct, NDPI_LOG_TRACE, "RTSP detected.\n");
+      NDPI_LOG_INFO(ndpi_struct, "found RTSP\n");
       flow->rtsp_control_flow = 1;
       ndpi_int_rtsp_add_connection(ndpi_struct, flow);
       return;
@@ -101,18 +92,15 @@ void ndpi_search_rtsp_tcp_udp(struct ndpi_detection_module_struct
   }
   if (packet->udp != NULL && packet->detected_protocol_stack[0] == NDPI_PROTOCOL_UNKNOWN
       && ((NDPI_COMPARE_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_RTP) == 0)
-#ifdef NDPI_PROTOCOL_RTCP
 	  || (NDPI_COMPARE_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_RTCP) == 0)
-#endif
 	  )) {
-    NDPI_LOG(NDPI_PROTOCOL_RTSP, ndpi_struct, NDPI_LOG_DEBUG,
+    NDPI_LOG_DBG2(ndpi_struct,
 	     "maybe RTSP RTP, RTSP RTCP, RDT; need next packet.\n");
     return;
   }
 
 
-  NDPI_LOG(NDPI_PROTOCOL_RTSP, ndpi_struct, NDPI_LOG_DEBUG, "didn't find handshake, exclude.\n");
-  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_RTSP);
+  NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
   return;
 }
 
@@ -127,5 +115,3 @@ void init_rtsp_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int
 				      ADD_TO_DETECTION_BITMASK);
   *id += 1;
 }
-
-#endif

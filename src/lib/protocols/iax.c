@@ -2,7 +2,7 @@
  * iax.c
  *
  * Copyright (C) 2009-2011 by ipoque GmbH
- * Copyright (C) 2011-15 - ntop.org
+ * Copyright (C) 2011-18 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -23,9 +23,12 @@
  */
 
 
-#include "ndpi_protocols.h"
+#include "ndpi_protocol_ids.h"
 
-#ifdef NDPI_PROTOCOL_IAX
+#define NDPI_CURRENT_PROTO NDPI_PROTOCOL_IAX
+
+#include "ndpi_api.h"
+
 
 #define NDPI_IAX_MAX_INFORMATION_ELEMENTS 15
 
@@ -58,7 +61,7 @@ static void ndpi_search_setup_iax(struct ndpi_detection_module_struct *ndpi_stru
       && packet->payload[11] <= 15) {
 
     if (packet->payload_packet_len == 12) {
-      NDPI_LOG(NDPI_PROTOCOL_IAX, ndpi_struct, NDPI_LOG_DEBUG, "found IAX.\n");
+      NDPI_LOG_INFO(ndpi_struct, "found IAX\n");
       ndpi_int_iax_add_connection(ndpi_struct, flow);
       return;
     }
@@ -66,7 +69,7 @@ static void ndpi_search_setup_iax(struct ndpi_detection_module_struct *ndpi_stru
     for (i = 0; i < NDPI_IAX_MAX_INFORMATION_ELEMENTS; i++) {
       packet_len = packet_len + 2 + packet->payload[packet_len + 1];
       if (packet_len == packet->payload_packet_len) {
-	NDPI_LOG(NDPI_PROTOCOL_IAX, ndpi_struct, NDPI_LOG_DEBUG, "found IAX.\n");
+	NDPI_LOG_INFO(ndpi_struct, "found IAX\n");
 	ndpi_int_iax_add_connection(ndpi_struct, flow);
 	return;
       }
@@ -77,16 +80,13 @@ static void ndpi_search_setup_iax(struct ndpi_detection_module_struct *ndpi_stru
 
   }
 
-  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_IAX);
+  NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
 
 }
 
 void ndpi_search_iax(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 {
   struct ndpi_packet_struct *packet = &flow->packet;
-  //      struct ndpi_flow_struct       *flow=ndpi_struct->flow;
-  //      struct ndpi_id_struct         *src=ndpi_struct->src;
-  //      struct ndpi_id_struct         *dst=ndpi_struct->dst;
 
   if(packet->udp 
      && (packet->detected_protocol_stack[0] == NDPI_PROTOCOL_UNKNOWN))
@@ -105,5 +105,3 @@ void init_iax_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int3
 
   *id += 1;
 }
-
-#endif

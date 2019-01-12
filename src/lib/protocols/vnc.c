@@ -1,7 +1,7 @@
 /*
  * vnc.c
  *
- * Copyright (C) 2016 - ntop.org
+ * Copyright (C) 2016-18 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -20,15 +20,17 @@
  * along with nDPI.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#include "ndpi_protocols.h"
+#include "ndpi_protocol_ids.h"
 
-#ifdef NDPI_PROTOCOL_VNC
+#define NDPI_CURRENT_PROTO NDPI_PROTOCOL_VNC
 
+#include "ndpi_api.h"
 
 void ndpi_search_vnc_tcp(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 {
   struct ndpi_packet_struct *packet = &flow->packet;
 
+  NDPI_LOG_DBG(ndpi_struct, "search vnc\n");
   /* search over TCP */
   if(packet->tcp) {
     
@@ -39,7 +41,7 @@ void ndpi_search_vnc_tcp(struct ndpi_detection_module_struct *ndpi_struct, struc
 	  (memcmp(packet->payload, "RFB 003.007", 11) == 0 && packet->payload[11] == 0x0a) ||
 	  (memcmp(packet->payload, "RFB 003.008", 11) == 0 && packet->payload[11] == 0x0a) ||
 	  (memcmp(packet->payload, "RFB 004.001", 11) == 0 && packet->payload[11] == 0x0a))) {	   
-	NDPI_LOG(NDPI_PROTOCOL_VNC, ndpi_struct, NDPI_LOG_DEBUG, "reached vnc stage one\n");
+	NDPI_LOG_DBG2(ndpi_struct, "reached vnc stage one\n");
 	flow->l4.tcp.vnc_stage = 1 + packet->packet_direction;
 	return;
       }
@@ -51,14 +53,13 @@ void ndpi_search_vnc_tcp(struct ndpi_detection_module_struct *ndpi_struct, struc
 	  (memcmp(packet->payload, "RFB 003.008", 11) == 0 && packet->payload[11] == 0x0a) ||
 	  (memcmp(packet->payload, "RFB 004.001", 11) == 0 && packet->payload[11] == 0x0a))) {
 	
-	NDPI_LOG(NDPI_PROTOCOL_VNC, ndpi_struct, NDPI_LOG_DEBUG, "found vnc\n");
+	NDPI_LOG_INFO(ndpi_struct, "found vnc\n");
 	ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_VNC, NDPI_PROTOCOL_UNKNOWN);
 	return;
       }
     }
   }
-  /* exclude VNC */
-  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_VNC);
+  NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
 }
 
 
@@ -73,5 +74,3 @@ void init_vnc_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int3
   
   *id += 1;
 }
-
-#endif

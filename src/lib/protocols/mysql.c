@@ -2,7 +2,7 @@
  * mysql.c
  * 
  * Copyright (C) 2009-2011 by ipoque GmbH
- * Copyright (C) 2011-15 - ntop.org
+ * Copyright (C) 2011-18 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -23,9 +23,12 @@
  */
 
 
-#include "ndpi_protocols.h"
+#include "ndpi_protocol_ids.h"
 
-#ifdef NDPI_PROTOCOL_MYSQL
+#define NDPI_CURRENT_PROTO NDPI_PROTOCOL_MYSQL
+
+#include "ndpi_api.h"
+
 
 static void ndpi_int_mysql_add_connection(struct ndpi_detection_module_struct
 					  *ndpi_struct, struct ndpi_flow_struct *flow)
@@ -36,9 +39,9 @@ static void ndpi_int_mysql_add_connection(struct ndpi_detection_module_struct
 void ndpi_search_mysql_tcp(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 {
   struct ndpi_packet_struct *packet = &flow->packet;
+
+  NDPI_LOG_DBG(ndpi_struct, "search MySQL\n");
 	
-  //      struct ndpi_id_struct         *src=ndpi_struct->src;
-  //      struct ndpi_id_struct         *dst=ndpi_struct->dst;
   if(packet->tcp) {
     if (packet->payload_packet_len > 38	//min length
 	&& get_u_int16_t(packet->payload, 0) == packet->payload_packet_len - 4	//first 3 bytes are length
@@ -55,7 +58,7 @@ void ndpi_search_mysql_tcp(struct ndpi_detection_module_struct *ndpi_struct, str
 	      && get_u_int64_t(packet->payload, a + 19) == 0x0ULL	//13 more
 	      && get_u_int32_t(packet->payload, a + 27) == 0x0	//filler bytes
 	      && get_u_int8_t(packet->payload, a + 31) == 0x0) {
-	    NDPI_LOG(NDPI_PROTOCOL_MYSQL, ndpi_struct, NDPI_LOG_DEBUG, "MySQL detected.\n");
+	    NDPI_LOG_INFO(ndpi_struct, "found MySQL\n");
 	    ndpi_int_mysql_add_connection(ndpi_struct, flow);
 	    return;
 	  }
@@ -65,7 +68,7 @@ void ndpi_search_mysql_tcp(struct ndpi_detection_module_struct *ndpi_struct, str
     }
   }
 
-  NDPI_ADD_PROTOCOL_TO_BITMASK(flow->excluded_protocol_bitmask, NDPI_PROTOCOL_MYSQL);
+  NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
 }
 
 
@@ -80,5 +83,3 @@ void init_mysql_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_in
 
   *id += 1;
 }
-
-#endif

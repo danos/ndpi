@@ -1,7 +1,7 @@
 /*
  * tcp_or_udp.c
  *
- * Copyright (C) 2011-15 - ntop.org
+ * Copyright (C) 2011-18 - ntop.org
  *
  * nDPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -74,7 +74,7 @@ void ndpi_search_tcp_or_udp(struct ndpi_detection_module_struct *ndpi_struct, st
 				       flow,
 				       flow->packet.iph ? flow->packet.iph->protocol :
 #ifdef NDPI_DETECTION_SUPPORT_IPV6
-				       flow->packet.iphv6->ip6_ctlun.ip6_un1.ip6_un1_nxt,
+				       flow->packet.iphv6->ip6_hdr.ip6_un1_nxt,
 #else
 				       0,
 #endif
