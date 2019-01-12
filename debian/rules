@@ -6,7 +6,7 @@ include /usr/share/dpkg/buildflags.mk
 include /usr/share/dpkg/pkg-info.mk
 
 # Used by debian/libndpi-wireshark.install
-export WIRESHARK_VERSION = 2.4.3
+export WIRESHARK_VERSION = $(strip $(shell apt-cache policy wireshark | grep Candidate | sed 's,.*Candidate: ,,;s,-.*,,'))
 
 %:
 	dh $@
