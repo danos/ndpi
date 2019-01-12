@@ -1,0 +1,20 @@
+--- a/src/lib/Makefile.in
++++ b/src/lib/Makefile.in
+@@ -33,7 +33,7 @@ ifeq ($(OS),Darwin)
+ CC=clang
+ SONAME_FLAG=
+ else
+-SONAME_FLAG=-Wl,-soname,$(NDPI_LIB_SHARED_BASE).$(NDPI_VERSION_MAJOR)
++SONAME_FLAG=-Wl,-soname,$(NDPI_LIB_SHARED_BASE).5.$(NDPI_VERSION_MAJOR).0
+ endif
+ 
+ all: $(NDPI_LIBS)
+@@ -47,7 +47,7 @@ $(NDPI_LIB_STATIC): $(OBJECTS)
+ $(NDPI_LIB_SHARED): $(OBJECTS)
+ 	$(CC) -shared -fPIC $(SONAME_FLAG) -o $@ $(OBJECTS)
+ 	ln -Ffs $(NDPI_LIB_SHARED) $(NDPI_LIB_SHARED_BASE)
+-	ln -Ffs $(NDPI_LIB_SHARED) $(NDPI_LIB_SHARED_BASE).$(NDPI_VERSION_MAJOR)
++	ln -Ffs $(NDPI_LIB_SHARED) $(NDPI_LIB_SHARED_BASE).5
+ 
+ %.o: %.c $(HEADERS) Makefile
+ 	$(CC) $(CFLAGS) -c $< -o $@

@@ -1,1 +1,2 @@
 fix-makefile-prefix
+use-soname-of-old-debian-package
