@@ -26,6 +26,7 @@ override_dh_auto_test:
 	rm -f tests/pcap/http_ipv6.pcap
 	rm -f tests/pcap/quic.pcap
 	rm -f tests/pcap/skype.pcap
+	rm -f tests/pcap/skype_no_unknown.pcap
 	rm -f tests/pcap/wechat.pcap
 	rm -f tests/pcap/youtube_quic.pcap
 	rm -f tests/pcap/youtubeupload.pcap
