@@ -1,6 +1,8 @@
 ndpi (2.6-1.0) unstable; urgency=medium
 
   * Non-maintainer upload.
+  * [f0451ce] Add gitlab CI file.
+  * [9a4a0f1] Disable tests which are broken on big endian.
   * [e941738] Update upstream source from tag 'upstream/2.6'
     Update to upstream version '2.6'
     with Debian dir ebb088f5b1a1a88743e71021b4a9c252b397527e
