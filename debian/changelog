@@ -1,12 +1,28 @@
-ndpi (2.6-1~1.gbpe94173) UNRELEASED; urgency=medium
+ndpi (2.6-1.0) unstable; urgency=medium
 
-  ** SNAPSHOT build @e9417387af387f4d8b9c9aa88c037139620e6fb0 **
-
+  * Non-maintainer upload.
   * [e941738] Update upstream source from tag 'upstream/2.6'
     Update to upstream version '2.6'
     with Debian dir ebb088f5b1a1a88743e71021b4a9c252b397527e
+    This will also hopefully fix all test issues.
+    Closes: #886133
+  * [a7ca26d] Removing patches as they don't apply anymore.
+  * [fcf4fce] snapshot changelog
+  * [6c04f9e] get wireshark version from apt
+  * [52af6ea] Disable binary patches for tests
+  * [61b7054] Install into /usr
+  * [9a430fe] Add patch to fix prefix in Makefile.
+  * [dfc35cb] Add patch to stay at libndpi5.
+    The last upload was patched to use 5 as library version.
+    This conflicts with upstream, but as we don't want a transition now,
+    leave it as it is for now.
+  * [647cd1a] Fix and activate tests.
+  * [7c3dfea] Fix wireshark version and info.
+  * [5c816a9] More fixes for the library soname change.
+  * [65e0c54] Updating git info
+  * [e54c89d] Updating symbols file.
 
- -- Bernd Zeimetz <bzed@debian.org>  Sat, 12 Jan 2019 16:45:26 +0100
+ -- Bernd Zeimetz <bzed@debian.org>  Sun, 13 Jan 2019 11:28:29 +0100
 
 ndpi (2.2-1) unstable; urgency=medium
 
