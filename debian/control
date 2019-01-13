@@ -13,8 +13,8 @@ Build-Depends:
     xdelta,
 Standards-Version: 4.1.2
 Homepage: http://www.ntop.org/products/ndpi/
-Vcs-Git: https://anonscm.debian.org/git/collab-maint/ndpi.git
-Vcs-Browser: https://anonscm.debian.org/gitweb/?p=collab-maint/ndpi.git
+Vcs-Git: https://salsa.debian.org/debian/ndpi.git
+Vcs-Browser: https://salsa.debian.org/debian/ndpi
 
 Package: libndpi-dev
 Section: libdevel
