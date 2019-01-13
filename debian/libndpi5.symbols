@@ -1,63 +1,526 @@
 libndpi.so.5 libndpi5 #MINVER#
+ NDPI_BITMASK_COMPARE@Base 2.6
+ NDPI_BITMASK_IS_EMPTY@Base 2.6
+ NDPI_DUMP_BITMASK@Base 2.6
+ NDPI_PROTOCOL_IP_clear@Base 2.6
+ NDPI_PROTOCOL_IP_is_set@Base 2.6
+ ac_automata_add@Base 2.6
+ ac_automata_display@Base 2.6
+ ac_automata_finalize@Base 2.6
+ ac_automata_init@Base 2.6
+ ac_automata_release@Base 2.6
+ ac_automata_reset@Base 2.6
+ ac_automata_search@Base 2.6
+ bt_decode@Base 2.6
+ bt_parse_debug@Base 2.6
+ cache_add@Base 2.6
+ cache_contains@Base 2.6
+ cache_entry_map_new@Base 2.6
+ cache_entry_new@Base 2.6
+ cache_free@Base 2.6
+ cache_new@Base 2.6
+ cache_remove@Base 2.6
+ cache_touch_entry@Base 2.6
+ cb_data@Base 2.6
+ check_ndpi_other_flow_func@Base 2.6
+ check_ndpi_tcp_flow_func@Base 2.6
+ check_ndpi_udp_flow_func@Base 2.6
+ check_punycode_string@Base 2.6
+ content_match@Base 2.6
+ getSSLcertificate@Base 2.6
+ host_match@Base 2.6
+ ht_create@Base 2.6
+ ht_free@Base 2.6
+ ht_get@Base 2.6
+ ht_hash@Base 2.6
+ ht_newpair@Base 2.6
+ ht_set@Base 2.6
+ init_afp_dissector@Base 2.6
+ init_aimini_dissector@Base 2.6
+ init_ajp_dissector@Base 2.6
+ init_amqp_dissector@Base 2.6
+ init_apple_push_dissector@Base 2.6
+ init_applejuice_dissector@Base 2.6
+ init_armagetron_dissector@Base 2.6
+ init_ayiya_dissector@Base 2.6
+ init_battlefield_dissector@Base 2.6
+ init_bgp_dissector@Base 2.6
+ init_bittorrent_dissector@Base 2.6
+ init_bjnp_dissector@Base 2.6
+ init_checkmk_dissector@Base 2.6
+ init_ciscovpn_dissector@Base 2.6
+ init_citrix_dissector@Base 2.6
+ init_coap_dissector@Base 2.6
+ init_corba_dissector@Base 2.6
+ init_crossfire_dissector@Base 2.6
+ init_csgo_dissector@Base 2.6
+ init_dcerpc_dissector@Base 2.6
+ init_dhcp_dissector@Base 2.6
+ init_dhcpv6_dissector@Base 2.6
+ init_diameter_dissector@Base 2.6
+ init_directconnect_dissector@Base 2.6
+ init_directdownloadlink_dissector@Base 2.6
+ init_dns_dissector@Base 2.6
+ init_dofus_dissector@Base 2.6
+ init_drda_dissector@Base 2.6
+ init_dropbox_dissector@Base 2.6
+ init_eaq_dissector@Base 2.6
+ init_edonkey_dissector@Base 2.6
+ init_fasttrack_dissector@Base 2.6
+ init_fbzero_dissector@Base 2.6
+ init_fiesta_dissector@Base 2.6
+ init_fix_dissector@Base 2.6
+ init_florensia_dissector@Base 2.6
+ init_ftp_control_dissector@Base 2.6
+ init_ftp_data_dissector@Base 2.6
+ init_git_dissector@Base 2.6
+ init_gnutella_dissector@Base 2.6
+ init_gtp_dissector@Base 2.6
+ init_guildwars_dissector@Base 2.6
+ init_h323_dissector@Base 2.6
+ init_halflife2_dissector@Base 2.6
+ init_hangout_dissector@Base 2.6
+ init_hep_dissector@Base 2.6
+ init_http_activesync_dissector@Base 2.6
+ init_http_dissector@Base 2.6
+ init_iax_dissector@Base 2.6
+ init_icecast_dissector@Base 2.6
+ init_ipp_dissector@Base 2.6
+ init_irc_dissector@Base 2.6
+ init_jabber_dissector@Base 2.6
+ init_kakaotalk_voice_dissector@Base 2.6
+ init_kerberos_dissector@Base 2.6
+ init_kontiki_dissector@Base 2.6
+ init_ldap_dissector@Base 2.6
+ init_lisp_dissector@Base 2.6
+ init_lotus_notes_dissector@Base 2.6
+ init_mail_imap_dissector@Base 2.6
+ init_mail_pop_dissector@Base 2.6
+ init_mail_smtp_dissector@Base 2.6
+ init_maplestory_dissector@Base 2.6
+ init_mdns_dissector@Base 2.6
+ init_megaco_dissector@Base 2.6
+ init_memcached_dissector@Base 2.6
+ init_mgpc_dissector@Base 2.6
+ init_mining_dissector@Base 2.6
+ init_mpegts_dissector@Base 2.6
+ init_mqtt_dissector@Base 2.6
+ init_msn_dissector@Base 2.6
+ init_mssql_tds_dissector@Base 2.6
+ init_mysql_dissector@Base 2.6
+ init_nest_log_sink_dissector@Base 2.6
+ init_netbios_dissector@Base 2.6
+ init_netflow_dissector@Base 2.6
+ init_nfs_dissector@Base 2.6
+ init_nintendo_dissector@Base 2.6
+ init_noe_dissector@Base 2.6
+ init_non_tcp_udp_dissector@Base 2.6
+ init_ntp_dissector@Base 2.6
+ init_ookla_dissector@Base 2.6
+ init_openft_dissector@Base 2.6
+ init_openvpn_dissector@Base 2.6
+ init_oracle_dissector@Base 2.6
+ init_oscar_dissector@Base 2.6
+ init_pando_dissector@Base 2.6
+ init_pcanywhere_dissector@Base 2.6
+ init_postgres_dissector@Base 2.6
+ init_pplive_dissector@Base 2.6
+ init_ppstream_dissector@Base 2.6
+ init_pptp_dissector@Base 2.6
+ init_qq_dissector@Base 2.6
+ init_quic_dissector@Base 2.6
+ init_radius_dissector@Base 2.6
+ init_rdp_dissector@Base 2.6
+ init_redis_dissector@Base 2.6
+ init_rsync_dissector@Base 2.6
+ init_rtcp_dissector@Base 2.6
+ init_rtmp_dissector@Base 2.6
+ init_rtp_dissector@Base 2.6
+ init_rtsp_dissector@Base 2.6
+ init_rx_dissector@Base 2.6
+ init_sflow_dissector@Base 2.6
+ init_shoutcast_dissector@Base 2.6
+ init_sip_dissector@Base 2.6
+ init_skinny_dissector@Base 2.6
+ init_skype_dissector@Base 2.6
+ init_smb_dissector@Base 2.6
+ init_smpp_dissector@Base 2.6
+ init_snmp_dissector@Base 2.6
+ init_socks_dissector@Base 2.6
+ init_someip_dissector@Base 2.6
+ init_sopcast_dissector@Base 2.6
+ init_soulseek_dissector@Base 2.6
+ init_spotify_dissector@Base 2.6
+ init_ssdp_dissector@Base 2.6
+ init_ssh_dissector@Base 2.6
+ init_ssl_dissector@Base 2.6
+ init_starcraft_dissector@Base 2.6
+ init_stealthnet_dissector@Base 2.6
+ init_steam_dissector@Base 2.6
+ init_stun_dissector@Base 2.6
+ init_syslog_dissector@Base 2.6
+ init_teamspeak_dissector@Base 2.6
+ init_teamviewer_dissector@Base 2.6
+ init_telegram_dissector@Base 2.6
+ init_telnet_dissector@Base 2.6
+ init_teredo_dissector@Base 2.6
+ init_tftp_dissector@Base 2.6
+ init_thunder_dissector@Base 2.6
+ init_tinc_dissector@Base 2.6
+ init_tor_dissector@Base 2.6
+ init_tvants_dissector@Base 2.6
+ init_tvuplayer_dissector@Base 2.6
+ init_ubntac2_dissector@Base 2.6
+ init_upnp_dissector@Base 2.6
+ init_usenet_dissector@Base 2.6
+ init_vhua_dissector@Base 2.6
+ init_viber_dissector@Base 2.6
+ init_vmware_dissector@Base 2.6
+ init_vnc_dissector@Base 2.6
+ init_warcraft3_dissector@Base 2.6
+ init_whatsapp_dissector@Base 2.6
+ init_whois_das_dissector@Base 2.6
+ init_world_of_kung_fu_dissector@Base 2.6
+ init_world_of_warcraft_dissector@Base 2.6
+ init_xbox_dissector@Base 2.6
+ init_xdmcp_dissector@Base 2.6
+ init_yahoo_dissector@Base 2.6
+ init_zattoo_dissector@Base 2.6
+ init_zmq_dissector@Base 2.6
+ is_diameter@Base 2.6
+ is_udp_guessable_protocol@Base 2.6
+ jenkins_one_at_a_time_hash@Base 2.6
+ lruc_cmp_keys@Base 2.6
+ lruc_delete@Base 2.6
+ lruc_free@Base 2.6
+ lruc_get@Base 2.6
+ lruc_hash@Base 2.6
+ lruc_new@Base 2.6
+ lruc_pop_or_create_item@Base 2.6
+ lruc_remove_item@Base 2.6
+ lruc_remove_lru_item@Base 2.6
+ lruc_set@Base 2.6
+ ndpi_Clear_Patricia@Base 2.6
+ ndpi_DeleteEntry@Base 2.6
+ ndpi_Deref_Prefix@Base 2.6
+ ndpi_Destroy_Patricia@Base 2.6
+ ndpi_New_Patricia@Base 2.6
+ ndpi_New_Prefix2@Base 2.6
+ ndpi_New_Prefix@Base 2.6
+ ndpi_Ref_Prefix@Base 2.6
+ ndpi_add_content_subprotocol@Base 2.6
  ndpi_add_string_to_automa@Base 1.8
  ndpi_add_string_value_to_automa@Base 2.2
+ ndpi_apply_flow_protocol_to_packet@Base 2.6
+ ndpi_ascii2prefix@Base 2.6
+ ndpi_build_default_ports@Base 2.6
+ ndpi_build_default_ports_range@Base 2.6
+ ndpi_bytestream_dec_or_hex_to_number64@Base 2.6
+ ndpi_bytestream_dec_or_hex_to_number@Base 2.6
+ ndpi_bytestream_to_ipv4@Base 2.6
+ ndpi_bytestream_to_number64@Base 2.6
+ ndpi_bytestream_to_number@Base 2.6
  ndpi_calloc@Base 1.7.1~git20151130.6f3d5a7
  ndpi_category_get_name@Base 2.2
  ndpi_category_set_name@Base 2.2
+ ndpi_check_flow_func@Base 2.6
+ ndpi_check_for_email_address@Base 2.6
+ ndpi_check_rx@Base 2.6
+ ndpi_check_starcraft_tcp@Base 2.6
+ ndpi_check_starcraft_udp@Base 2.6
+ ndpi_comp_with_mask@Base 2.6
+ ndpi_connection_tracking@Base 2.6
+ ndpi_debug_printf@Base 2.6
+ ndpi_default_ports_tree_node_t_walker@Base 2.6
+ ndpi_detection_get_l4@Base 2.6
  ndpi_detection_get_sizeof_ndpi_flow_struct@Base 1.4.0+svn6712
  ndpi_detection_get_sizeof_ndpi_id_struct@Base 1.4.0+svn6712
  ndpi_detection_giveup@Base 1.8
  ndpi_detection_process_packet@Base 1.4.0+svn6712
  ndpi_dump_protocols@Base 1.4.0+svn6712
+ ndpi_enable_loaded_categories@Base 2.6
+ ndpi_exclude_protocol@Base 2.6
  ndpi_exit_detection_module@Base 1.4.0+svn6712
+ ndpi_fill_ip_protocol_category@Base 2.6
+ ndpi_fill_protocol_category@Base 2.6
  ndpi_finalize_automa@Base 1.8
  ndpi_flow_free@Base 2.2
  ndpi_flow_malloc@Base 2.2
+ ndpi_flowv4_flow_hash@Base 2.6
+ ndpi_flowv6_flow_hash@Base 2.6
  ndpi_free@Base 1.4.0+svn6712
  ndpi_free_automa@Base 1.8
  ndpi_free_flow@Base 1.6
+ ndpi_get_api_version@Base 2.6
+ ndpi_get_category_id@Base 2.6
+ ndpi_get_custom_category_match@Base 2.6
  ndpi_get_flow_masterprotocol@Base 1.7
  ndpi_get_http_content_type@Base 1.6
  ndpi_get_http_method@Base 1.6
  ndpi_get_http_url@Base 1.6
  ndpi_get_lower_proto@Base 1.7.1~git20151130.6f3d5a7
+ ndpi_get_ndpi_detection_module_size@Base 2.6
+ ndpi_get_ndpi_num_custom_protocols@Base 2.6
+ ndpi_get_ndpi_num_supported_protocols@Base 2.6
  ndpi_get_num_supported_protocols@Base 1.4.0+svn6712
  ndpi_get_proto_breed@Base 1.6
  ndpi_get_proto_breed_name@Base 1.6
  ndpi_get_proto_by_id@Base 1.7
  ndpi_get_proto_by_name@Base 2.2
  ndpi_get_proto_category@Base 2.2
+ ndpi_get_proto_defaults@Base 2.6
  ndpi_get_proto_name@Base 1.4.0+svn6712
  ndpi_get_protocol_id@Base 1.5.1
  ndpi_get_protocol_id_master_proto@Base 1.7
  ndpi_guess_protocol_id@Base 1.7
  ndpi_guess_undetected_protocol@Base 1.4.0+svn6712
+ ndpi_handle_rule@Base 2.6
  ndpi_init_automa@Base 1.8
  ndpi_init_detection_module@Base 1.4.0+svn6712
+ ndpi_init_protocol_match@Base 2.6
+ ndpi_int_change_category@Base 2.6
+ ndpi_int_change_flow_protocol@Base 2.6
+ ndpi_int_change_packet_protocol@Base 2.6
+ ndpi_int_change_protocol@Base 2.6
+ ndpi_int_reset_packet_protocol@Base 2.6
+ ndpi_int_reset_protocol@Base 2.6
+ ndpi_ips_match@Base 2.6
  ndpi_is_custom_category@Base 2.2
  ndpi_is_proto@Base 1.7.1~git20151130.6f3d5a7
+ ndpi_is_ssl_tor@Base 2.6
  ndpi_is_subprotocol_informative@Base 2.2
+ ndpi_is_tor_flow@Base 2.6
+ ndpi_load_hostname_category@Base 2.6
+ ndpi_load_ip_category@Base 2.6
  ndpi_load_protocols_file@Base 1.4.0+svn6712
  ndpi_malloc@Base 1.7.1~git20151130.6f3d5a7
+ ndpi_match_bigram@Base 2.6
+ ndpi_match_content_subprotocol@Base 2.6
+ ndpi_match_host_subprotocol@Base 2.6
+ ndpi_match_prefix@Base 2.6
  ndpi_match_string@Base 1.8
  ndpi_match_string_id@Base 2.2
  ndpi_match_string_subprotocol@Base 1.8
+ ndpi_my_inet_pton@Base 2.6
+ ndpi_net_match@Base 2.6
  ndpi_netbios_name_interpret@Base 2.2
+ ndpi_network_ptree_match@Base 2.6
+ ndpi_packet_dst_ip_eql@Base 2.6
+ ndpi_packet_dst_ip_get@Base 2.6
+ ndpi_packet_src_ip_eql@Base 2.6
+ ndpi_packet_src_ip_get@Base 2.6
+ ndpi_parse_packet_line_info@Base 2.6
+ ndpi_parse_packet_line_info_any@Base 2.6
+ ndpi_patricia_lookup@Base 2.6
+ ndpi_patricia_process@Base 2.6
+ ndpi_patricia_remove@Base 2.6
+ ndpi_patricia_search_best2@Base 2.6
+ ndpi_patricia_search_best@Base 2.6
+ ndpi_patricia_search_exact@Base 2.6
+ ndpi_patricia_walk_inorder@Base 2.6
+ ndpi_prefix_toa2@Base 2.6
+ ndpi_prefix_toa2x@Base 2.6
+ ndpi_prefix_toa@Base 2.6
+ ndpi_prefix_tochar@Base 2.6
  ndpi_process_extra_packet@Base 2.2
+ ndpi_protocol2id@Base 2.6
  ndpi_protocol2name@Base 1.7
+ ndpi_realloc@Base 2.6
  ndpi_revision@Base 1.4.0+svn6712
+ ndpi_search_activesync@Base 2.6
+ ndpi_search_afp@Base 2.6
+ ndpi_search_aimini@Base 2.6
+ ndpi_search_ajp@Base 2.6
+ ndpi_search_amqp@Base 2.6
+ ndpi_search_apple_push@Base 2.6
+ ndpi_search_applejuice_tcp@Base 2.6
+ ndpi_search_armagetron_udp@Base 2.6
+ ndpi_search_ayiya@Base 2.6
+ ndpi_search_battlefield@Base 2.6
+ ndpi_search_bgp@Base 2.6
+ ndpi_search_bittorrent@Base 2.6
+ ndpi_search_bjnp@Base 2.6
+ ndpi_search_checkmk@Base 2.6
+ ndpi_search_ciscovpn@Base 2.6
+ ndpi_search_citrix@Base 2.6
+ ndpi_search_coap@Base 2.6
+ ndpi_search_collectd@Base 2.6
+ ndpi_search_corba@Base 2.6
+ ndpi_search_crossfire_tcp_udp@Base 2.6
+ ndpi_search_csgo@Base 2.6
+ ndpi_search_dcerpc@Base 2.6
+ ndpi_search_dhcp_udp@Base 2.6
+ ndpi_search_dhcpv6_udp@Base 2.6
+ ndpi_search_diameter@Base 2.6
+ ndpi_search_direct_download_link_tcp@Base 2.6
+ ndpi_search_directconnect@Base 2.6
+ ndpi_search_dns@Base 2.6
+ ndpi_search_dofus@Base 2.6
+ ndpi_search_drda@Base 2.6
+ ndpi_search_dropbox@Base 2.6
+ ndpi_search_eaq@Base 2.6
+ ndpi_search_edonkey@Base 2.6
+ ndpi_search_fasttrack_tcp@Base 2.6
+ ndpi_search_fbzero@Base 2.6
+ ndpi_search_fiesta@Base 2.6
+ ndpi_search_fix@Base 2.6
+ ndpi_search_florensia@Base 2.6
+ ndpi_search_ftp_control@Base 2.6
+ ndpi_search_ftp_data@Base 2.6
+ ndpi_search_git@Base 2.6
+ ndpi_search_gnutella@Base 2.6
+ ndpi_search_gtp@Base 2.6
+ ndpi_search_guildwars_tcp@Base 2.6
+ ndpi_search_h323@Base 2.6
+ ndpi_search_halflife2@Base 2.6
+ ndpi_search_hangout@Base 2.6
+ ndpi_search_hep@Base 2.6
+ ndpi_search_http_tcp@Base 2.6
+ ndpi_search_iax@Base 2.6
+ ndpi_search_icecast_tcp@Base 2.6
+ ndpi_search_in_non_tcp_udp@Base 2.6
+ ndpi_search_ipp@Base 2.6
+ ndpi_search_irc_ssl_detect_ninety_percent_but_very_fast@Base 2.6
+ ndpi_search_irc_tcp@Base 2.6
+ ndpi_search_jabber_tcp@Base 2.6
+ ndpi_search_kakaotalk_voice@Base 2.6
+ ndpi_search_kerberos@Base 2.6
+ ndpi_search_kontiki@Base 2.6
+ ndpi_search_ldap@Base 2.6
+ ndpi_search_lisp@Base 2.6
+ ndpi_search_lotus_notes@Base 2.6
+ ndpi_search_mail_imap_tcp@Base 2.6
+ ndpi_search_mail_pop_tcp@Base 2.6
+ ndpi_search_mail_smtp_tcp@Base 2.6
+ ndpi_search_maplestory@Base 2.6
+ ndpi_search_mdns@Base 2.6
+ ndpi_search_megaco@Base 2.6
+ ndpi_search_memcached@Base 2.6
+ ndpi_search_mgcp@Base 2.6
+ ndpi_search_mining_tcp@Base 2.6
+ ndpi_search_mpegts@Base 2.6
+ ndpi_search_mqtt@Base 2.6
+ ndpi_search_msn@Base 2.6
+ ndpi_search_mssql_tds@Base 2.6
+ ndpi_search_mysql_tcp@Base 2.6
+ ndpi_search_nest_log_sink@Base 2.6
+ ndpi_search_netbios@Base 2.6
+ ndpi_search_netflow@Base 2.6
+ ndpi_search_nfs@Base 2.6
+ ndpi_search_nintendo@Base 2.6
+ ndpi_search_noe@Base 2.6
+ ndpi_search_ntp_udp@Base 2.6
+ ndpi_search_ookla@Base 2.6
+ ndpi_search_openft_tcp@Base 2.6
+ ndpi_search_openvpn@Base 2.6
+ ndpi_search_oracle@Base 2.6
+ ndpi_search_oscar@Base 2.6
+ ndpi_search_pando@Base 2.6
+ ndpi_search_pcanywhere@Base 2.6
+ ndpi_search_postgres_tcp@Base 2.6
+ ndpi_search_pplive@Base 2.6
+ ndpi_search_ppstream@Base 2.6
+ ndpi_search_pptp@Base 2.6
+ ndpi_search_qq@Base 2.6
+ ndpi_search_quic@Base 2.6
+ ndpi_search_radius@Base 2.6
+ ndpi_search_rdp@Base 2.6
+ ndpi_search_redis@Base 2.6
+ ndpi_search_rsync@Base 2.6
+ ndpi_search_rtcp@Base 2.6
+ ndpi_search_rtmp@Base 2.6
+ ndpi_search_rtp@Base 2.6
+ ndpi_search_rtsp_tcp_udp@Base 2.6
+ ndpi_search_rx@Base 2.6
+ ndpi_search_sflow@Base 2.6
+ ndpi_search_shoutcast_tcp@Base 2.6
+ ndpi_search_sip@Base 2.6
+ ndpi_search_skinny@Base 2.6
+ ndpi_search_skype@Base 2.6
+ ndpi_search_smb_tcp@Base 2.6
+ ndpi_search_smpp_tcp@Base 2.6
+ ndpi_search_snmp@Base 2.6
+ ndpi_search_socks@Base 2.6
+ ndpi_search_someip@Base 2.6
+ ndpi_search_sopcast@Base 2.6
+ ndpi_search_soulseek_tcp@Base 2.6
+ ndpi_search_spotify@Base 2.6
+ ndpi_search_ssdp@Base 2.6
+ ndpi_search_ssh_tcp@Base 2.6
+ ndpi_search_ssl_tcp@Base 2.6
+ ndpi_search_starcraft@Base 2.6
+ ndpi_search_stealthnet@Base 2.6
+ ndpi_search_steam@Base 2.6
+ ndpi_search_stun@Base 2.6
+ ndpi_search_syslog@Base 2.6
+ ndpi_search_tcp_or_udp@Base 2.6
+ ndpi_search_tcp_or_udp_raw@Base 2.6
+ ndpi_search_teamspeak@Base 2.6
+ ndpi_search_teamview@Base 2.6
+ ndpi_search_telegram@Base 2.6
+ ndpi_search_telnet_tcp@Base 2.6
+ ndpi_search_teredo@Base 2.6
+ ndpi_search_tftp@Base 2.6
+ ndpi_search_thunder@Base 2.6
+ ndpi_search_tinc@Base 2.6
+ ndpi_search_tor@Base 2.6
+ ndpi_search_tvants_udp@Base 2.6
+ ndpi_search_tvuplayer@Base 2.6
+ ndpi_search_ubntac2@Base 2.6
+ ndpi_search_upnp@Base 2.6
+ ndpi_search_usenet_tcp@Base 2.6
+ ndpi_search_vhua@Base 2.6
+ ndpi_search_viber@Base 2.6
+ ndpi_search_vmware@Base 2.6
+ ndpi_search_vnc_tcp@Base 2.6
+ ndpi_search_warcraft3@Base 2.6
+ ndpi_search_whatsapp@Base 2.6
+ ndpi_search_whois_das@Base 2.6
+ ndpi_search_world_of_kung_fu@Base 2.6
+ ndpi_search_worldofwarcraft@Base 2.6
+ ndpi_search_xbox@Base 2.6
+ ndpi_search_xdmcp@Base 2.6
+ ndpi_search_yahoo@Base 2.6
+ ndpi_search_zattoo@Base 2.6
+ ndpi_search_zmq@Base 2.6
+ ndpi_set_bitmask_protocol_detection@Base 2.6
  ndpi_set_detected_protocol@Base 1.7
+ ndpi_set_detection_preferences@Base 2.6
+ ndpi_set_log_level@Base 2.6
+ ndpi_set_proto_breed@Base 2.6
  ndpi_set_proto_category@Base 2.2
  ndpi_set_proto_defaults@Base 1.4.0+svn6712
  ndpi_set_protocol_detection_bitmask2@Base 1.4.0+svn6712
+ ndpi_strdup@Base 2.6
+ ndpi_strncasestr@Base 2.6
  ndpi_strnstr@Base 1.8
  ndpi_tdelete@Base 1.4.0+svn6712
  ndpi_tdestroy@Base 1.4.0+svn6712
  ndpi_tfind@Base 1.4.0+svn6712
  ndpi_tsearch@Base 1.4.0+svn6712
  ndpi_twalk@Base 1.4.0+svn6712
+ node_assign_id@Base 2.6
+ node_create@Base 2.6
+ node_create_next@Base 2.6
+ node_edge_compare@Base 2.6
+ node_find_next@Base 2.6
+ node_findbs_next@Base 2.6
+ node_has_matchstr@Base 2.6
+ node_init@Base 2.6
+ node_register_matchstr@Base 2.6
+ node_register_outgoing@Base 2.6
+ node_release@Base 2.6
+ node_sort_edges@Base 2.6
+ ntohs_ndpi_bytestream_to_number@Base 2.6
+ sc2_match_logon_ip@Base 2.6
+ search_ddl_domains@Base 2.6
  set_ndpi_debug_function@Base 1.8
  set_ndpi_flow_free@Base 2.2
  set_ndpi_flow_malloc@Base 2.2
  set_ndpi_free@Base 1.8
  set_ndpi_malloc@Base 1.8
+ sha1_compress@Base 2.6
+ sort@Base 2.6
+ sslDetectProtocolFromCertificate@Base 2.6
+ sslInitExtraPacketProcessing@Base 2.6
+ sslTryAndRetrieveServerCertificate@Base 2.6
