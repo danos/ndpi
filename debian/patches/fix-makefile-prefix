@@ -1,3 +1,6 @@
+Description: Ensure prefix and libdir point to /usr and not /usr/local
+Author: Bernd Zeimetz <bzed@debian.org>
+
 --- a/src/lib/Makefile.in
 +++ b/src/lib/Makefile.in
 @@ -10,8 +10,8 @@
