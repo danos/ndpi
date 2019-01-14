@@ -1,4 +1,4 @@
-libndpi.so.5 libndpi5 #MINVER#
+libndpi.so.2.6 libndpi2.6 #MINVER#
  NDPI_BITMASK_COMPARE@Base 2.6
  NDPI_BITMASK_IS_EMPTY@Base 2.6
  NDPI_DUMP_BITMASK@Base 2.6

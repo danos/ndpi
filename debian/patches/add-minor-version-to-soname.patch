@@ -1,0 +1,44 @@
+Description: Change SONAME include the minor version of the library, as
+ upstream typically break ABI at every minor release.
+Author: Ludovico Cavedon <cavedon@debian.org>
+
+Index: ndpi/src/lib/Makefile.in
+===================================================================
+--- ndpi.orig/src/lib/Makefile.in
++++ ndpi/src/lib/Makefile.in
+@@ -20,6 +20,7 @@ RANLIB     = ranlib
+ OBJECTS   = $(patsubst protocols/%.c, protocols/%.o, $(wildcard protocols/*.c)) $(patsubst third_party/src/%.c, third_party/src/%.o, $(wildcard third_party/src/*.c)) ndpi_main.o
+ HEADERS   = $(wildcard ../include/*.h)
+ NDPI_VERSION_MAJOR   = @NDPI_MAJOR@
++NDPI_VERSION_MINOR   = @NDPI_MINOR@
+ NDPI_LIB_STATIC      = libndpi.a
+ NDPI_LIB_SHARED_BASE = libndpi.so
+ NDPI_LIB_SHARED      = $(NDPI_LIB_SHARED_BASE).@NDPI_VERSION_SHORT@
+@@ -33,7 +34,7 @@ ifeq ($(OS),Darwin)
+ CC=clang
+ SONAME_FLAG=
+ else
+-SONAME_FLAG=-Wl,-soname,$(NDPI_LIB_SHARED_BASE).$(NDPI_VERSION_MAJOR)
++SONAME_FLAG=-Wl,-soname,$(NDPI_LIB_SHARED_BASE).$(NDPI_VERSION_MAJOR).$(NDPI_VERSION_MINOR)
+ endif
+ 
+ all: $(NDPI_LIBS)
+@@ -47,7 +48,7 @@ $(NDPI_LIB_STATIC): $(OBJECTS)
+ $(NDPI_LIB_SHARED): $(OBJECTS)
+ 	$(CC) -shared -fPIC $(SONAME_FLAG) -o $@ $(OBJECTS)
+ 	ln -Ffs $(NDPI_LIB_SHARED) $(NDPI_LIB_SHARED_BASE)
+-	ln -Ffs $(NDPI_LIB_SHARED) $(NDPI_LIB_SHARED_BASE).$(NDPI_VERSION_MAJOR)
++	ln -Ffs $(NDPI_LIB_SHARED) $(NDPI_LIB_SHARED_BASE).$(NDPI_VERSION_MAJOR).$(NDPI_VERSION_MINOR)
+ 
+ %.o: %.c $(HEADERS) Makefile
+ 	$(CC) $(CFLAGS) -c $< -o $@
+@@ -61,7 +62,7 @@ distclean: clean
+ install: $(NDPI_LIBS)
+ 	mkdir -p $(DESTDIR)$(libdir)
+ 	cp $(NDPI_LIBS) $(DESTDIR)$(libdir)/
+-	ln -Ffs $(DESTDIR)$(libdir)/$(NDPI_LIB_SHARED) $(DESTDIR)$(libdir)/$(NDPI_LIB_SHARED_BASE)
+-	ln -Ffs $(DESTDIR)$(libdir)/$(NDPI_LIB_SHARED) $(DESTDIR)$(libdir)/$(NDPI_LIB_SHARED_BASE).$(NDPI_VERSION_MAJOR)
++	ln -Ffs $(NDPI_LIB_SHARED) $(DESTDIR)$(libdir)/$(NDPI_LIB_SHARED_BASE)
++	ln -Ffs $(NDPI_LIB_SHARED) $(DESTDIR)$(libdir)/$(NDPI_LIB_SHARED_BASE).$(NDPI_VERSION_MAJOR).$(NDPI_VERSION_MINOR)
+ 	mkdir -p $(DESTDIR)$(includedir)
+ 	cp ../include/*.h $(DESTDIR)$(includedir)

@@ -19,7 +19,7 @@ Vcs-Browser: https://salsa.debian.org/debian/ndpi
 Package: libndpi-dev
 Section: libdevel
 Architecture: any
-Depends: libndpi5 (= ${binary:Version}), ${misc:Depends}
+Depends: libndpi2.6 (= ${binary:Version}), ${misc:Depends}
 Description: extensible deep packet inspection library - development files
  nDPI is a ntop-maintained superset of the popular OpenDPI library. Released
  under the LGPL license, its goal is to extend the original library by adding
@@ -35,7 +35,7 @@ Description: extensible deep packet inspection library - development files
  .
  This package contains the static library and compilation headers.
 
-Package: libndpi5
+Package: libndpi2.6
 Architecture: any
 Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
