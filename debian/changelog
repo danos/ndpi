@@ -1,5 +1,8 @@
-ndpi (2.6-1.0) unstable; urgency=medium
+ndpi (2.6-1~1.gbp521b7e) UNRELEASED; urgency=medium
 
+  ** SNAPSHOT build @521b7ee1d0bc28eca6ab2208707f016bc81b36ef **
+
+  [ Bernd Zeimetz ]
   * Non-maintainer upload.
   * [e941738] Update upstream source from tag 'upstream/2.6'
     Update to upstream version '2.6'
@@ -25,7 +28,10 @@ ndpi (2.6-1.0) unstable; urgency=medium
   * [9a4a0f1] Disable tests which are broken on big endian.
   * [d58ddad] Disabling another test.
 
- -- Bernd Zeimetz <bzed@debian.org>  Sun, 13 Jan 2019 11:28:29 +0100
+  [ Ludovico Cavedon ]
+  * 
+
+ -- Ludovico Cavedon <cavedon@debian.org>  Sun, 13 Jan 2019 18:58:40 -0800
 
 ndpi (2.2-1) unstable; urgency=medium
 
