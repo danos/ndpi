@@ -1,6 +1,4 @@
-ndpi (2.6-1~3.gbpa78217) UNRELEASED; urgency=medium
-
-  ** SNAPSHOT build @a78217372cf7abe783755ba8deb9c9f17443c246 **
+ndpi (2.6-1) unstable; urgency=medium
 
   [ Bernd Zeimetz ]
   * [e941738] Update upstream source from tag 'upstream/2.6'
@@ -32,8 +30,9 @@ ndpi (2.6-1~3.gbpa78217) UNRELEASED; urgency=medium
   * Check DEB_BUILD_OPTIONS before running tests.
   * Update Standards-Version to 4.3.0.
   * Update debian/copyright for new upstream code.
+  * Update changelog for snapshot upload.
 
- -- Ludovico Cavedon <cavedon@debian.org>  Sun, 13 Jan 2019 23:52:08 -0800
+ -- Ludovico Cavedon <cavedon@debian.org>  Mon, 14 Jan 2019 11:17:02 -0800
 
 ndpi (2.2-1) unstable; urgency=medium
 
