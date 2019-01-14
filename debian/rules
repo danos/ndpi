@@ -12,7 +12,6 @@ WIRESHARK_PLUGINDIR = $(shell pkg-config --variable=plugindir wireshark)
 	dh $@
 
 override_dh_auto_configure:
-	cp $(CURDIR)/src/lib/third_party/include/libcache.h $(CURDIR)/src/include/
 	./autogen.sh
 	dh_auto_configure -- --prefix=/usr
 
