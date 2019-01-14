@@ -1,27 +1,18 @@
-ndpi (2.6-1~1.gbp521b7e) UNRELEASED; urgency=medium
+ndpi (2.6-1~2.gbp2b9b1f) UNRELEASED; urgency=medium
 
-  ** SNAPSHOT build @521b7ee1d0bc28eca6ab2208707f016bc81b36ef **
+  ** SNAPSHOT build @2b9b1f86ff9093b4ff672297b1e8d9c21c526ce7 **
 
   [ Bernd Zeimetz ]
-  * Non-maintainer upload.
   * [e941738] Update upstream source from tag 'upstream/2.6'
     Update to upstream version '2.6'
     with Debian dir ebb088f5b1a1a88743e71021b4a9c252b397527e
     This will also hopefully fix all test issues.
     Closes: #886133
   * [a7ca26d] Removing patches as they don't apply anymore.
-  * [fcf4fce] snapshot changelog
-  * [6c04f9e] get wireshark version from apt
   * [52af6ea] Disable binary patches for tests
   * [61b7054] Install into /usr
   * [9a430fe] Add patch to fix prefix in Makefile.
-  * [dfc35cb] Add patch to stay at libndpi5.
-    The last upload was patched to use 5 as library version.
-    This conflicts with upstream, but as we don't want a transition now,
-    leave it as it is for now.
   * [647cd1a] Fix and activate tests.
-  * [7c3dfea] Fix wireshark version and info.
-  * [5c816a9] More fixes for the library soname change.
   * [65e0c54] Updating git info
   * [e54c89d] Updating symbols file.
   * [f0451ce] Add gitlab CI file.
@@ -29,9 +20,19 @@ ndpi (2.6-1~1.gbp521b7e) UNRELEASED; urgency=medium
   * [d58ddad] Disabling another test.
 
   [ Ludovico Cavedon ]
-  * 
+  * Update changelog to snapshot entry.
+  * Change SONAME and lib package name to include minory library version.
+  * Use libwireshark-dev to determine wireshak plugin path.
+  * Add define-have-json-c.patch to ensure ndpiReader is compiled with JSON
+    support.
+  * Link ndpiReader dynamically against libndpi and avoid lnking against
+    unnecessary C++ libraries.
+  * Stop adding libcache.h to -dev package.
+  * Add DEP3 header to patches/fix-makefile-prefix.
+  * Check DEB_BUILD_OPTIONS before running tests.
+  * Update Standards-Version to 4.3.0.
 
- -- Ludovico Cavedon <cavedon@debian.org>  Sun, 13 Jan 2019 18:58:40 -0800
+ -- Ludovico Cavedon <cavedon@debian.org>  Sun, 13 Jan 2019 22:48:43 -0800
 
 ndpi (2.2-1) unstable; urgency=medium
 
