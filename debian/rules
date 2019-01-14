@@ -30,7 +30,7 @@ override_dh_auto_test:
 	rm -f tests/pcap/wechat.pcap
 	rm -f tests/pcap/youtube_quic.pcap
 	rm -f tests/pcap/youtubeupload.pcap
-	cd tests && ./do.sh
+	cd tests && LD_LIBRARY_PATH=$(CURDIR)/src/lib ./do.sh
 
 override_dh_install:
 	# Used by debian/libndpi-wireshark.install.
