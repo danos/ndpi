@@ -1,2 +1,3 @@
 fix-makefile-prefix
 add-minor-version-to-soname.patch
+define-have-json-c.patch

@@ -1,0 +1,17 @@
+Description: Define HAVE_JSON_C so that ndpiReader is compiled with JSON
+ support. In theory ensuring HAVE_CONFIG_H is defined would be a better way,
+ but it looks like the library is compiled without HAVE_CONFIG_H, so defining
+ it for ndpiReader only may create more subtle issues.
+Author: Ludovico Cavedon <cavedon@debian.org>
+
+Index: ndpi/example/Makefile.in
+===================================================================
+--- ndpi.orig/example/Makefile.in
++++ ndpi/example/Makefile.in
+@@ -1,5 +1,5 @@
+ CC=@CC@
+-CFLAGS=-g -I../src/include @CFLAGS@
++CFLAGS=-g -I../src/include -DHAVE_JSON_C @CFLAGS@
+ LIBNDPI=../src/lib/libndpi.a
+ LDFLAGS=$(LIBNDPI) @PCAP_LIB@ -lpthread @LDFLAGS@
+ OBJS=ndpiReader.o ndpi_util.o
