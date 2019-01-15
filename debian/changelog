@@ -1,13 +1,10 @@
-ndpi (2.6-2~2.gbp0c5e23) UNRELEASED; urgency=medium
+ndpi (2.6-2) unstable; urgency=medium
 
-  ** SNAPSHOT build @0c5e23ee23ba21ff9193b6ac75e2a6ab63fa2e1a **
-
-  * UNRELEASED
   * Remove no longer needed build-dep on xdelta.
   * Fix reference-after-free in ndpiReader and optimistically re-enable all
     tests succeeding on amd64 and i386.
 
- -- Ludovico Cavedon <cavedon@debian.org>  Tue, 15 Jan 2019 00:53:39 -0800
+ -- Ludovico Cavedon <cavedon@debian.org>  Tue, 15 Jan 2019 01:04:36 -0800
 
 ndpi (2.6-1) unstable; urgency=medium
 
