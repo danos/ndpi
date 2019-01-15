@@ -1,3 +1,11 @@
+ndpi (2.6-2~1.gbp15b321) UNRELEASED; urgency=medium
+
+  ** SNAPSHOT build @15b32135906582f1fab178c39f61f612e4b9b155 **
+
+  * UNRELEASED
+
+ -- Ludovico Cavedon <cavedon@debian.org>  Tue, 15 Jan 2019 00:19:12 -0800
+
 ndpi (2.6-1) unstable; urgency=medium
 
   [ Bernd Zeimetz ]
