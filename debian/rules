@@ -20,16 +20,7 @@ ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
 	# disable generally broken tests
 	rm -f tests/pcap/nintendo.pcap
 	rm -f tests/pcap/skype-conference-call.pcap
-	# disable tests broken on big endian
 	rm -f tests/pcap/1kxun.pcap
-	rm -f tests/pcap/KakaoTalk_chat.pcap
-	rm -f tests/pcap/http_ipv6.pcap
-	rm -f tests/pcap/quic.pcap
-	rm -f tests/pcap/skype.pcap
-	rm -f tests/pcap/skype_no_unknown.pcap
-	rm -f tests/pcap/wechat.pcap
-	rm -f tests/pcap/youtube_quic.pcap
-	rm -f tests/pcap/youtubeupload.pcap
 	cd tests && LD_LIBRARY_PATH=$(CURDIR)/src/lib ./do.sh
 endif
 
