@@ -26,7 +26,6 @@ ndpi (2.6-1) unstable; urgency=medium
   * [d58ddad] Disabling another test.
 
   [ Ludovico Cavedon ]
-  * Update changelog to snapshot entry.
   * Change SONAME and lib package name to include minory library version.
   * Use libwireshark-dev to determine wireshak plugin path.
   * Add define-have-json-c.patch to ensure ndpiReader is compiled with JSON
@@ -38,7 +37,6 @@ ndpi (2.6-1) unstable; urgency=medium
   * Check DEB_BUILD_OPTIONS before running tests.
   * Update Standards-Version to 4.3.0.
   * Update debian/copyright for new upstream code.
-  * Update changelog for snapshot upload.
 
  -- Ludovico Cavedon <cavedon@debian.org>  Mon, 14 Jan 2019 11:17:02 -0800
 
