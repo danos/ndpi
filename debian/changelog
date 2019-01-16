@@ -1,13 +1,10 @@
-ndpi (2.6-3~2.gbp4004e7) UNRELEASED; urgency=medium
+ndpi (2.6-3) unstable; urgency=medium
 
-  ** SNAPSHOT build @4004e7e86fdea87bc4d0ba6b4bd55b335534badf **
-
-  * UNRELEASED
   * Add packet-direction.patch and quic.patch to fix big-endian-related bugs.
   * Disable tests that have inconsistent behavior across architecture due to
     broken sorting in the test code.
 
- -- Ludovico Cavedon <cavedon@debian.org>  Wed, 16 Jan 2019 01:47:02 -0800
+ -- Ludovico Cavedon <cavedon@debian.org>  Wed, 16 Jan 2019 01:48:34 -0800
 
 ndpi (2.6-2) unstable; urgency=medium
 
