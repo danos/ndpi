@@ -1,3 +1,11 @@
+ndpi (2.6-3~1.gbp4ef85a) UNRELEASED; urgency=medium
+
+  ** SNAPSHOT build @4ef85a282125379c80dfaa1cd5c75035ab83277f **
+
+  * UNRELEASED
+
+ -- Ludovico Cavedon <cavedon@debian.org>  Wed, 16 Jan 2019 01:24:19 -0800
+
 ndpi (2.6-2) unstable; urgency=medium
 
   * Remove no longer needed build-dep on xdelta.
