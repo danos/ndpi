@@ -17,9 +17,13 @@ override_dh_auto_configure:
 
 override_dh_auto_test:
 ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
-	# disable generally broken tests
+	# disable tests with a broken pcap file
 	rm -f tests/pcap/nintendo.pcap
 	rm -f tests/pcap/skype-conference-call.pcap
+	# disable tests that have inconsistent behavior across architecture due
+	# to broken sorting in the test code
+	rm -f tests/pcap/skype.pcap
+	rm -f tests/pcap/skype_no_unknown.pcap
 	rm -f tests/pcap/1kxun.pcap
 	cd tests && LD_LIBRARY_PATH=$(CURDIR)/src/lib ./do.sh
 endif
