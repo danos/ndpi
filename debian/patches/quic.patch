@@ -1,0 +1,54 @@
+Author: Ludovico Cavedon <cavedon@debian.org>
+Description: QUIC: convert little endian offsets to host endianness
+    Offset in the QUIC protocol are little endian. Reading them as uint32_t
+    works on little endian architectures, but breaks on big endian ones.
+    This change applies the proper conversion and fixes running the
+    http_ipv6 and quic tests on big endian architectures.
+Forwarded: https://github.com/ntop/nDPI/pull/658
+
+Index: ndpi/src/include/ndpi_define.h.in
+===================================================================
+--- ndpi.orig/src/include/ndpi_define.h.in
++++ ndpi/src/include/ndpi_define.h.in
+@@ -338,4 +338,26 @@
+ #define NDPI_MINOR                              @NDPI_MINOR@
+ #define NDPI_PATCH                              @NDPI_PATCH@
+ 
++
++#ifdef __APPLE__
++
++#include <libkern/OSByteOrder.h>
++
++#define htobe16(x) OSSwapHostToBigInt16(x)
++#define htole16(x) OSSwapHostToLittleInt16(x)
++#define be16toh(x) OSSwapBigToHostInt16(x)
++#define le16toh(x) OSSwapLittleToHostInt16(x)
++
++#define htobe32(x) OSSwapHostToBigInt32(x)
++#define htole32(x) OSSwapHostToLittleInt32(x)
++#define be32toh(x) OSSwapBigToHostInt32(x)
++#define le32toh(x) OSSwapLittleToHostInt32(x)
++
++#define htobe64(x) OSSwapHostToBigInt64(x)
++#define htole64(x) OSSwapHostToLittleInt64(x)
++#define be64toh(x) OSSwapBigToHostInt64(x)
++#define le64toh(x) OSSwapLittleToHostInt64(x)
++
++#endif /* __APPLE__ */
++
+ #endif /* __NDPI_DEFINE_INCLUDE_FILE__ */
+Index: ndpi/src/lib/protocols/quic.c
+===================================================================
+--- ndpi.orig/src/lib/protocols/quic.c
++++ ndpi/src/lib/protocols/quic.c
+@@ -96,8 +96,8 @@ void ndpi_search_quic(struct ndpi_detect
+ 	     && (packet->payload[i+1] == 'N')
+ 	     && (packet->payload[i+2] == 'I')
+ 	     && (packet->payload[i+3] == 0)) {
+-	    u_int32_t offset = *((u_int32_t*)&packet->payload[i+4]);
+-	    u_int32_t prev_offset = *((u_int32_t*)&packet->payload[i-4]);
++	    u_int32_t offset = le32toh(*((u_int32_t*)&packet->payload[i+4]));
++	    u_int32_t prev_offset = le32toh(*((u_int32_t*)&packet->payload[i-4]));
+ 	    int len = offset-prev_offset;
+ 	    int sni_offset = i+prev_offset+1;
+ 
