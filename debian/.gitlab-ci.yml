@@ -1,11 +1,6 @@
-image: registry.salsa.debian.org/salsa-ci-team/ci-image-git-buildpackage:latest
+include:
+ - https://salsa.debian.org/salsa-ci-team/pipeline/raw/master/salsa-ci.yml
+ - https://salsa.debian.org/salsa-ci-team/pipeline/raw/master/pipeline-jobs.yml
 
-pages:
-  stage: deploy
-  artifacts:
-    paths:
-      - public
-  script:
-    - gitlab-ci-git-buildpackage
-    - gitlab-ci-lintian
-    - gitlab-ci-aptly
+variables:
+ RELEASE: 'unstable'
