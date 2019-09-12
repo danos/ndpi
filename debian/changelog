@@ -1,6 +1,6 @@
-ndpi (2.6-3.1) unstable; urgency=medium
+ndpi (2.6-4) unstable; urgency=medium
 
-  * Non-maintainer upload
+  * Team upload (salsa.d.o namespace)
   * debian/patches/662.patch:
     - make the build reproducible (Closes: #929609)
   * debian/patches/aea91781aa476589361e16ece6aa6c10102e0f33.patch:
