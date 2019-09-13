@@ -1,3 +1,11 @@
+ndpi (2.6-5) unstable; urgency=medium
+
+  * Team upload (salsa.d.o namespace)
+  * Add CPPFLAGS to make blhc happy
+  * Also add LDFLAGS
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Fri, 13 Sep 2019 23:04:00 +0200
+
 ndpi (2.6-4) unstable; urgency=medium
 
   * Team upload (salsa.d.o namespace)
