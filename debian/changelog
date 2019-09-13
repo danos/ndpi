@@ -3,6 +3,9 @@ ndpi (2.6-5) unstable; urgency=medium
   * Team upload (salsa.d.o namespace)
   * Add CPPFLAGS to make blhc happy
   * Also add LDFLAGS
+  * Bump compat level to 12
+  * Bump std-version to 4.4.0
+  * Make copyright URI in https mode
 
  -- Gianfranco Costamagna <locutusofborg@debian.org>  Fri, 13 Sep 2019 23:04:00 +0200
 
