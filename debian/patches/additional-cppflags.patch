@@ -22,7 +22,7 @@ Author: Gianfranco Costamagna <locutusofborg@debian.org>
  
  $(NDPI_LIB_SHARED): $(OBJECTS)
 -	$(CC) -shared -fPIC $(SONAME_FLAG) -o $@ $(OBJECTS)
-+	$(CC) $(CFLAGS) $(CPPFLAGS) -shared -fPIC $(SONAME_FLAG) -o $@ $(OBJECTS)
++	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) -shared -fPIC $(SONAME_FLAG) -o $@ $(OBJECTS)
  	ln -Ffs $(NDPI_LIB_SHARED) $(NDPI_LIB_SHARED_BASE)
  	ln -Ffs $(NDPI_LIB_SHARED) $(NDPI_LIB_SHARED_BASE).$(NDPI_VERSION_MAJOR).$(NDPI_VERSION_MINOR)
  
