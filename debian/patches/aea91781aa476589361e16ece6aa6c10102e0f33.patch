@@ -9,10 +9,10 @@ Subject: [PATCH] Fix alignment issue on IPv6 structs
  src/lib/protocols/mdns_proto.c |  5 +++--
  3 files changed, 11 insertions(+), 7 deletions(-)
 
-diff --git a/src/include/ndpi_define.h.in b/src/include/ndpi_define.h.in
-index 4d269607..ce4c4cc6 100644
---- a/src/include/ndpi_define.h.in
-+++ b/src/include/ndpi_define.h.in
+Index: ndpi/src/include/ndpi_define.h.in
+===================================================================
+--- ndpi.orig/src/include/ndpi_define.h.in
++++ ndpi/src/include/ndpi_define.h.in
 @@ -250,7 +250,7 @@
  
  /** macro to compare 2 IPv6 addresses with each other to identify the "smaller" IPv6 address  */
@@ -22,11 +22,11 @@ index 4d269607..ce4c4cc6 100644
  
  #define NDPI_NUM_BITS              512
  
-diff --git a/src/include/ndpi_typedefs.h b/src/include/ndpi_typedefs.h
-index 0db1ccf9..4e231434 100644
---- a/src/include/ndpi_typedefs.h
-+++ b/src/include/ndpi_typedefs.h
-@@ -250,27 +250,30 @@ struct ndpi_iphdr {
+Index: ndpi/src/include/ndpi_typedefs.h
+===================================================================
+--- ndpi.orig/src/include/ndpi_typedefs.h
++++ ndpi/src/include/ndpi_typedefs.h
+@@ -207,27 +207,30 @@
  /* +++++++++++++++++++++++ IPv6 header +++++++++++++++++++++++ */
  /* rfc3542 */
  
@@ -61,11 +61,11 @@ index 0db1ccf9..4e231434 100644
  
  /* +++++++++++++++++++++++ TCP header +++++++++++++++++++++++ */
  
-diff --git a/src/lib/protocols/mdns_proto.c b/src/lib/protocols/mdns_proto.c
-index 75eab720..388376e1 100644
---- a/src/lib/protocols/mdns_proto.c
-+++ b/src/lib/protocols/mdns_proto.c
-@@ -121,8 +121,9 @@ void ndpi_search_mdns(struct ndpi_detection_module_struct *ndpi_struct, struct n
+Index: ndpi/src/lib/protocols/mdns_proto.c
+===================================================================
+--- ndpi.orig/src/lib/protocols/mdns_proto.c
++++ ndpi/src/lib/protocols/mdns_proto.c
+@@ -127,8 +127,9 @@
        }
  #ifdef NDPI_DETECTION_SUPPORT_IPV6
        if(packet->iphv6 != NULL) {

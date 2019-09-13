@@ -1,0 +1,34 @@
+Description: Honour cppflags too
+Author: Gianfranco Costamagna <locutusofborg@debian.org>
+--- ndpi-2.6.orig/example/Makefile.in
++++ ndpi-2.6/example/Makefile.in
+@@ -9,10 +9,10 @@ all: ndpiReader @DPDK_TARGET@
+ 
+ ndpiReader: $(LIBNDPI)
+ ndpiReader: $(OBJS)
+-	$(CC) $(CFLAGS) $(OBJS) -o $@ $(LDFLAGS)
++	$(CC) $(CPPFLAGS) $(CFLAGS) $(OBJS) -o $@ $(LDFLAGS)
+ 
+ %.o: %.c $(HEADERS) Makefile
+-	$(CC) $(CFLAGS) -c $< -o $@
++	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+ 
+ install:
+ 	mkdir -p $(DESTDIR)$(PREFIX)/bin/
+--- ndpi-2.6.orig/src/lib/Makefile.in
++++ ndpi-2.6/src/lib/Makefile.in
+@@ -46,12 +46,12 @@ $(NDPI_LIB_STATIC): $(OBJECTS)
+ 	   $(RANLIB) $@	       
+ 
+ $(NDPI_LIB_SHARED): $(OBJECTS)
+-	$(CC) -shared -fPIC $(SONAME_FLAG) -o $@ $(OBJECTS)
++	$(CC) $(CFLAGS) $(CPPFLAGS) -shared -fPIC $(SONAME_FLAG) -o $@ $(OBJECTS)
+ 	ln -Ffs $(NDPI_LIB_SHARED) $(NDPI_LIB_SHARED_BASE)
+ 	ln -Ffs $(NDPI_LIB_SHARED) $(NDPI_LIB_SHARED_BASE).$(NDPI_VERSION_MAJOR).$(NDPI_VERSION_MINOR)
+ 
+ %.o: %.c $(HEADERS) Makefile
+-	$(CC) $(CFLAGS) -c $< -o $@
++	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+ 
+ clean:
+ 	/bin/rm -f $(NDPI_LIB_STATIC) $(OBJECTS) *.o *.so *.lo $(NDPI_LIB_SHARED)
