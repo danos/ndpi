@@ -26,7 +26,7 @@ Index: ndpi/src/include/ndpi_typedefs.h
 ===================================================================
 --- ndpi.orig/src/include/ndpi_typedefs.h
 +++ ndpi/src/include/ndpi_typedefs.h
-@@ -207,27 +207,30 @@
+@@ -207,27 +207,30 @@ struct ndpi_iphdr {
  /* +++++++++++++++++++++++ IPv6 header +++++++++++++++++++++++ */
  /* rfc3542 */
  
@@ -65,7 +65,7 @@ Index: ndpi/src/lib/protocols/mdns_proto.c
 ===================================================================
 --- ndpi.orig/src/lib/protocols/mdns_proto.c
 +++ ndpi/src/lib/protocols/mdns_proto.c
-@@ -127,8 +127,9 @@
+@@ -121,8 +121,9 @@ void ndpi_search_mdns(struct ndpi_detect
        }
  #ifdef NDPI_DETECTION_SUPPORT_IPV6
        if(packet->iphv6 != NULL) {

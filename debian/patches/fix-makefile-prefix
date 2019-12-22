@@ -1,32 +1,23 @@
 Description: Ensure prefix and libdir point to /usr and not /usr/local
 Author: Bernd Zeimetz <bzed@debian.org>
 
---- a/src/lib/Makefile.in
-+++ b/src/lib/Makefile.in
-@@ -10,8 +10,8 @@
- #
+Index: ndpi/src/lib/Makefile.in
+===================================================================
+--- ndpi.orig/src/lib/Makefile.in
++++ ndpi/src/lib/Makefile.in
+@@ -11,7 +11,7 @@
  # Installation directories
  #
--prefix     = /usr/local
+ prefix     = @prefix@
 -libdir     = ${prefix}/lib
-+prefix     = /usr
 +libdir     = ${prefix}/lib/$(DEB_TARGET_MULTIARCH)
  includedir = ${prefix}/include/ndpi
  CC         = @CC@
  CFLAGS     += -fPIC -DPIC -I../include -Ithird_party/include -DNDPI_LIB_COMPILATION -O2 -g
---- a/example/Makefile.in
-+++ b/example/Makefile.in
-@@ -3,7 +3,7 @@ CFLAGS=-g -I../src/include @CFLAGS@
- LIBNDPI=../src/lib/libndpi.a
- LDFLAGS=$(LIBNDPI) @PCAP_LIB@ -lpthread @LDFLAGS@
- OBJS=ndpiReader.o ndpi_util.o
--PREFIX?=/usr/local
-+PREFIX?=/usr
- 
- all: ndpiReader @DPDK_TARGET@
- 
---- a/Makefile.am
-+++ b/Makefile.am
+Index: ndpi/Makefile.am
+===================================================================
+--- ndpi.orig/Makefile.am
++++ ndpi/Makefile.am
 @@ -1,7 +1,7 @@
  ACLOCAL_AMFLAGS = -I m4
  SUBDIRS = src/lib example tests
