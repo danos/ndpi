@@ -36,9 +36,9 @@
 
 static u_int16_t get16(int *i, const u_int8_t *payload) {
   u_int16_t v = *(u_int16_t*)&payload[*i];
-  
+
   (*i) += 2;
-  
+
   return(ntohs(v));
 }
 
@@ -52,7 +52,7 @@ static u_int getNameLength(u_int i, const u_int8_t *payload, u_int payloadLen) {
   else {
     u_int8_t len = payload[i];
     u_int8_t off = len + 1;
-	
+
     if(off == 0) /* Bad packet */
       return(0);
     else
@@ -63,24 +63,26 @@ static u_int getNameLength(u_int i, const u_int8_t *payload, u_int payloadLen) {
 /* *********************************************** */
 
 void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow) {
-  int x;
+  int x, payload_offset;
   u_int8_t is_query;
   u_int16_t s_port = 0, d_port = 0;
-  
+
   NDPI_LOG_DBG(ndpi_struct, "search DNS\n");
 
   if(flow->packet.udp != NULL) {
     s_port = ntohs(flow->packet.udp->source);
     d_port = ntohs(flow->packet.udp->dest);
-    x = 0;
+    payload_offset = 0;
   } else if(flow->packet.tcp != NULL) /* pkt size > 512 bytes */ {
     s_port = ntohs(flow->packet.tcp->source);
     d_port = ntohs(flow->packet.tcp->dest);
-    x = 2;
+    payload_offset = 2;
   } else {
     NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
     return;
   }
+
+  x = payload_offset;
 
   if((s_port == 53 || d_port == 53 || d_port == 5355)
      && (flow->packet.payload_packet_len > sizeof(struct ndpi_dns_packet_header)+x)) {
@@ -118,7 +120,7 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
 	      if(flow->packet.payload[x] == '\0') {
 		x++;
 		flow->protos.dns.query_type = get16(&x, flow->packet.payload);
-#ifdef DNS_DEBUG		
+#ifdef DNS_DEBUG
     		NDPI_LOG_DBG2(ndpi_struct, "query_type=%2d\n", flow->protos.dns.query_type);
 #endif
 		break;
@@ -128,7 +130,6 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
 	  }
 	} else
 	  invalid = 1;
-	
       } else {
 	/* DNS Reply */
 
@@ -140,15 +141,15 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
 	       || ((dns_header.additional_rrs > 0) && (dns_header.additional_rrs <= NDPI_MAX_DNS_REQUESTS)))
 	   ) {
 	  /* This is a good reply */
-	  if(ndpi_struct->dns_dissect_response) {
+	  if(ndpi_struct->dns_dont_dissect_response == 0) {
 	    x++;
-	  
+
 	    if(flow->packet.payload[x] != '\0') {
 	      while((x < flow->packet.payload_packet_len)
 		    && (flow->packet.payload[x] != '\0')) {
 		x++;
 	      }
-	        
+
 	      x++;
 	    }
 
@@ -160,7 +161,7 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
 
 	      for(num = 0; num < dns_header.num_answers; num++) {
 		u_int16_t data_len;
-  
+
 		if((x+6) >= flow->packet.payload_packet_len) {
 		  break;
 		}
@@ -169,7 +170,7 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
 		  break;
 		} else
 		  x += data_len;
- 
+
 		rsp_type = get16(&x, flow->packet.payload);
 		flow->protos.dns.rsp_type = rsp_type;
 		break;
@@ -185,8 +186,7 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
       }
 
       /* extract host name server */
-      int j = 0, max_len = sizeof(flow->host_server_name)-1, off = sizeof(struct ndpi_dns_packet_header) + 1;
-
+      int j = 0, max_len = sizeof(flow->host_server_name)-1, off = sizeof(struct ndpi_dns_packet_header) + 1 + payload_offset;
       while(off < flow->packet.payload_packet_len && flow->packet.payload[off] != '\0') {
 	flow->host_server_name[j] = flow->packet.payload[off];
 	if(j < max_len) {
@@ -199,9 +199,11 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
 	off++;
       }
 
-	if(is_query && ndpi_struct->dns_dissect_response)
-	  return; /* The response will set the verdict */
-
+      if(is_query && (ndpi_struct->dns_dont_dissect_response == 0)) {
+	// dpi_set_detected_protocol(ndpi_struct, flow, (d_port == 5355) ? NDPI_PROTOCOL_LLMNR : NDPI_PROTOCOL_DNS, NDPI_PROTOCOL_UNKNOWN);	
+	return; /* The response will set the verdict */
+      }
+      
       flow->host_server_name[j] = '\0';
 
       flow->protos.dns.num_queries = (u_int8_t)dns_header.num_queries,
@@ -209,33 +211,33 @@ void ndpi_search_dns(struct ndpi_detection_module_struct *ndpi_struct, struct nd
 
       if(j > 0) {
 	ndpi_protocol_match_result ret_match;
-	
-	ndpi_match_host_subprotocol(ndpi_struct, flow, 
+
+	ndpi_match_host_subprotocol(ndpi_struct, flow,
 				    (char *)flow->host_server_name,
 				    strlen((const char*)flow->host_server_name),
 				    &ret_match,
 				    NDPI_PROTOCOL_DNS);
       }
-      
+
 #ifdef DNS_DEBUG
       NDPI_LOG_DBG2(ndpi_struct, "[num_queries=%d][num_answers=%d][reply_code=%u][rsp_type=%u][host_server_name=%s]\n",
 	     flow->protos.dns.num_queries, flow->protos.dns.num_answers,
 	     flow->protos.dns.reply_code, flow->protos.dns.rsp_type, flow->host_server_name
 	     );
 #endif
-    
+
       if(flow->packet.detected_protocol_stack[0] == NDPI_PROTOCOL_UNKNOWN) {
 	/**
 	   Do not set the protocol with DNS if ndpi_match_host_subprotocol() has
 	   matched a subprotocol
 	**/
-	NDPI_LOG_INFO(ndpi_struct, "found DNS\n");      
+	NDPI_LOG_INFO(ndpi_struct, "found DNS\n");
 	ndpi_set_detected_protocol(ndpi_struct, flow, (d_port == 5355) ? NDPI_PROTOCOL_LLMNR : NDPI_PROTOCOL_DNS, NDPI_PROTOCOL_UNKNOWN);
       } else {
 	NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
       }
     }
-  } 
+  }
 }
 
 void init_dns_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int32_t *id, NDPI_PROTOCOL_BITMASK *detection_bitmask)

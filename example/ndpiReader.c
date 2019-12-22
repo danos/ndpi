@@ -913,10 +913,11 @@ static void node_proto_guess_walker(const void *node, ndpi_VISIT which, int dept
   struct ndpi_flow_info *flow = *(struct ndpi_flow_info **) node;
   u_int16_t thread_id = *((u_int16_t *) user_data);
 
-  if((which == ndpi_preorder) || (which == ndpi_leaf)) { /* Avoid walking the same node multiple times */
-    if((!flow->detection_completed) && flow->ndpi_flow)
+  if((which == ndpi_preorder) || (which == ndpi_leaf)) { /* Avoid walking the same node multiple times */    
+    if((!flow->detection_completed) && flow->ndpi_flow) {   
       flow->detected_protocol = ndpi_detection_giveup(ndpi_thread_info[0].workflow->ndpi_struct, flow->ndpi_flow, enable_protocol_guess);
-
+    }
+    
     process_ndpi_collected_info(ndpi_thread_info[thread_id].workflow, flow);
 
     ndpi_thread_info[thread_id].workflow->stats.protocol_counter[flow->detected_protocol.app_protocol]       += flow->src2dst_packets + flow->dst2src_packets;
@@ -1015,7 +1016,6 @@ void freeIpTree(addr_node *root) {
   freeIpTree(root->left);
   freeIpTree(root->right);
   free(root);
-  root = NULL;
 }
 
 /* *********************************************** */
@@ -1459,7 +1459,7 @@ static void setupDetection(u_int16_t thread_id, pcap_t * pcap_handle) {
   ndpi_set_detection_preferences(ndpi_thread_info[thread_id].workflow->ndpi_struct,
 				 ndpi_pref_http_dont_dissect_response, 0);
   ndpi_set_detection_preferences(ndpi_thread_info[thread_id].workflow->ndpi_struct,
-				 ndpi_pref_dns_dissect_response, 0);
+				 ndpi_pref_dns_dont_dissect_response, 0);
   ndpi_set_detection_preferences(ndpi_thread_info[thread_id].workflow->ndpi_struct,
 				 ndpi_pref_enable_category_substring_match, 1);
 
@@ -2489,8 +2489,7 @@ static void ndpi_process_packet(u_char *args,
   if(memcmp(packet, packet_checked, header->caplen) != 0)
     printf("INTERNAL ERROR: ingress packet was modified by nDPI: this should not happen [thread_id=%u, packetId=%lu, caplen=%u]\n",
 	   thread_id, (unsigned long)ndpi_thread_info[thread_id].workflow->stats.raw_packet_count, header->caplen);
-  free(packet_checked);
-
+  
   if((pcap_end.tv_sec-pcap_start.tv_sec) > pcap_analysis_duration) {
     int i;
     u_int64_t processing_time_usec, setup_time_usec;
@@ -2514,6 +2513,12 @@ static void ndpi_process_packet(u_char *args,
     memcpy(&begin, &end, sizeof(begin));
     memcpy(&pcap_start, &pcap_end, sizeof(pcap_start));
   }
+
+  /* 
+     Leave the free as last statement to avoid crashes when ndpi_detection_giveup()
+     is called above by printResults()
+  */
+  free(packet_checked);
 }
 
 
@@ -2901,7 +2906,7 @@ float getAverage(struct json_object *jObj_stat, char *field){
   float average;
   float sum = 0;
   int r;
-  int j;
+  int j = 0;
 
   if((r = strcmp(field, "top.scanner.stats")) == 0) {
     for(j=0; j<json_object_array_length(jObj_stat); j++) {

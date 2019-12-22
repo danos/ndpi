@@ -740,8 +740,11 @@ extern "C" {
 				  char *name, ndpi_protocol_category_t category);
   int ndpi_enable_loaded_categories(struct ndpi_detection_module_struct *ndpi_struct);
   int ndpi_fill_ip_protocol_category(struct ndpi_detection_module_struct *ndpi_struct,
-				 const struct ndpi_iphdr *iph,
+				 u_int32_t saddr,
+				 u_int32_t daddr,
 				 ndpi_protocol *ret);
+  int ndpi_match_custom_category(struct ndpi_detection_module_struct *ndpi_struct,
+				      char *name, unsigned long *id);
   void ndpi_fill_protocol_category(struct ndpi_detection_module_struct *ndpi_struct,
 				   struct ndpi_flow_struct *flow,
 				   ndpi_protocol *ret);
@@ -756,6 +759,12 @@ extern "C" {
   u_int ndpi_get_ndpi_num_custom_protocols(struct ndpi_detection_module_struct *ndpi_mod);
   u_int ndpi_get_ndpi_detection_module_size();
   void ndpi_set_log_level(struct ndpi_detection_module_struct *ndpi_mod, u_int l);
+
+  /* LRU cache */
+  struct ndpi_lru_cache* ndpi_lru_cache_init(u_int32_t num_entries);
+  void ndpi_lru_free_cache(struct ndpi_lru_cache *c);
+  u_int8_t ndpi_lru_find_cache(struct ndpi_lru_cache *c, u_int32_t key, u_int8_t clean_key_when_found);
+  void ndpi_lru_add_to_cache(struct ndpi_lru_cache *c, u_int32_t key);
   
   /**
    * Add a string to match to an automata
