@@ -1,8 +1,18 @@
-ndpi (2.8-1) UNRELEASED; urgency=medium
+ndpi (2.8-1~1.gbp95362d) UNRELEASED; urgency=medium
+
+  ** SNAPSHOT build @95362d6c06ebd9550ba3fb128f26eda699b4d927 **
 
   * New upstream version 2.8
+  * Refresh patches.
+  * Remove patches merged upstream:
+    - ndpireader-no-free.patch
+    - quic.patch
+    - packet-direction.patch
+  * Rename package libndpi2.6 to libndpi2.8.
+  * Update symbols file for libndpi2.8.
+  * Remove executable bit from debian/libndpi-wireshark.* files.
 
- -- Ludovico Cavedon <cavedon@debian.org>  Mon, 23 Dec 2019 13:56:22 +0100
+ -- Ludovico Cavedon <cavedon@debian.org>  Mon, 23 Dec 2019 15:17:09 +0100
 
 ndpi (2.6-5) unstable; urgency=medium
 
