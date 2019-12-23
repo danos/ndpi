@@ -1,4 +1,4 @@
-libndpi.so.2.6 libndpi2.6 #MINVER#
+libndpi.so.2.8 libndpi2.8 #MINVER#
  NDPI_BITMASK_COMPARE@Base 2.6
  NDPI_BITMASK_IS_EMPTY@Base 2.6
  NDPI_DUMP_BITMASK@Base 2.6
@@ -103,6 +103,7 @@ libndpi.so.2.6 libndpi2.6 #MINVER#
  init_memcached_dissector@Base 2.6
  init_mgpc_dissector@Base 2.6
  init_mining_dissector@Base 2.6
+ init_modbus_dissector@Base 2.8
  init_mpegts_dissector@Base 2.6
  init_mqtt_dissector@Base 2.6
  init_msn_dissector@Base 2.6
@@ -190,16 +191,6 @@ libndpi.so.2.6 libndpi2.6 #MINVER#
  is_diameter@Base 2.6
  is_udp_guessable_protocol@Base 2.6
  jenkins_one_at_a_time_hash@Base 2.6
- lruc_cmp_keys@Base 2.6
- lruc_delete@Base 2.6
- lruc_free@Base 2.6
- lruc_get@Base 2.6
- lruc_hash@Base 2.6
- lruc_new@Base 2.6
- lruc_pop_or_create_item@Base 2.6
- lruc_remove_item@Base 2.6
- lruc_remove_lru_item@Base 2.6
- lruc_set@Base 2.6
  ndpi_Clear_Patricia@Base 2.6
  ndpi_DeleteEntry@Base 2.6
  ndpi_Deref_Prefix@Base 2.6
@@ -293,9 +284,14 @@ libndpi.so.2.6 libndpi2.6 #MINVER#
  ndpi_load_hostname_category@Base 2.6
  ndpi_load_ip_category@Base 2.6
  ndpi_load_protocols_file@Base 1.4.0+svn6712
+ ndpi_lru_add_to_cache@Base 2.8
+ ndpi_lru_cache_init@Base 2.8
+ ndpi_lru_find_cache@Base 2.8
+ ndpi_lru_free_cache@Base 2.8
  ndpi_malloc@Base 1.7.1~git20151130.6f3d5a7
  ndpi_match_bigram@Base 2.6
  ndpi_match_content_subprotocol@Base 2.6
+ ndpi_match_custom_category@Base 2.8
  ndpi_match_host_subprotocol@Base 2.6
  ndpi_match_prefix@Base 2.6
  ndpi_match_string@Base 1.8
@@ -398,6 +394,7 @@ libndpi.so.2.6 libndpi2.6 #MINVER#
  ndpi_search_memcached@Base 2.6
  ndpi_search_mgcp@Base 2.6
  ndpi_search_mining_tcp@Base 2.6
+ ndpi_search_modbus_tcp@Base 2.8
  ndpi_search_mpegts@Base 2.6
  ndpi_search_mqtt@Base 2.6
  ndpi_search_msn@Base 2.6
