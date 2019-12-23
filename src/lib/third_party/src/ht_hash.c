@@ -23,9 +23,10 @@ hashtable_t *ht_create(int size) {
     return NULL;
 
   /* Allocate pointers to the head nodes. */
-  if((hashtable->table = ndpi_malloc(sizeof(entry_t *) * size)) == NULL)
+  if((hashtable->table = ndpi_malloc(sizeof(entry_t *) * size)) == NULL) {
+    free(hashtable);
     return NULL;
-  else {    
+  } else {    
     for(i = 0; i < size; i++)
       hashtable->table[i] = NULL;
   }
@@ -61,8 +62,10 @@ entry_t *ht_newpair(char *key, u_int16_t value) {
   if((newpair = ndpi_malloc(sizeof(entry_t))) == NULL)
     return NULL;  
   
-  if((newpair->key = ndpi_strdup(key)) == NULL)
+  if((newpair->key = ndpi_strdup(key)) == NULL) {
+    free(newpair);
     return NULL;  
+  }
 
   newpair->value = value, newpair->next = NULL;
 
@@ -122,10 +125,6 @@ void ht_set(hashtable_t *hashtable, char *key, u_int16_t value) {
 u_int16_t ht_get(hashtable_t *hashtable, char *key) {
   int bin = 0;
   entry_t *pair;
-
-#ifdef HASH_DEBUG
-    printf("*** %s() %s = %u ***\n", __FUNCTION__, key, pair->value);
-#endif
 
   bin = ht_hash(hashtable, key);
 

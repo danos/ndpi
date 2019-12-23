@@ -2,7 +2,7 @@
 /*
  * ndpi_protocol_ids.h
  *
- * Copyright (C) 2011-18 - ntop.org
+ * Copyright (C) 2011-19 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -79,13 +79,11 @@ typedef enum {
   NDPI_PROTOCOL_MINING                = 42, /* Bitcoin, Ethereum, ZCash, Monero */
   NDPI_PROTOCOL_NEST_LOG_SINK         = 43, /* Nest Log Sink (Nest Protect) - Darryl Sokoloski <darryl@egloo.ca> */
   NDPI_PROTOCOL_MODBUS                = 44, /* Modbus */
-
-  NDPI_PROTOCOL_FREE_45               = 45, /* Free */
-  NDPI_PROTOCOL_FREE_46               = 46, /* Free */
-  
+  NDPI_PROTOCOL_WHATSAPP_CALL         = 45, /* WhatsApp video ad audio calls go here */
+  NDPI_PROTOCOL_DATASAVER             = 46, /* Protocols used to save data on Internet communications */  
   NDPI_PROTOCOL_XBOX                  = 47,
   NDPI_PROTOCOL_QQ                    = 48,
-  NDPI_PROTOCOL_FREE_49               = 49, /* Free */
+  NDPI_PROTOCOL_TIKTOK                = 49,
   NDPI_PROTOCOL_RTSP                  = 50,
   NDPI_PROTOCOL_MAIL_IMAPS            = 51,
   NDPI_PROTOCOL_ICECAST               = 52,
@@ -100,7 +98,7 @@ typedef enum {
   NDPI_PROTOCOL_QQLIVE                = 61,
   NDPI_PROTOCOL_THUNDER               = 62,
   NDPI_PROTOCOL_SOULSEEK              = 63,
-  NDPI_PROTOCOL_SSL_NO_CERT           = 64,
+  NDPI_PROTOCOL_PS_VUE                = 64,
   NDPI_PROTOCOL_IRC                   = 65,
   NDPI_PROTOCOL_AYIYA                 = 66,
   NDPI_PROTOCOL_UNENCRYPTED_JABBER    = 67,
@@ -127,7 +125,7 @@ typedef enum {
   NDPI_PROTOCOL_RDP                   = 88,
   NDPI_PROTOCOL_VNC                   = 89,
   NDPI_PROTOCOL_PCANYWHERE            = 90,
-  NDPI_PROTOCOL_SSL                   = 91,
+  NDPI_PROTOCOL_TLS                   = 91,
   NDPI_PROTOCOL_SSH                   = 92,
   NDPI_PROTOCOL_USENET                = 93,
   NDPI_PROTOCOL_MGCP                  = 94,
@@ -173,7 +171,7 @@ typedef enum {
   NDPI_PROTOCOL_LASTFM                = 134,
   NDPI_PROTOCOL_WAZE                  = 135,
   NDPI_PROTOCOL_YOUTUBE_UPLOAD        = 136, /* Upload files to youtube */
-  NDPI_PROTOCOL_GENERIC               = 137, /* Generic protocol used for category matching */
+  NDPI_PROTOCOL_HULU                  = 137,
   NDPI_PROTOCOL_CHECKMK               = 138,
   NDPI_PROTOCOL_AJP                   = 139, /* Leonn Paiva <leonn.paiva@gmail.com> */
   NDPI_PROTOCOL_APPLE                 = 140,
@@ -225,24 +223,24 @@ typedef enum {
   NDPI_PROTOCOL_VEVO                  = 186,
   NDPI_PROTOCOL_PANDORA               = 187,
   NDPI_PROTOCOL_QUIC                  = 188, /* Andrea Buscarinu <andrea.buscarinu@gmail.com> - Michele Campus <michelecampus5@gmail.com> */
-  NDPI_PROTOCOL_WHATSAPP_VOICE        = 189,
+  NDPI_PROTOCOL_ZOOM                  = 189, /* Zoom video conference. */
   NDPI_PROTOCOL_EAQ                   = 190,
   NDPI_PROTOCOL_OOKLA                 = 191,
   NDPI_PROTOCOL_AMQP                  = 192,
   NDPI_PROTOCOL_KAKAOTALK             = 193, /* KakaoTalk Chat (no voice call) */
   NDPI_PROTOCOL_KAKAOTALK_VOICE       = 194, /* KakaoTalk Voice */
   NDPI_PROTOCOL_TWITCH                = 195, /* Edoardo Dominici <edoaramis@gmail.com> */
-  NDPI_PROTOCOL_FREE_196              = 196, /* Free */
+  NDPI_PROTOCOL_DNS_OVER_HTTPS        = 196,
   NDPI_PROTOCOL_WECHAT                = 197,
   NDPI_PROTOCOL_MPEGTS                = 198,
   NDPI_PROTOCOL_SNAPCHAT              = 199,
   NDPI_PROTOCOL_SINA                  = 200,
-  NDPI_PROTOCOL_HANGOUT               = 201,
+  NDPI_PROTOCOL_HANGOUT_DUO           = 201, /* Google Hangout ad Duo (merged as they are very similar) */ 
   NDPI_PROTOCOL_IFLIX                 = 202, /* www.vizuamatix.com R&D team & M.Mallawaarachchie <manoj_ws@yahoo.com> */
   NDPI_PROTOCOL_GITHUB                = 203,
   NDPI_PROTOCOL_BJNP                  = 204,
-  NDPI_PROTOCOL_FREE_205              = 205, /* Free */
-  NDPI_PROTOCOL_VIDTO                 = 206,
+  NDPI_PROTOCOL_LINE                  = 205, /* https://en.wikipedia.org/wiki/Line_(software) */
+  NDPI_PROTOCOL_WIREGUARD             = 206,
   NDPI_PROTOCOL_SMPP                  = 207, /* Damir Franusic <df@release14.org> */
   NDPI_PROTOCOL_DNSCRYPT              = 208,
   NDPI_PROTOCOL_TINC                  = 209, /* William Guglielmo <william@deselmo.com> */
@@ -252,7 +250,7 @@ typedef enum {
   NDPI_PROTOCOL_STARCRAFT             = 213, /* Matteo Bracci <matteobracci1@gmail.com> */
   NDPI_PROTOCOL_TEREDO                = 214,
   NDPI_PROTOCOL_HOTSPOT_SHIELD        = 215,
-  NDPI_PROTOCOL_HEP                   = 216, /* sipcapture.org QXIP BV */
+  NDPI_PROTOCOL_IMO                   = 216,
   NDPI_PROTOCOL_GOOGLE_DRIVE          = 217,
   NDPI_PROTOCOL_OCS                   = 218,
   NDPI_PROTOCOL_OFFICE_365            = 219,
@@ -279,13 +277,15 @@ typedef enum {
   NDPI_PROTOCOL_AMAZON_VIDEO          = 240,
   NDPI_PROTOCOL_GOOGLE_DOCS           = 241,
   NDPI_PROTOCOL_WHATSAPP_FILES        = 242, /* Videos, pictures, voice messages... */
-  /*
+  NDPI_PROTOCOL_TARGUS_GETDATA        = 243,
+  NDPI_PROTOCOL_DNP3                  = 244,
+  NDPI_PROTOCOL_104                   = 245,    
+/*
     IMPORTANT
     before allocating a new identifier please fill up
     one of those named NDPI_PROTOCOL_FREE_XXX and not used
     (placeholders to avoid protocol renumbering)
   */
-  
   
   /* IMPORTANT:NDPI_LAST_IMPLEMENTED_PROTOCOL MUST BE THE LAST ELEMENT */
   NDPI_LAST_IMPLEMENTED_PROTOCOL

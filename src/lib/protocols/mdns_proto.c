@@ -1,7 +1,7 @@
 /*
  * mdns.c
  *
- * Copyright (C) 2016-18 - ntop.org
+ * Copyright (C) 2016-19 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -121,8 +121,9 @@ void ndpi_search_mdns(struct ndpi_detection_module_struct *ndpi_struct, struct n
       }
 #ifdef NDPI_DETECTION_SUPPORT_IPV6
       if(packet->iphv6 != NULL) {
-	const u_int32_t *daddr = packet->iphv6->ip6_dst.u6_addr.u6_addr32;
-	if(daddr[0] == htonl(0xff020000) /* && daddr[1] == 0 && daddr[2] == 0 && daddr[3] == htonl(0xfb) */) {
+	u_int32_t daddr_0 = packet->iphv6->ip6_dst.u6_addr.u6_addr32[0];
+
+	if(daddr_0 == htonl(0xff020000) /* && daddr[1] == 0 && daddr[2] == 0 && daddr[3] == htonl(0xfb) */) {
 
 	  NDPI_LOG_INFO(ndpi_struct, "found MDNS with destination address ff02::fb\n");
 	  

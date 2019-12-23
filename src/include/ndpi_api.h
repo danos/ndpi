@@ -1,7 +1,7 @@
 /*
  * ndpi_api.h
  *
- * Copyright (C) 2011-17 - ntop.org
+ * Copyright (C) 2011-19 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -58,7 +58,7 @@ extern "C" {
    *         else 0
    *
    */
-  int check_punycode_string(char *buff, int len);
+  int ndpi_check_punycode_string(char *buff, int len);
 
 
   /**
@@ -206,7 +206,18 @@ extern "C" {
    */
   void ndpi_set_protocol_detection_bitmask2(struct ndpi_detection_module_struct *ndpi_struct,
 					    const NDPI_PROTOCOL_BITMASK * detection_bitmask);
-
+  
+  /**
+   *  Function to be called to see in case of unknown match to see if there is
+   *  a partial match that has been prevented by the current nDPI preferences configuration
+   *
+   * @par    ndpi_struct  = the detection module
+   * @par    flow         = the flow given for the detection module
+   * @return the detected protocol even if the flow is not completed;
+   *
+   */
+  ndpi_protocol ndpi_get_partial_detection(struct ndpi_detection_module_struct *ndpi_struct,
+					   struct ndpi_flow_struct *flow);
   /**
    *  Function to be called before we give up with detection for a given flow.
    *  This function reduces the NDPI_UNKNOWN_PROTOCOL detection
@@ -214,12 +225,14 @@ extern "C" {
    * @par    ndpi_struct  = the detection module
    * @par    flow         = the flow given for the detection module
    * @par    enable_guess = guess protocol if unknown
+   * @par    protocol_was_guessed = 1 if the protocol was guesses (requires enable_guess = 1), 0 otherwise
    * @return the detected protocol even if the flow is not completed;
    *
    */
   ndpi_protocol ndpi_detection_giveup(struct ndpi_detection_module_struct *ndpi_struct,
 				      struct ndpi_flow_struct *flow,
-				      u_int8_t enable_guess);
+				      u_int8_t enable_guess,
+				      u_int8_t *protocol_was_guessed);
 
   /**
    * Processes an extra packet in order to get more information for a given protocol
@@ -372,13 +385,12 @@ extern "C" {
    * @return the ID of the matched subprotocol
    *
    */
-  int ndpi_match_host_subprotocol(struct ndpi_detection_module_struct *ndpi_struct,
-				  struct ndpi_flow_struct *flow,
-				  char *string_to_match,
-				  u_int string_to_match_len,
-				  ndpi_protocol_match_result *ret_match,
-				  u_int16_t master_protocol_id);
-
+  u_int16_t ndpi_match_host_subprotocol(struct ndpi_detection_module_struct *ndpi_struct,
+					struct ndpi_flow_struct *flow,
+					char *string_to_match,
+					u_int string_to_match_len,
+					ndpi_protocol_match_result *ret_match,
+					u_int16_t master_protocol_id);  
 
   /**
    * Check if the string content passed match with a protocol
@@ -392,12 +404,12 @@ extern "C" {
    * @return the ID of the matched subprotocol
    *
    */
-  int ndpi_match_content_subprotocol(struct ndpi_detection_module_struct *ndpi_struct,
-				     struct ndpi_flow_struct *flow,
-				     char *string_to_match,
-				     u_int string_to_match_len,
-				     ndpi_protocol_match_result *ret_match,
-				     u_int16_t master_protocol_id);
+  u_int16_t ndpi_match_content_subprotocol(struct ndpi_detection_module_struct *ndpi_struct,
+					   struct ndpi_flow_struct *flow,
+					   char *string_to_match,
+					   u_int string_to_match_len,
+					   ndpi_protocol_match_result *ret_match,
+					   u_int16_t master_protocol_id);
   /**
    * Exclude protocol from search
    *
@@ -601,7 +613,17 @@ extern "C" {
    *
    */
   int ndpi_load_protocols_file(struct ndpi_detection_module_struct *ndpi_mod,
-			       char* path);
+			       const char* path);
+
+ /**
+   * Read a file and load the categories
+   *
+   * @par     ndpi_mod = the detection module
+   * @par     path     = the path of the file
+   * @return  0 if the file is loaded correctly;
+   *          -1 else
+   */
+  int ndpi_load_categories_file(struct ndpi_detection_module_struct *ndpi_str, const char* path);
 
   /**
    * Get the total number of the supported protocols
@@ -670,12 +692,12 @@ extern "C" {
    *
    * @par     ndpi_struct = the detection module
    * @par     flow = the detected flow
-   * @par     certificate = the ssl certificate
+   * @par     certificate = the SSL/TLS certificate
    * @return  1 if the flow is TOR;
    *          0 else
    *
    */
-  int ndpi_is_ssl_tor(struct ndpi_detection_module_struct *ndpi_struct,
+  int ndpi_is_tls_tor(struct ndpi_detection_module_struct *ndpi_struct,
 		      struct ndpi_flow_struct *flow, char *certificate);
 
   /* Wrappers functions */
@@ -734,48 +756,56 @@ extern "C" {
    */
   int ndpi_match_string(void *_automa, char *string_to_match);
 
-  void ndpi_load_ip_category(struct ndpi_detection_module_struct *ndpi_struct,
-			     char *ip_address_and_mask, ndpi_protocol_category_t category);
+  int ndpi_load_ip_category(struct ndpi_detection_module_struct *ndpi_struct,
+				 const char *ip_address_and_mask, ndpi_protocol_category_t category);
   int ndpi_load_hostname_category(struct ndpi_detection_module_struct *ndpi_struct,
-				  char *name, ndpi_protocol_category_t category);
+				 const char *name_to_add, ndpi_protocol_category_t category);
+  int ndpi_load_category(struct ndpi_detection_module_struct *ndpi_struct,
+				 const char *ip_or_name, ndpi_protocol_category_t category);
   int ndpi_enable_loaded_categories(struct ndpi_detection_module_struct *ndpi_struct);
   int ndpi_fill_ip_protocol_category(struct ndpi_detection_module_struct *ndpi_struct,
 				 u_int32_t saddr,
 				 u_int32_t daddr,
 				 ndpi_protocol *ret);
   int ndpi_match_custom_category(struct ndpi_detection_module_struct *ndpi_struct,
-				      char *name, unsigned long *id);
+				 char *name, u_int name_len, unsigned long *id);
   void ndpi_fill_protocol_category(struct ndpi_detection_module_struct *ndpi_struct,
 				   struct ndpi_flow_struct *flow,
 				   ndpi_protocol *ret);
   int ndpi_get_custom_category_match(struct ndpi_detection_module_struct *ndpi_struct,
-				      char *name_or_ip, unsigned long *id);
+				     char *name_or_ip, u_int name_len, unsigned long *id);
   int ndpi_set_detection_preferences(struct ndpi_detection_module_struct *ndpi_mod,
 				     ndpi_detection_preference pref,
 				     int value);
 
+  /* Tells to called on what l4 protocol given application protocol can be found */
+  ndpi_l4_proto_info ndpi_get_l4_proto_info(struct ndpi_detection_module_struct *ndpi_struct, u_int16_t ndpi_proto_id);
+  const char* ndpi_get_l4_proto_name(ndpi_l4_proto_info proto);
+    
   ndpi_proto_defaults_t* ndpi_get_proto_defaults(struct ndpi_detection_module_struct *ndpi_mod);
   u_int ndpi_get_ndpi_num_supported_protocols(struct ndpi_detection_module_struct *ndpi_mod);
   u_int ndpi_get_ndpi_num_custom_protocols(struct ndpi_detection_module_struct *ndpi_mod);
-  u_int ndpi_get_ndpi_detection_module_size();
+  u_int ndpi_get_ndpi_detection_module_size(void);
   void ndpi_set_log_level(struct ndpi_detection_module_struct *ndpi_mod, u_int l);
 
   /* LRU cache */
   struct ndpi_lru_cache* ndpi_lru_cache_init(u_int32_t num_entries);
   void ndpi_lru_free_cache(struct ndpi_lru_cache *c);
-  u_int8_t ndpi_lru_find_cache(struct ndpi_lru_cache *c, u_int32_t key, u_int8_t clean_key_when_found);
-  void ndpi_lru_add_to_cache(struct ndpi_lru_cache *c, u_int32_t key);
+  u_int8_t ndpi_lru_find_cache(struct ndpi_lru_cache *c, u_int32_t key,
+			       u_int16_t *value, u_int8_t clean_key_when_found);
+  void ndpi_lru_add_to_cache(struct ndpi_lru_cache *c, u_int32_t key, u_int16_t value);
   
   /**
    * Add a string to match to an automata
    *
    * @par     The automata initialized with ndpi_init_automa();
    * @par     The (sub)string to search
+   * @par     The (sub)string length
    * @par     The id associated with the matched string or 0 id not found.
    * @return  0 in case of match, or -1 if no match, or -2 if an error occurred.
    *
    */
-  int ndpi_match_string_id(void *_automa, char *string_to_match, unsigned long *id);
+  int ndpi_match_string_id(void *_automa, char *string_to_match, u_int match_len, unsigned long *id);
 
   /* Utility functions to set ndpi malloc/free/print wrappers */
   void set_ndpi_malloc(void* (*__ndpi_malloc)(size_t size));
@@ -784,10 +814,10 @@ extern "C" {
   void set_ndpi_flow_free(void  (*__ndpi_flow_free)(void *ptr));
   void set_ndpi_debug_function(struct ndpi_detection_module_struct *ndpi_str,
 			       ndpi_debug_function_ptr ndpi_debug_printf);
-  void * ndpi_malloc(size_t size);
-  void * ndpi_calloc(unsigned long count, size_t size);
-  void ndpi_free(void *ptr);
-  u_int8_t ndpi_get_api_version();
+  //void * ndpi_malloc(size_t size);
+  //void * ndpi_calloc(unsigned long count, size_t size);
+  //void ndpi_free(void *ptr);
+  u_int8_t ndpi_get_api_version(void);
 
   /* https://github.com/corelight/community-id-spec */
   int ndpi_flowv4_flow_hash(u_int8_t l4_proto, u_int32_t src_ip, u_int32_t dst_ip, u_int16_t src_port, u_int16_t dst_port,
@@ -795,7 +825,112 @@ extern "C" {
   int ndpi_flowv6_flow_hash(u_int8_t l4_proto, struct ndpi_in6_addr *src_ip, struct ndpi_in6_addr *dst_ip,
 			    u_int16_t src_port, u_int16_t dst_port, u_int8_t icmp_type, u_int8_t icmp_code,
 			    u_char *hash_buf, u_int8_t hash_buf_len);
+  u_int8_t ndpi_extra_dissection_possible(struct ndpi_detection_module_struct *ndpi_struct,
+					  struct ndpi_flow_struct *flow);    
+  u_int8_t ndpi_is_safe_ssl_cipher(u_int32_t cipher);
+  const char* ndpi_cipher2str(u_int32_t cipher);
+  u_int16_t ndpi_guess_host_protocol_id(struct ndpi_detection_module_struct *ndpi_struct,
+					struct ndpi_flow_struct *flow);
+  int ndpi_has_human_readeable_string(struct ndpi_detection_module_struct *ndpi_struct,
+				      char *buffer, u_int buffer_size,
+				      u_int8_t min_string_match_len, /* Will return 0 if no string > min_string_match_len have been found */
+				      char *outbuf, u_int outbuf_len);
+  char* ndpi_ssl_version2str(u_int16_t version, u_int8_t *unknown_tls_version);
+
+  /* Serializer */
+  int ndpi_init_serializer_ll(ndpi_serializer *serializer, ndpi_serialization_format fmt,
+			      u_int32_t buffer_size);
+  int ndpi_init_serializer(ndpi_serializer *serializer, ndpi_serialization_format fmt);
+  void ndpi_term_serializer(ndpi_serializer *serializer);
+  void ndpi_reset_serializer(ndpi_serializer *serializer);
+  int ndpi_serialize_string_int32(ndpi_serializer *serializer,
+				  const char *key, int32_t value);
+  int ndpi_serialize_string_int64(ndpi_serializer *serializer,
+				  const char *key, int64_t value);  
+  int ndpi_serialize_uint32_uint32(ndpi_serializer *serializer,
+				   u_int32_t key, u_int32_t value);
+  int ndpi_serialize_uint32_uint64(ndpi_serializer *serializer,
+				   u_int32_t key, u_int64_t value);
+  int ndpi_serialize_uint32_int32(ndpi_serializer *serializer,
+				  u_int32_t key, int32_t value);
+  int ndpi_serialize_uint32_int64(ndpi_serializer *serializer,
+				  u_int32_t key, int64_t value);
+  int ndpi_serialize_uint32_float(ndpi_serializer *serializer,
+				  u_int32_t key, float value,
+				  const char *format /* e.f. "%.2f" */);
+  int ndpi_serialize_uint32_string(ndpi_serializer *serializer,
+				   u_int32_t key, const char *value);
+  int ndpi_serialize_string_uint32(ndpi_serializer *serializer,
+				   const char *key, u_int32_t value);
+  int ndpi_serialize_string_uint32_format(ndpi_serializer *serializer,
+					  const char *key, u_int32_t value,
+					  const char *format);
+  int ndpi_serialize_string_uint64(ndpi_serializer *serializer,
+				   const char *key, u_int64_t value);
+  int ndpi_serialize_string_string(ndpi_serializer *serializer,
+				   const char *key, const char *value);
+  int ndpi_serialize_string_binary(ndpi_serializer *_serializer,
+				   const char *key, const char *_value,
+				   u_int16_t vlen);
+
+  int ndpi_serialize_string_float(ndpi_serializer *serializer,
+				  const char *key, float value,
+				  const char *format /* e.f. "%.2f" */);
+  int ndpi_serialize_end_of_record(ndpi_serializer *serializer);
+  int ndpi_serialize_start_of_block(ndpi_serializer *_serializer,
+				    const char *key);
+  int ndpi_serialize_end_of_block(ndpi_serializer *_serializer);
+  char* ndpi_serializer_get_buffer(ndpi_serializer *_serializer, u_int32_t *buffer_len);
+  u_int32_t ndpi_serializer_get_buffer_len(ndpi_serializer *_serializer);
+  int ndpi_serializer_set_buffer_len(ndpi_serializer *_serializer, u_int32_t l);
+  void ndpi_serializer_set_csv_separator(ndpi_serializer *serializer, char separator);
+
+  void ndpi_serializer_create_snapshot(ndpi_serializer *serializer);
+  void ndpi_serializer_rollback_snapshot(ndpi_serializer *serializer);
   
+  /* Deserializer */
+  int ndpi_init_deserializer(ndpi_deserializer *deserializer,
+			     ndpi_serializer *serializer);
+  int ndpi_init_deserializer_buf(ndpi_deserializer *deserializer,
+				 u_int8_t *serialized_buffer,
+				 u_int32_t serialized_buffer_len);
+  
+  ndpi_serialization_format ndpi_deserialize_get_format(ndpi_deserializer *_deserializer);
+  ndpi_serialization_type ndpi_deserialize_get_item_type(ndpi_deserializer *deserializer, ndpi_serialization_type *key_type);
+  int ndpi_deserialize_next(ndpi_deserializer *deserializer);
+
+  int ndpi_deserialize_key_uint32(ndpi_deserializer *deserializer, u_int32_t *key);
+  int ndpi_deserialize_key_string(ndpi_deserializer *deserializer, ndpi_string *key);
+
+  int ndpi_deserialize_value_uint32(ndpi_deserializer *deserializer, u_int32_t *value);
+  int ndpi_deserialize_value_uint64(ndpi_deserializer *deserializer, u_int64_t *value);
+  int ndpi_deserialize_value_int32(ndpi_deserializer *deserializer, int32_t *value);
+  int ndpi_deserialize_value_int64(ndpi_deserializer *deserializer, int64_t *value);
+  int ndpi_deserialize_value_float(ndpi_deserializer *deserializer, float *value);
+  int ndpi_deserialize_value_string(ndpi_deserializer *deserializer, ndpi_string *value);
+
+  int ndpi_deserialize_clone_item(ndpi_deserializer *deserializer, ndpi_serializer *serializer);
+  int ndpi_deserialize_clone_all(ndpi_deserializer *deserializer, ndpi_serializer *serializer);
+
+  /* Data analysis */
+  struct ndpi_analyze_struct* ndpi_alloc_data_analysis(u_int16_t _max_series_len);
+  void ndpi_init_data_analysis(struct ndpi_analyze_struct *s, u_int16_t _max_series_len);
+  void ndpi_free_data_analysis(struct ndpi_analyze_struct *d);
+  void ndpi_data_add_value(struct ndpi_analyze_struct *s, const u_int32_t value);
+
+  float ndpi_data_average(struct ndpi_analyze_struct *s);
+  float ndpi_data_window_average(struct ndpi_analyze_struct *s);
+  
+  float ndpi_data_entropy(struct ndpi_analyze_struct *s);
+  float ndpi_data_variance(struct ndpi_analyze_struct *s);
+  float ndpi_data_stddev(struct ndpi_analyze_struct *s);
+  u_int32_t ndpi_data_min(struct ndpi_analyze_struct *s);
+  u_int32_t ndpi_data_max(struct ndpi_analyze_struct *s);
+  float ndpi_data_ratio(u_int32_t sent, u_int32_t rcvd);
+    
+  const char* ndpi_data_ratio2str(float ratio);
+  
+  void ndpi_data_print_window_values(struct ndpi_analyze_struct *s); /* debug */
 #ifdef __cplusplus
 }
 #endif

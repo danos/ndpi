@@ -1,7 +1,7 @@
 /*
  * yahoo.c
  *
- * Copyright (C) 2016-18 - ntop.org
+ * Copyright (C) 2016-19 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -367,7 +367,7 @@ void ndpi_search_yahoo(struct ndpi_detection_module_struct *ndpi_struct, struct 
 
       if(packet->detected_protocol_stack[0] == NDPI_PROTOCOL_UNKNOWN
 	 || packet->detected_protocol_stack[0] == NDPI_PROTOCOL_HTTP
-	 || packet->detected_protocol_stack[0] == NDPI_PROTOCOL_SSL) {
+	 || packet->detected_protocol_stack[0] == NDPI_PROTOCOL_TLS) {
         /* search over TCP */
 	ndpi_search_yahoo_tcp(ndpi_struct, flow);
       }

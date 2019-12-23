@@ -1,7 +1,7 @@
 /*
  * eaq.c
  *
- * Copyright (C) 2015-18 - ntop.org
+ * Copyright (C) 2015-19 - ntop.org
  *
  * This module is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -41,7 +41,15 @@ static void ndpi_int_eaq_add_connection(struct ndpi_detection_module_struct *ndp
 
 
 void ndpi_search_eaq(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow) {
+  if (!flow) {
+    return;
+  }
+
   struct ndpi_packet_struct *packet = &flow->packet;
+  if (!packet) {
+    return;
+  }
+
   u_int16_t sport = ntohs(packet->udp->source), dport = ntohs(packet->udp->dest);
   
   NDPI_LOG_DBG(ndpi_struct, "search eaq\n");

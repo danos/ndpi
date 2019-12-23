@@ -1,8 +1,9 @@
 CC=@CC@
+CXX=@CXX@
 CFLAGS=-g -I../src/include @CFLAGS@
 LIBNDPI=../src/lib/libndpi.a
-LDFLAGS=$(LIBNDPI) @PCAP_LIB@ -lpthread @LDFLAGS@
-OBJS=ndpiReader.o ndpi_util.o
+LDFLAGS=$(LIBNDPI) @PCAP_LIB@ -lpthread -lm @LDFLAGS@
+OBJS=ndpiReader.o reader_util.o
 PREFIX?=@prefix@
 
 all: ndpiReader @DPDK_TARGET@
@@ -15,7 +16,10 @@ ndpiReader: $(OBJS) $(LIBNDPI)
 
 install:
 	mkdir -p $(DESTDIR)$(PREFIX)/bin/
+	mkdir -p $(DESTDIR)$(PREFIX)/sbin/ndpi
 	cp ndpiReader $(DESTDIR)$(PREFIX)/bin/
+	cp protos.txt $(DESTDIR)$(PREFIX)/sbin/ndpi/ndpiProtos.txt
+	cp mining_hosts.txt $(DESTDIR)$(PREFIX)/sbin/ndpi/ndpiCustomCategory.txt
 	[ -f build/app/ndpiReader.dpdk ] && cp build/app/ndpiReader.dpdk $(DESTDIR)$(PREFIX)/bin/ || true
 	[ -f ndpiReader.dpdk ] && cp ndpiReader.dpdk $(DESTDIR)$(PREFIX)/bin/ || true
 

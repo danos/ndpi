@@ -2,7 +2,7 @@
  * sip.c
  *
  * Copyright (C) 2009-2011 by ipoque GmbH
- * Copyright (C) 2011-18 - ntop.org
+ * Copyright (C) 2011-19 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -119,6 +119,28 @@ void ndpi_search_sip_handshake(struct ndpi_detection_module_struct
         if ((memcmp(packet_payload, "CANCEL ", 7) == 0 || memcmp(packet_payload, "cancel ", 7) == 0)
 	    && (memcmp(&packet_payload[7], "SIP:", 4) == 0 || memcmp(&packet_payload[7], "sip:", 4) == 0)) {
 	  NDPI_LOG_INFO(ndpi_struct, "found sip CANCEL\n");
+	  ndpi_int_sip_add_connection(ndpi_struct, flow, 0);
+	  return;
+	}
+
+        if ((memcmp(packet_payload, "PUBLISH ", 8) == 0 || memcmp(packet_payload, "publish ", 8) == 0)
+	    && (memcmp(&packet_payload[8], "SIP:", 4) == 0 || memcmp(&packet_payload[8], "sip:", 4) == 0)) {
+	  NDPI_LOG_INFO(ndpi_struct, "found sip PUBLISH\n");
+	  ndpi_int_sip_add_connection(ndpi_struct, flow, 0);
+	  return;
+	}
+
+        if ((memcmp(packet_payload, "SUBSCRIBE ", 10) == 0 || memcmp(packet_payload, "subscribe ", 10) == 0)
+	    && (memcmp(&packet_payload[10], "SIP:", 4) == 0 || memcmp(&packet_payload[10], "sip:", 4) == 0)) {
+	  NDPI_LOG_INFO(ndpi_struct, "found sip SUBSCRIBE\n");
+	  ndpi_int_sip_add_connection(ndpi_struct, flow, 0);
+	  return;
+	}
+        
+        /* SIP message extension RFC 3248 */
+        if ((memcmp(packet_payload, "MESSAGE ", 8) == 0 || memcmp(packet_payload, "message ", 8) == 0)
+	    && (memcmp(&packet_payload[8], "SIP:", 4) == 0 || memcmp(&packet_payload[8], "sip:", 4) == 0)) {
+	  NDPI_LOG_INFO(ndpi_struct, "found sip MESSAGE\n");
 	  ndpi_int_sip_add_connection(ndpi_struct, flow, 0);
 	  return;
 	}

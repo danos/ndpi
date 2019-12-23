@@ -1,4 +1,6 @@
-READER="../example/ndpiReader -p ../example/protos.txt"
+#!/bin/sh
+
+READER="../example/ndpiReader -p ../example/protos.txt -c ../example/categories.txt"
 
 RC=0
 PCAPS=`cd pcap; /bin/ls *.pcap`
@@ -8,7 +10,7 @@ build_results() {
 	#echo $f
 	# create result files if not present
 	if [ ! -f result/$f.out ]; then
-	    CMD="$READER -q -i pcap/$f -w result/$f.out -v 1"
+	    CMD="$READER -q -i pcap/$f -w result/$f.out -v 2"
 	    $CMD 
 	fi
     done
@@ -17,7 +19,7 @@ build_results() {
 check_results() {
     for f in $PCAPS; do 
 	if [ -f result/$f.out ]; then
-	    CMD="$READER -q -i pcap/$f -w /tmp/reader.out -v 1"
+	    CMD="$READER -q -i pcap/$f -w /tmp/reader.out -v 2"
 	    $CMD
 	    NUM_DIFF=`diff result/$f.out /tmp/reader.out | wc -l`
 	    
