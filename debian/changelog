@@ -1,3 +1,9 @@
+ndpi (2.8-1) UNRELEASED; urgency=medium
+
+  * New upstream version 2.8
+
+ -- Ludovico Cavedon <cavedon@debian.org>  Mon, 23 Dec 2019 13:56:22 +0100
+
 ndpi (2.6-5) unstable; urgency=medium
 
   * Team upload (salsa.d.o namespace)
