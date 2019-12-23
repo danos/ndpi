@@ -27,7 +27,6 @@
 void ndpi_search_ookla(struct ndpi_detection_module_struct* ndpi_struct, struct ndpi_flow_struct* flow) {
   struct ndpi_packet_struct* packet = &flow->packet;
   u_int32_t addr = 0;
-  void *value;
 
   NDPI_LOG_DBG(ndpi_struct, "Ookla detection\n");
 
@@ -39,7 +38,9 @@ void ndpi_search_ookla(struct ndpi_detection_module_struct* ndpi_struct, struct 
     goto ookla_exclude;
 
   if(ndpi_struct->ookla_cache != NULL) {
-    if(ndpi_lru_find_cache(ndpi_struct->ookla_cache, addr, 0 /* Don't remove it as it can be used for other connections */)) {
+    u_int16_t dummy;
+    
+    if(ndpi_lru_find_cache(ndpi_struct->ookla_cache, addr, &dummy, 0 /* Don't remove it as it can be used for other connections */)) {
       NDPI_LOG_INFO(ndpi_struct, "found ookla tcp connection\n");
       ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_OOKLA, NDPI_PROTOCOL_UNKNOWN);
       return;

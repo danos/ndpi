@@ -1,7 +1,7 @@
 /*
  * skype.c
  *
- * Copyright (C) 2017-18 - ntop.org
+ * Copyright (C) 2017-19 - ntop.org
  *
  * nDPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -22,13 +22,6 @@
 #define NDPI_CURRENT_PROTO NDPI_PROTOCOL_SKYPE
 
 #include "ndpi_api.h"
-
-static void ndpi_skype_report_protocol(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow) {
-  //printf("-> payload_len=%u\n", flow->packet.payload_packet_len);
-  
-  NDPI_LOG_INFO(ndpi_struct, "found skype\n");
-  ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_SKYPE_CALL, NDPI_PROTOCOL_SKYPE);
-}
 
 static int is_port(u_int16_t a, u_int16_t b, u_int16_t c) {
   return(((a == c) || (b == c)) ? 1 : 0);
@@ -60,7 +53,11 @@ static void ndpi_check_skype(struct ndpi_detection_module_struct *ndpi_struct, s
 	   ((payload_len >= 16)
 	    && (packet->payload[0] != 0x30) /* Avoid invalid SNMP detection */
 	    && (packet->payload[2] == 0x02))) {
-	  ndpi_skype_report_protocol(ndpi_struct, flow);
+
+	  if(is_port(sport, dport, 8801))
+	    ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_ZOOM, NDPI_PROTOCOL_UNKNOWN);
+	  else
+	    ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_SKYPE_CALL, NDPI_PROTOCOL_SKYPE);
 	}
       }
       
@@ -83,18 +80,20 @@ static void ndpi_check_skype(struct ndpi_detection_module_struct *ndpi_struct, s
 	      && flow->l4.tcp.seen_syn
 	      && flow->l4.tcp.seen_syn_ack
 	      && flow->l4.tcp.seen_ack) {
-
+      /* Disabled this logic as it's too weak and leads to false positives */
+#if 0
       if((payload_len == 8) || (payload_len == 3) || (payload_len == 17)) {
 	// printf("[SKYPE] payload_len=%u\n", payload_len);
 	/* printf("[SKYPE] %u/%u\n", ntohs(packet->tcp->source), ntohs(packet->tcp->dest)); */
 	
 	NDPI_LOG_INFO(ndpi_struct, "found skype\n");
-	ndpi_skype_report_protocol(ndpi_struct, flow);
+	  ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_SKYPE_CALL, NDPI_PROTOCOL_SKYPE);
       } else {
 	// printf("NO [SKYPE] payload_len=%u\n", payload_len);
       }
 
       /* printf("[SKYPE] [id: %u][len: %d]\n", flow->l4.tcp.skype_packet_id, payload_len);  */
+#endif
     } else {
       NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
     }

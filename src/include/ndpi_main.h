@@ -1,7 +1,7 @@
 /*
  * ndpi_main.h
  *
- * Copyright (C) 2011-18 - ntop.org
+ * Copyright (C) 2011-19 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -112,10 +112,9 @@ extern "C" {
   extern void ndpi_packet_src_ip_get(const struct ndpi_packet_struct *packet, ndpi_ip_addr_t * ip);
   extern void ndpi_packet_dst_ip_get(const struct ndpi_packet_struct *packet, ndpi_ip_addr_t * ip);
 
-  extern char *ndpi_get_ip_string(struct ndpi_detection_module_struct *ndpi_struct,
-				  const ndpi_ip_addr_t * ip);
-  extern char *ndpi_get_packet_src_ip_string(struct ndpi_detection_module_struct *ndpi_struct,
-					     const struct ndpi_packet_struct *packet);
+  extern int ndpi_parse_ip_string(const char *ip_str, ndpi_ip_addr_t *parsed_ip);
+  extern char *ndpi_get_ip_string(const ndpi_ip_addr_t * ip, char *buf, u_int buf_len);
+
   extern char* ndpi_get_proto_by_id(struct ndpi_detection_module_struct *ndpi_mod, u_int id);
   u_int16_t ndpi_get_proto_by_name(struct ndpi_detection_module_struct *ndpi_mod, const char *name);
 
@@ -124,7 +123,7 @@ extern "C" {
 					  u_int8_t proto, u_int16_t sport, u_int16_t dport,
 					  u_int8_t *user_defined_proto);
 
-  extern u_int8_t ndpi_is_proto(ndpi_protocol p, u_int16_t proto);
+  extern u_int8_t ndpi_is_proto(ndpi_protocol proto, u_int16_t p);
 
   extern u_int16_t ndpi_get_lower_proto(ndpi_protocol p);
   extern int ndpi_get_protocol_id_master_proto(struct ndpi_detection_module_struct *ndpi_struct,

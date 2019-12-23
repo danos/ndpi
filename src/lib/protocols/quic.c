@@ -1,7 +1,7 @@
 /*
  * quic.c
  *
- * Copyright (C) 2012-18 - ntop.org
+ * Copyright (C) 2012-19 - ntop.org
  *
  * This module is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -21,6 +21,10 @@
  * Michele Campus - <campus@ntop.org>
  *
  */
+
+#if defined __FreeBSD__ || defined __NetBSD__ || defined __OpenBSD__
+#include <sys/endian.h>
+#endif
 
 #include "ndpi_protocol_ids.h"
 
@@ -74,20 +78,40 @@ void ndpi_search_quic(struct ndpi_detection_module_struct *ndpi_struct,
 
   if(packet->udp != NULL
      && (udp_len > (quic_hlen+4 /* QXXX */))
-     && ((packet->payload[0] & 0xC2) == 0x00)
+     // && ((packet->payload[0] & 0xC2) == 0x00)
      && (quic_ports(ntohs(packet->udp->source), ntohs(packet->udp->dest)))
      ) {
     int i;
 
-    if((version_len > 0) && (packet->payload[1+cid_len] != 'Q'))
-      goto no_quic;
+    if((packet->payload[1] == 'Q')
+       && (packet->payload[2] == '0')
+       && (packet->payload[3] == '4')
+       && (packet->payload[4] == '6')
+       && (version_len == 1)
+       )
+      quic_hlen = 18; /* TODO: Better handle Q046 */
+    else {
+      u_int16_t potential_stun_len = ntohs((*((u_int16_t*)&packet->payload[2])));
+      
+      if((version_len > 0) && (packet->payload[1+cid_len] != 'Q'))
+	goto no_quic;
 
-    NDPI_LOG_INFO(ndpi_struct, "found QUIC\n");
-    ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_QUIC, NDPI_PROTOCOL_UNKNOWN);
+      if((version_len == 0) && ((packet->payload[0] & 0xC3 /* ignore CID len/packet number */) != 0))
+	goto no_quic;      
 
-    if(packet->payload[quic_hlen+12] != 0xA0)
-      quic_hlen++;
-	     
+
+      /* Heuristic to see if this packet could be a STUN packet */
+      if((potential_stun_len /* STUN message len */ < udp_len)
+	 && ((potential_stun_len+25 /* Attribute header overhead we assume is max */) /* STUN message len */ > udp_len))	
+	return; /* This could be STUN, let's skip this packet */      
+      
+      NDPI_LOG_INFO(ndpi_struct, "found QUIC\n");
+      ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_QUIC, NDPI_PROTOCOL_UNKNOWN);
+      
+      if(packet->payload[quic_hlen+12] != 0xA0)
+	quic_hlen++;
+    }
+    
     if(udp_len > quic_hlen + 16 + 4) {
       if(!strncmp((char*)&packet->payload[quic_hlen+16], "CHLO" /* Client Hello */, 4)) {
 	/* Check if SNI (Server Name Identification) is present */
@@ -96,8 +120,8 @@ void ndpi_search_quic(struct ndpi_detection_module_struct *ndpi_struct,
 	     && (packet->payload[i+1] == 'N')
 	     && (packet->payload[i+2] == 'I')
 	     && (packet->payload[i+3] == 0)) {
-	    u_int32_t offset = le32toh(*((u_int32_t*)&packet->payload[i+4]));
-	    u_int32_t prev_offset = le32toh(*((u_int32_t*)&packet->payload[i-4]));
+	    u_int32_t offset = (*((u_int32_t*)&packet->payload[i+4]));
+	    u_int32_t prev_offset = (*((u_int32_t*)&packet->payload[i-4]));
 	    int len = offset-prev_offset;
 	    int sni_offset = i+prev_offset+1;
 

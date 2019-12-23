@@ -2,7 +2,7 @@
  * msn.c
  *
  * Copyright (C) 2009-2011 by ipoque GmbH
- * Copyright (C) 2011-18 - ntop.org
+ * Copyright (C) 2011-19 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -62,7 +62,7 @@ static void ndpi_search_msn_tcp(struct ndpi_detection_module_struct *ndpi_struct
   u_int16_t plen;
   u_int16_t status = 0;
   
-  if(packet->detected_protocol_stack[0] == NDPI_PROTOCOL_SSL) {
+  if(packet->detected_protocol_stack[0] == NDPI_PROTOCOL_TLS) {
     
     NDPI_LOG_DBG2(ndpi_struct, "msn ssl ft test\n");
 
@@ -103,7 +103,7 @@ static void ndpi_search_msn_tcp(struct ndpi_detection_module_struct *ndpi_struct
    */
   /* now we have a look at the first packet only. */
   if(flow->packet_counter == 1
-      || ((packet->detected_protocol_stack[0] == NDPI_PROTOCOL_SSL)
+      || ((packet->detected_protocol_stack[0] == NDPI_PROTOCOL_TLS)
 	  && flow->packet_counter <= 3)
       ) {
     
@@ -497,7 +497,7 @@ void ndpi_search_msn(struct ndpi_detection_module_struct *ndpi_struct, struct nd
       // need to do the ceck when protocol == http too (POST /gateway ...)
       if(packet->detected_protocol_stack[0] == NDPI_PROTOCOL_UNKNOWN
 	 || packet->detected_protocol_stack[0] == NDPI_PROTOCOL_HTTP
-	 || packet->detected_protocol_stack[0] == NDPI_PROTOCOL_SSL
+	 || packet->detected_protocol_stack[0] == NDPI_PROTOCOL_TLS
 	 || packet->detected_protocol_stack[0] == NDPI_PROTOCOL_STUN
 	 )
 	ndpi_search_msn_tcp(ndpi_struct, flow);

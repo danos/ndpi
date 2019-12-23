@@ -1,7 +1,7 @@
 /*
  * ndpi_typedefs.h
  *
- * Copyright (C) 2011-18 - ntop.org
+ * Copyright (C) 2011-19 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -34,6 +34,13 @@ typedef enum {
 	      NDPI_LOG_DEBUG,
 	      NDPI_LOG_DEBUG_EXTRA
 } ndpi_log_level_t;
+
+typedef enum {
+	      ndpi_l4_proto_unknown = 0,
+	      ndpi_l4_proto_tcp_only,
+	      ndpi_l4_proto_udp_only,
+	      ndpi_l4_proto_tcp_and_udp,
+} ndpi_l4_proto_info;
 
 /* NDPI_VISIT */
 typedef enum {
@@ -122,6 +129,49 @@ struct ndpi_ethhdr
   u_int16_t h_proto;      /* data length (<= 1500) or type ID proto (>=1536) */
 } PACK_OFF;
 
+/* +++++++++++++++ ARP header +++++++++++++++ */
+PACK_ON
+struct ndpi_arphdr {
+  u_int16_t ar_hrd;/* Format of hardware address.  */
+  u_int16_t ar_pro;/* Format of protocol address.  */
+  u_int8_t  ar_hln;/* Length of hardware address.  */
+  u_int8_t  ar_pln;/* Length of protocol address.  */
+  u_int16_t ar_op;/* ARP opcode (command).  */
+  u_char arp_sha[6];/* sender hardware address */
+  u_int32_t arp_spa;/* sender protocol address */
+  u_char arp_tha[6];/* target hardware address */
+  u_int32_t arp_tpa;/* target protocol address */
+} PACK_OFF;
+
+/* +++++++++++++++ DHCP header +++++++++++++++ */
+PACK_ON
+struct ndpi_dhcphdr {
+  u_int8_t      msgType;
+  u_int8_t      htype;
+  u_int8_t      hlen;
+  u_int8_t      hops;
+  u_int32_t     xid;/* 4 */
+  u_int16_t     secs;/* 8 */
+  u_int16_t     flags;
+  u_int32_t     ciaddr;/* 12 */
+  u_int32_t     yiaddr;/* 16 */
+  u_int32_t     siaddr;/* 20 */
+  u_int32_t     giaddr;/* 24 */
+  u_int8_t      chaddr[16]; /* 28 */
+  u_int8_t      sname[64]; /* 44 */
+  u_int8_t      file[128]; /* 108 */
+  u_int32_t     magic; /* 236 */
+  u_int8_t      options[308];
+} PACK_OFF;
+
+/* +++++++++++++++ MDNS rsp header +++++++++++++++ */
+PACK_ON
+struct ndpi_mdns_rsp_entry {
+  u_int16_t rsp_type, rsp_class;
+  u_int32_t ttl;
+  u_int16_t data_len;
+} PACK_OFF;
+
 /* +++++++++++++++++++ LLC header (IEEE 802.2) ++++++++++++++++ */
 
 PACK_ON
@@ -207,27 +257,30 @@ struct ndpi_iphdr {
 /* +++++++++++++++++++++++ IPv6 header +++++++++++++++++++++++ */
 /* rfc3542 */
 
+PACK_ON
 struct ndpi_in6_addr {
   union {
     u_int8_t   u6_addr8[16];
     u_int16_t  u6_addr16[8];
     u_int32_t  u6_addr32[4];
+    u_int64_t  u6_addr64[2];
   } u6_addr;  /* 128-bit IP6 address */
-};
+} PACK_OFF;
 
+PACK_ON
 struct ndpi_ip6_hdrctl {
   u_int32_t ip6_un1_flow;
   u_int16_t ip6_un1_plen;
   u_int8_t ip6_un1_nxt;
   u_int8_t ip6_un1_hlim;
-};
+} PACK_OFF;
 
-/* PACK_ON */
+PACK_ON
 struct ndpi_ipv6hdr {
   struct ndpi_ip6_hdrctl ip6_hdr;
   struct ndpi_in6_addr ip6_src;
   struct ndpi_in6_addr ip6_dst;
-} /* PACK_OFF */;
+} PACK_OFF;
 
 /* +++++++++++++++++++++++ TCP header +++++++++++++++++++++++ */
 
@@ -302,6 +355,29 @@ struct ndpi_icmphdr {
   } un;
 } PACK_OFF;
 
+/* +++++++++++++++++++++++ ICMP6 header +++++++++++++++++++++++ */
+
+PACK_ON
+struct ndpi_icmp6hdr {
+  uint8_t     icmp6_type;   /* type field */
+  uint8_t     icmp6_code;   /* code field */
+  uint16_t    icmp6_cksum;  /* checksum field */
+  union {
+    uint32_t  icmp6_un_data32[1]; /* type-specific field */
+    uint16_t  icmp6_un_data16[2]; /* type-specific field */
+    uint8_t   icmp6_un_data8[4];  /* type-specific field */
+  } icmp6_dataun;
+} PACK_OFF;
+
+/* +++++++++++++++++++++++ VXLAN header +++++++++++++++++++++++ */
+
+PACK_ON
+struct ndpi_vxlanhdr {
+  u_int16_t flags;
+  u_int16_t groupPolicy;
+  u_int32_t vni;
+} PACK_OFF;
+
 /* ************************************************************ */
 /* ******************* ********************* ****************** */
 /* ************************************************************ */
@@ -356,19 +432,26 @@ PACK_ON struct tinc_cache_entry {
 } PACK_OFF;
 
 typedef enum {
-	      HTTP_METHOD_UNKNOWN = 0,
-	      HTTP_METHOD_OPTIONS,
-	      HTTP_METHOD_GET,
-	      HTTP_METHOD_HEAD,
-	      HTTP_METHOD_POST,
-	      HTTP_METHOD_PUT,
-	      HTTP_METHOD_DELETE,
-	      HTTP_METHOD_TRACE,
-	      HTTP_METHOD_CONNECT
+	      NDPI_HTTP_METHOD_UNKNOWN = 0,
+	      NDPI_HTTP_METHOD_OPTIONS,
+	      NDPI_HTTP_METHOD_GET,
+	      NDPI_HTTP_METHOD_HEAD,
+	      NDPI_HTTP_METHOD_PATCH,
+	      NDPI_HTTP_METHOD_POST,
+	      NDPI_HTTP_METHOD_PUT,
+	      NDPI_HTTP_METHOD_DELETE,
+	      NDPI_HTTP_METHOD_TRACE,
+	      NDPI_HTTP_METHOD_CONNECT
 } ndpi_http_method;
 
+struct ndpi_lru_cache_entry {
+  u_int32_t key; /* Store the whole key to avoid ambiguities */
+  u_int32_t is_full:1, value:16, pad:15;
+};
+  
 struct ndpi_lru_cache {
-  u_int32_t num_entries, *entries;  
+  u_int32_t num_entries;
+  struct ndpi_lru_cache_entry *entries;
 };
 
 struct ndpi_id_struct {
@@ -479,14 +562,14 @@ struct ndpi_flow_tcp_struct {
 
   /* NDPI_PROTOCOL_WHATSAPP */
   u_int8_t wa_matched_so_far;
-  
+
   /* NDPI_PROTOCOL_TDS */
   u_int8_t tds_login_version;
 
   /* NDPI_PROTOCOL_IRC */
   u_int8_t irc_stage;
   u_int8_t irc_port;
-  
+
   /* NDPI_PROTOCOL_H323 */
   u_int8_t h323_valid_packets;
 
@@ -540,9 +623,18 @@ struct ndpi_flow_tcp_struct {
   /* NDPI_PROTOCOL_TELNET */
   u_int32_t telnet_stage:2;			// 0 - 2
 
-  /* NDPI_PROTOCOL_SSL */
-  u_int8_t ssl_seen_client_cert:1, ssl_seen_server_cert:1, ssl_stage:2; // 0 - 5
-
+  void* tls_srv_cert_fingerprint_ctx;
+  
+  /* NDPI_PROTOCOL_TLS */
+  u_int8_t tls_seen_client_cert:1,
+    tls_seen_server_cert:1,
+    tls_seen_certificate:1,
+    tls_srv_cert_fingerprint_found:1,
+    tls_srv_cert_fingerprint_processed:1,
+    tls_stage:2, _pad:1; // 0 - 5
+  int16_t tls_record_offset, tls_fingerprint_len; /* Need to be signed */
+  u_int8_t tls_sha1_certificate_fingerprint[20];
+  
   /* NDPI_PROTOCOL_POSTGRES */
   u_int32_t postgres_stage:3;
 
@@ -551,7 +643,7 @@ struct ndpi_flow_tcp_struct {
   u_int32_t seen_syn:1;
   u_int32_t seen_syn_ack:1;
   u_int32_t seen_ack:1;
-  
+
   /* NDPI_PROTOCOL_ICECAST */
   u_int32_t icecast_stage:1;
 
@@ -658,6 +750,10 @@ struct ndpi_flow_udp_struct {
 
   /* NDPI_PROTOCOL_MEMCACHED */
   u_int8_t memcached_matches;
+
+  /* NDPI_PROTOCOL_WIREGUARD */
+  u_int8_t wireguard_stage;
+  u_int32_t wireguard_peer_index[2];
 }
 #ifndef WIN32
   __attribute__ ((__packed__))
@@ -724,10 +820,9 @@ struct ndpi_packet_struct {
   u_int8_t tcp_retransmission;
   u_int8_t l4_protocol;
 
-  u_int8_t ssl_certificate_detected:4, ssl_certificate_num_checks:4;
+  u_int8_t tls_certificate_detected:4, tls_certificate_num_checks:4;
   u_int8_t packet_lines_parsed_complete:1,
-    packet_direction:1,
-    empty_line_position_set:1;
+    packet_direction:1, empty_line_position_set:1, pad:5;
 };
 
 struct ndpi_detection_module_struct;
@@ -754,7 +849,8 @@ typedef enum {
 	      NDPI_PROTOCOL_ACCEPTABLE,            /* Probably doesn't provide risks, but could be malicious (e.g., Dropbox) */
 	      NDPI_PROTOCOL_FUN,                   /* Pure fun protocol, which may be prohibited by the user policy (e.g., Netflix) */
 	      NDPI_PROTOCOL_UNSAFE,                /* Probably provides risks, but could be a normal traffic. Unencrypted protocols with clear pass should be here (e.g., telnet) */
-	      NDPI_PROTOCOL_POTENTIALLY_DANGEROUS, /* Surely is dangerous (ex. Tor). Be prepared to troubles */
+	      NDPI_PROTOCOL_POTENTIALLY_DANGEROUS, /* Possibly dangerous (ex. Tor). */
+	      NDPI_PROTOCOL_DANGEROUS,             /* Surely is dangerous (ex. smbv1). Be prepared to troubles */
 	      NDPI_PROTOCOL_TRACKER_ADS,           /* Trackers, Advertisements... */
 	      NDPI_PROTOCOL_UNRATED                /* No idea, not implemented or impossible to classify */
 } ndpi_protocol_breed_t;
@@ -791,15 +887,12 @@ typedef enum {
 	      NDPI_PROTOCOL_CATEGORY_CUSTOM_4,          /* User custom category 4 */
 	      NDPI_PROTOCOL_CATEGORY_CUSTOM_5,          /* User custom category 5 */
 
-	      /* Payload Content */
-	      NDPI_CONTENT_CATEGORY_AVI,
-	      NDPI_CONTENT_CATEGORY_FLASH,
-	      NDPI_CONTENT_CATEGORY_OGG,
-	      NDPI_CONTENT_CATEGORY_MPEG,
-	      NDPI_CONTENT_CATEGORY_QUICKTIME,
-	      NDPI_CONTENT_CATEGORY_REALMEDIA,
-	      NDPI_CONTENT_CATEGORY_WINDOWSMEDIA,
-	      NDPI_CONTENT_CATEGORY_WEBM,
+	      /* Further categories... */
+	      NDPI_PROTOCOL_CATEGORY_MUSIC,
+	      NDPI_PROTOCOL_CATEGORY_VIDEO,
+	      NDPI_PROTOCOL_CATEGORY_SHOPPING,
+	      NDPI_PROTOCOL_CATEGORY_PRODUCTIVITY,
+	      NDPI_PROTOCOL_CATEGORY_FILE_SHARING,
 
 	      /* Some custom categories */
 	      CUSTOM_CATEGORY_MINING           = 99,
@@ -807,6 +900,13 @@ typedef enum {
 	      CUSTOM_CATEGORY_ADVERTISEMENT    = 101,
 	      CUSTOM_CATEGORY_BANNED_SITE      = 102,
 	      CUSTOM_CATEGORY_SITE_UNAVAILABLE = 103,
+	      CUSTOM_CATEGORY_ALLOWED_SITE     = 104,
+	      /*
+		The category below is used to track communications made by
+		security applications (e.g. sophosxl.net, spamhaus.org)
+		to track malware, spam etc.
+	      */
+	      CUSTOM_CATEGORY_ANTIMALWARE      = 105,
 
 	      /*
 		IMPORTANT
@@ -817,7 +917,7 @@ typedef enum {
 
 		in ndpi_main.c
 	      */
-    
+
 	      NDPI_PROTOCOL_NUM_CATEGORIES /*
 					     NOTE: Keep this as last member
 					     Unused as value but useful to getting the number of elements
@@ -826,13 +926,12 @@ typedef enum {
 } ndpi_protocol_category_t;
 
 typedef enum {
-	      ndpi_pref_http_dont_dissect_response = 0,
-	      ndpi_pref_dns_dont_dissect_response,
-	      ndpi_pref_direction_detect_disable,
-	      ndpi_pref_disable_metadata_export,
-	      ndpi_pref_enable_category_substring_match
+   ndpi_pref_http_dont_dissect_response = 0,
+   ndpi_pref_dns_dont_dissect_response,
+   ndpi_pref_direction_detect_disable,
+   ndpi_pref_disable_metadata_export,
 } ndpi_detection_preference;
-  
+
 /* ntop extensions */
 typedef struct ndpi_proto_defaults {
   char *protoName;
@@ -955,11 +1054,10 @@ struct ndpi_detection_module_struct {
 #else
     ndpi_automa hostnames, hostnames_shadow;
 #endif
-    void *hostnames_hash;
     void *ipAddresses, *ipAddresses_shadow; /* Patricia */
     u_int8_t categories_loaded;
   } custom_categories;
-  
+
   /* IP-based protocol detection */
   void *protocols_ptree;
 
@@ -985,10 +1083,6 @@ struct ndpi_detection_module_struct {
   u_int32_t zattoo_connection_timeout;
   u_int32_t jabber_stun_timeout;
   u_int32_t jabber_file_transfer_timeout;
-#ifdef NDPI_ENABLE_DEBUG_MESSAGES
-#define NDPI_IP_STRING_SIZE 40
-  char ip_string[NDPI_IP_STRING_SIZE];
-#endif
   u_int8_t ip_version_limit;
   /* NDPI_PROTOCOL_BITTORRENT */
   struct hash_ip4p_table *bt_ht;
@@ -1006,18 +1100,26 @@ struct ndpi_detection_module_struct {
   /* NDPI_PROTOCOL_TINC */
   struct cache *tinc_cache;
 
+  /* NDPI_PROTOCOL_STUN and subprotocols */
+  struct ndpi_lru_cache *stun_cache;
+
   ndpi_proto_defaults_t proto_defaults[NDPI_MAX_SUPPORTED_PROTOCOLS+NDPI_MAX_NUM_CUSTOM_PROTOCOLS];
 
   u_int8_t http_dont_dissect_response:1, dns_dont_dissect_response:1,
     direction_detect_disable:1, /* disable internal detection of packet direction */
-    disable_metadata_export:1, /* No metadata is exported */
-    enable_category_substring_match:1 /* Default is perfect match */
+    disable_metadata_export:1   /* No metadata is exported */
     ;
-  
+
   void *hyperscan; /* Intel Hyperscan */
 };
-  
+
 #endif /* NDPI_LIB_COMPILATION */
+
+typedef enum {
+   ndpi_cipher_safe = NDPI_CIPHER_SAFE,
+   ndpi_cipher_weak = NDPI_CIPHER_WEAK,
+   ndpi_cipher_insecure = NDPI_CIPHER_INSECURE
+} ndpi_cipher_weakness;
 
 struct ndpi_flow_struct {
   u_int16_t detected_protocol_stack[NDPI_PROTOCOL_SIZE];
@@ -1027,8 +1129,8 @@ struct ndpi_flow_struct {
   u_int16_t protocol_stack_info;
 
   /* init parameter, internal used to set up timestamp,... */
-  u_int16_t guessed_protocol_id, guessed_host_protocol_id, guessed_category;
-  u_int8_t protocol_id_already_guessed:1, host_already_guessed:1, init_finished:1, setup_packet_direction:1, packet_direction:1, check_extra_packets:1;
+  u_int16_t guessed_protocol_id, guessed_host_protocol_id, guessed_category, guessed_header_category;
+  u_int8_t l4_proto, protocol_id_already_guessed:1, host_already_guessed:1, init_finished:1, setup_packet_direction:1, packet_direction:1, check_extra_packets:1;
 
   /*
     if ndpi_struct->direction_detect_disable == 1
@@ -1039,7 +1141,7 @@ struct ndpi_flow_struct {
   u_int8_t max_extra_packets_to_check;
   u_int8_t num_extra_packets_checked;
   u_int8_t num_processed_pkts; /* <= WARNING it can wrap but we do expect people to giveup earlier */
-  
+
   int (*extra_packets_func) (struct ndpi_detection_module_struct *, struct ndpi_flow_struct *flow);
 
   /*
@@ -1077,8 +1179,9 @@ struct ndpi_flow_struct {
   union {
     /* the only fields useful for nDPI and ntopng */
     struct {
-      u_int8_t num_queries, num_answers, reply_code;
+      u_int8_t num_queries, num_answers, reply_code, is_query;
       u_int16_t query_type, query_class, rsp_type;
+      ndpi_ip_addr_t rsp_addr; /* The first address in a DNS response packet */
     } dns;
 
     struct {
@@ -1087,27 +1190,41 @@ struct ndpi_flow_struct {
     } ntp;
 
     struct {
+      char cname[24], realm[24];
+    } kerberos;
+
+    struct {
       struct {
-	char client_certificate[64], server_certificate[64];
+	u_int16_t ssl_version;
+	char client_certificate[64], server_certificate[64], server_organization[64];
+	u_int32_t notBefore, notAfter;
+	char ja3_client[33], ja3_server[33];
+	u_int16_t server_cipher;
+	ndpi_cipher_weakness server_unsafe_cipher;
       } ssl;
-      
+
       struct {
-	u_int8_t num_udp_pkts, num_processed_pkts, num_binding_requests, is_skype;
+	u_int8_t num_udp_pkts, num_processed_pkts, num_binding_requests;
       } stun;
 
-      /* We can have STUN over SSL thus they need to live together */
-    } stun_ssl;  
+      /* We can have STUN over SSL/TLS thus they need to live together */
+    } stun_ssl;
 
     struct {
       char client_signature[48], server_signature[48];
+      char hassh_client[33], hassh_server[33];
     } ssh;
 
+    struct {
+      u_int8_t last_one_byte_pkt, last_byte;
+    } imo;
+    
     struct {
       char answer[96];
     } mdns;
 
     struct {
-      char version[96];
+      char version[32];
     } ubntac2;
 
     struct {
@@ -1134,10 +1251,10 @@ struct ndpi_flow_struct {
   NDPI_PROTOCOL_BITMASK excluded_protocol_bitmask;
 
   ndpi_protocol_category_t category;
-  
+
   /* NDPI_PROTOCOL_REDIS */
   u_int8_t redis_s2d_first_char, redis_d2s_first_char;
-  
+
   u_int16_t packet_counter;		      // can be 0 - 65000
   u_int16_t packet_direction_counter[2];
   u_int16_t byte_counter[2];
@@ -1153,7 +1270,7 @@ struct ndpi_flow_struct {
   /* NDPI_PROTOCOL_HTTP */
   u_int8_t http_detected:1;
   u_int16_t http_upper_protocol, http_lower_protocol;
-  
+
   /* NDPI_PROTOCOL_RTSP */
   u_int8_t rtsprdt_stage:2, rtsp_control_flow:1;
 
@@ -1168,7 +1285,7 @@ struct ndpi_flow_struct {
 
   /* NDPI_PROTOCOL_THUNDER */
   u_int8_t thunder_stage:2;		        // 0 - 3
-  
+
   /* NDPI_PROTOCOL_OSCAR */
   u_int8_t oscar_ssl_voice_stage:3, oscar_video_voice:1;
 
@@ -1229,6 +1346,11 @@ typedef struct {
 } ndpi_protocol_match;
 
 typedef struct {
+  char *string_to_match, *hyperscan_string_to_match;
+  ndpi_protocol_category_t protocol_category;
+} ndpi_category_match;
+
+typedef struct {
   u_int32_t network;
   u_int8_t cidr;
   u_int8_t value;
@@ -1239,5 +1361,81 @@ typedef struct {
   ndpi_protocol_category_t protocol_category;
   ndpi_protocol_breed_t protocol_breed;
 } ndpi_protocol_match_result;
+
+typedef enum {
+  ndpi_serialization_format_unknown = 0,
+  ndpi_serialization_format_tlv,
+  ndpi_serialization_format_json,
+  ndpi_serialization_format_csv
+} ndpi_serialization_format;
+
+/* Note: key supports string and uint32 (compressed to uint8/uint16) only,
+ * this is also enforced by the API */
+typedef enum {
+  ndpi_serialization_unknown = 0,
+  ndpi_serialization_end_of_record,
+  ndpi_serialization_uint8,
+  ndpi_serialization_uint16,
+  ndpi_serialization_uint32,
+  ndpi_serialization_uint64,
+  ndpi_serialization_int8,
+  ndpi_serialization_int16,
+  ndpi_serialization_int32,
+  ndpi_serialization_int64,
+  ndpi_serialization_float,
+  ndpi_serialization_string
+} ndpi_serialization_type;
+
+#define NDPI_SERIALIZER_DEFAULT_BUFFER_SIZE 8192
+#define NDPI_SERIALIZER_DEFAULT_BUFFER_INCR 1024
+
+#define NDPI_SERIALIZER_STATUS_COMMA (1 << 0)
+#define NDPI_SERIALIZER_STATUS_ARRAY (1 << 1)
+#define NDPI_SERIALIZER_STATUS_EOR   (1 << 2)
+#define NDPI_SERIALIZER_STATUS_SOB   (1 << 3)
+
+typedef struct {
+  u_int32_t flags;
+  u_int32_t size_used;
+} ndpi_private_serializer_status;
+
+typedef struct {
+  ndpi_private_serializer_status status;
+  u_int32_t initial_buffer_size;
+  u_int32_t buffer_size;
+  ndpi_serialization_format fmt;
+  u_int8_t *buffer;
+  char csv_separator[2];
+  u_int8_t has_snapshot;
+  ndpi_private_serializer_status snapshot;
+} ndpi_private_serializer;
+
+#define ndpi_private_deserializer ndpi_private_serializer
+
+typedef struct { char c[sizeof(ndpi_private_serializer)]; } ndpi_serializer;
+
+#define ndpi_deserializer ndpi_serializer
+
+typedef struct {
+  char *str;
+  u_int16_t str_len;
+} ndpi_string;
+
+/* **************************************** */
+
+struct ndpi_analyze_struct {
+  u_int32_t *values;
+  u_int32_t min_val, max_val, sum_total, num_data_entries, next_value_insert_index;
+  u_int16_t num_values_array_len /* lenght of the values array */;
+
+  struct {
+    /* https://www.johndcook.com/blog/standard_deviation/ */
+    float mu, q;
+  } stddev;
+};
+
+#define DEFAULT_SERIES_LEN  64
+#define MAX_SERIES_LEN      512
+#define MIN_SERIES_LEN      8
 
 #endif /* __NDPI_TYPEDEFS_H__ */
