@@ -8,7 +8,7 @@ Build-Depends:
     dpkg-dev (>= 1.16.1.1),
     libjson-c-dev,
     libpcap-dev,
-    libwireshark-dev,
+    libwireshark-dev (>= 3.0~),
     pkg-config,
 Standards-Version: 4.4.1
 Homepage: http://www.ntop.org/products/ndpi/
