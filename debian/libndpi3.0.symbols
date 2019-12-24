@@ -1,9 +1,11 @@
 libndpi.so.3.0 libndpi3.0 #MINVER#
+* Build-Depends-Package: libndpi-dev
  NDPI_BITMASK_COMPARE@Base 2.6
- NDPI_BITMASK_IS_EMPTY@Base 2.6
- NDPI_DUMP_BITMASK@Base 2.6
  NDPI_PROTOCOL_IP_clear@Base 2.6
- NDPI_PROTOCOL_IP_is_set@Base 2.6
+ SHA1Final@Base 3.0
+ SHA1Init@Base 3.0
+ SHA1Transform@Base 3.0
+ SHA1Update@Base 3.0
  ac_automata_add@Base 2.6
  ac_automata_display@Base 2.6
  ac_automata_finalize@Base 2.6
@@ -25,19 +27,21 @@ libndpi.so.3.0 libndpi3.0 #MINVER#
  check_ndpi_other_flow_func@Base 2.6
  check_ndpi_tcp_flow_func@Base 2.6
  check_ndpi_udp_flow_func@Base 2.6
- check_punycode_string@Base 2.6
- content_match@Base 2.6
- getSSLcertificate@Base 2.6
- host_match@Base 2.6
+ getSSCertificateFingerprint@Base 3.0
+ getSSLorganization@Base 3.0
+ getTLScertificate@Base 3.0
+ get_stun_lru_key@Base 3.0
  ht_create@Base 2.6
  ht_free@Base 2.6
  ht_get@Base 2.6
  ht_hash@Base 2.6
  ht_newpair@Base 2.6
  ht_set@Base 2.6
+ init_104_dissector@Base 3.0
  init_afp_dissector@Base 2.6
  init_aimini_dissector@Base 2.6
  init_ajp_dissector@Base 2.6
+ init_amazon_video_dissector@Base 3.0
  init_amqp_dissector@Base 2.6
  init_apple_push_dissector@Base 2.6
  init_applejuice_dissector@Base 2.6
@@ -60,6 +64,7 @@ libndpi.so.3.0 libndpi3.0 #MINVER#
  init_diameter_dissector@Base 2.6
  init_directconnect_dissector@Base 2.6
  init_directdownloadlink_dissector@Base 2.6
+ init_dnp3_dissector@Base 3.0
  init_dns_dissector@Base 2.6
  init_dofus_dissector@Base 2.6
  init_drda_dissector@Base 2.6
@@ -80,11 +85,11 @@ libndpi.so.3.0 libndpi3.0 #MINVER#
  init_h323_dissector@Base 2.6
  init_halflife2_dissector@Base 2.6
  init_hangout_dissector@Base 2.6
- init_hep_dissector@Base 2.6
  init_http_activesync_dissector@Base 2.6
  init_http_dissector@Base 2.6
  init_iax_dissector@Base 2.6
  init_icecast_dissector@Base 2.6
+ init_imo_dissector@Base 3.0
  init_ipp_dissector@Base 2.6
  init_irc_dissector@Base 2.6
  init_jabber_dissector@Base 2.6
@@ -92,6 +97,7 @@ libndpi.so.3.0 libndpi3.0 #MINVER#
  init_kerberos_dissector@Base 2.6
  init_kontiki_dissector@Base 2.6
  init_ldap_dissector@Base 2.6
+ init_line_dissector@Base 3.0
  init_lisp_dissector@Base 2.6
  init_lotus_notes_dissector@Base 2.6
  init_mail_imap_dissector@Base 2.6
@@ -154,12 +160,12 @@ libndpi.so.3.0 libndpi3.0 #MINVER#
  init_spotify_dissector@Base 2.6
  init_ssdp_dissector@Base 2.6
  init_ssh_dissector@Base 2.6
- init_ssl_dissector@Base 2.6
  init_starcraft_dissector@Base 2.6
  init_stealthnet_dissector@Base 2.6
  init_steam_dissector@Base 2.6
  init_stun_dissector@Base 2.6
  init_syslog_dissector@Base 2.6
+ init_targus_getdata_dissector@Base 3.0
  init_teamspeak_dissector@Base 2.6
  init_teamviewer_dissector@Base 2.6
  init_telegram_dissector@Base 2.6
@@ -168,6 +174,7 @@ libndpi.so.3.0 libndpi3.0 #MINVER#
  init_tftp_dissector@Base 2.6
  init_thunder_dissector@Base 2.6
  init_tinc_dissector@Base 2.6
+ init_tls_dissector@Base 3.0
  init_tor_dissector@Base 2.6
  init_tvants_dissector@Base 2.6
  init_tvuplayer_dissector@Base 2.6
@@ -181,6 +188,7 @@ libndpi.so.3.0 libndpi3.0 #MINVER#
  init_warcraft3_dissector@Base 2.6
  init_whatsapp_dissector@Base 2.6
  init_whois_das_dissector@Base 2.6
+ init_wireguard_dissector@Base 3.0
  init_world_of_kung_fu_dissector@Base 2.6
  init_world_of_warcraft_dissector@Base 2.6
  init_xbox_dissector@Base 2.6
@@ -195,19 +203,20 @@ libndpi.so.3.0 libndpi3.0 #MINVER#
  ndpi_DeleteEntry@Base 2.6
  ndpi_Deref_Prefix@Base 2.6
  ndpi_Destroy_Patricia@Base 2.6
+ ndpi_MD5Final@Base 3.0
+ ndpi_MD5Init@Base 3.0
+ ndpi_MD5Update@Base 3.0
  ndpi_New_Patricia@Base 2.6
  ndpi_New_Prefix2@Base 2.6
  ndpi_New_Prefix@Base 2.6
  ndpi_Ref_Prefix@Base 2.6
- ndpi_add_content_subprotocol@Base 2.6
  ndpi_add_string_to_automa@Base 1.8
  ndpi_add_string_value_to_automa@Base 2.2
+ ndpi_alloc_data_analysis@Base 3.0
  ndpi_apply_flow_protocol_to_packet@Base 2.6
  ndpi_ascii2prefix@Base 2.6
  ndpi_build_default_ports@Base 2.6
- ndpi_build_default_ports_range@Base 2.6
  ndpi_bytestream_dec_or_hex_to_number64@Base 2.6
- ndpi_bytestream_dec_or_hex_to_number@Base 2.6
  ndpi_bytestream_to_ipv4@Base 2.6
  ndpi_bytestream_to_number64@Base 2.6
  ndpi_bytestream_to_number@Base 2.6
@@ -216,13 +225,40 @@ libndpi.so.3.0 libndpi3.0 #MINVER#
  ndpi_category_set_name@Base 2.2
  ndpi_check_flow_func@Base 2.6
  ndpi_check_for_email_address@Base 2.6
+ ndpi_check_punycode_string@Base 3.0
  ndpi_check_rx@Base 2.6
  ndpi_check_starcraft_tcp@Base 2.6
  ndpi_check_starcraft_udp@Base 2.6
+ ndpi_cipher2str@Base 3.0
+ ndpi_classify@Base 3.0
  ndpi_comp_with_mask@Base 2.6
  ndpi_connection_tracking@Base 2.6
+ ndpi_data_add_value@Base 3.0
+ ndpi_data_average@Base 3.0
+ ndpi_data_entropy@Base 3.0
+ ndpi_data_max@Base 3.0
+ ndpi_data_min@Base 3.0
+ ndpi_data_print_window_values@Base 3.0
+ ndpi_data_ratio2str@Base 3.0
+ ndpi_data_ratio@Base 3.0
+ ndpi_data_stddev@Base 3.0
+ ndpi_data_variance@Base 3.0
+ ndpi_data_window_average@Base 3.0
  ndpi_debug_printf@Base 2.6
  ndpi_default_ports_tree_node_t_walker@Base 2.6
+ ndpi_deserialize_clone_all@Base 3.0
+ ndpi_deserialize_clone_item@Base 3.0
+ ndpi_deserialize_get_format@Base 3.0
+ ndpi_deserialize_get_item_type@Base 3.0
+ ndpi_deserialize_key_string@Base 3.0
+ ndpi_deserialize_key_uint32@Base 3.0
+ ndpi_deserialize_next@Base 3.0
+ ndpi_deserialize_value_float@Base 3.0
+ ndpi_deserialize_value_int32@Base 3.0
+ ndpi_deserialize_value_int64@Base 3.0
+ ndpi_deserialize_value_string@Base 3.0
+ ndpi_deserialize_value_uint32@Base 3.0
+ ndpi_deserialize_value_uint64@Base 3.0
  ndpi_detection_get_l4@Base 2.6
  ndpi_detection_get_sizeof_ndpi_flow_struct@Base 1.4.0+svn6712
  ndpi_detection_get_sizeof_ndpi_id_struct@Base 1.4.0+svn6712
@@ -232,6 +268,7 @@ libndpi.so.3.0 libndpi3.0 #MINVER#
  ndpi_enable_loaded_categories@Base 2.6
  ndpi_exclude_protocol@Base 2.6
  ndpi_exit_detection_module@Base 1.4.0+svn6712
+ ndpi_extra_dissection_possible@Base 3.0
  ndpi_fill_ip_protocol_category@Base 2.6
  ndpi_fill_protocol_category@Base 2.6
  ndpi_finalize_automa@Base 1.8
@@ -241,6 +278,7 @@ libndpi.so.3.0 libndpi3.0 #MINVER#
  ndpi_flowv6_flow_hash@Base 2.6
  ndpi_free@Base 1.4.0+svn6712
  ndpi_free_automa@Base 1.8
+ ndpi_free_data_analysis@Base 3.0
  ndpi_free_flow@Base 1.6
  ndpi_get_api_version@Base 2.6
  ndpi_get_category_id@Base 2.6
@@ -249,11 +287,16 @@ libndpi.so.3.0 libndpi3.0 #MINVER#
  ndpi_get_http_content_type@Base 1.6
  ndpi_get_http_method@Base 1.6
  ndpi_get_http_url@Base 1.6
+ ndpi_get_ip_string@Base 3.0
+ ndpi_get_l4_proto_info@Base 3.0
+ ndpi_get_l4_proto_name@Base 3.0
  ndpi_get_lower_proto@Base 1.7.1~git20151130.6f3d5a7
+ ndpi_get_mc_rep_times@Base 3.0
  ndpi_get_ndpi_detection_module_size@Base 2.6
  ndpi_get_ndpi_num_custom_protocols@Base 2.6
  ndpi_get_ndpi_num_supported_protocols@Base 2.6
  ndpi_get_num_supported_protocols@Base 1.4.0+svn6712
+ ndpi_get_partial_detection@Base 3.0
  ndpi_get_proto_breed@Base 1.6
  ndpi_get_proto_breed_name@Base 1.6
  ndpi_get_proto_by_id@Base 1.7
@@ -263,27 +306,39 @@ libndpi.so.3.0 libndpi3.0 #MINVER#
  ndpi_get_proto_name@Base 1.4.0+svn6712
  ndpi_get_protocol_id@Base 1.5.1
  ndpi_get_protocol_id_master_proto@Base 1.7
+ ndpi_guess_host_protocol_id@Base 3.0
  ndpi_guess_protocol_id@Base 1.7
  ndpi_guess_undetected_protocol@Base 1.4.0+svn6712
  ndpi_handle_rule@Base 2.6
+ ndpi_has_human_readeable_string@Base 3.0
  ndpi_init_automa@Base 1.8
+ ndpi_init_data_analysis@Base 3.0
+ ndpi_init_deserializer@Base 3.0
+ ndpi_init_deserializer_buf@Base 3.0
  ndpi_init_detection_module@Base 1.4.0+svn6712
  ndpi_init_protocol_match@Base 2.6
+ ndpi_init_serializer@Base 3.0
+ ndpi_init_serializer_ll@Base 3.0
  ndpi_int_change_category@Base 2.6
  ndpi_int_change_flow_protocol@Base 2.6
  ndpi_int_change_packet_protocol@Base 2.6
  ndpi_int_change_protocol@Base 2.6
  ndpi_int_reset_packet_protocol@Base 2.6
  ndpi_int_reset_protocol@Base 2.6
+ ndpi_int_stun_add_connection@Base 3.0
  ndpi_ips_match@Base 2.6
  ndpi_is_custom_category@Base 2.2
  ndpi_is_proto@Base 1.7.1~git20151130.6f3d5a7
- ndpi_is_ssl_tor@Base 2.6
+ ndpi_is_safe_ssl_cipher@Base 3.0
  ndpi_is_subprotocol_informative@Base 2.2
+ ndpi_is_tls_tor@Base 3.0
  ndpi_is_tor_flow@Base 2.6
+ ndpi_load_categories_file@Base 3.0
+ ndpi_load_category@Base 3.0
  ndpi_load_hostname_category@Base 2.6
  ndpi_load_ip_category@Base 2.6
  ndpi_load_protocols_file@Base 1.4.0+svn6712
+ ndpi_log_timestamp@Base 3.0
  ndpi_lru_add_to_cache@Base 2.8
  ndpi_lru_cache_init@Base 2.8
  ndpi_lru_find_cache@Base 2.8
@@ -297,6 +352,7 @@ libndpi.so.3.0 libndpi3.0 #MINVER#
  ndpi_match_string@Base 1.8
  ndpi_match_string_id@Base 2.2
  ndpi_match_string_subprotocol@Base 1.8
+ ndpi_merge_splt_arrays@Base 3.0
  ndpi_my_inet_pton@Base 2.6
  ndpi_net_match@Base 2.6
  ndpi_netbios_name_interpret@Base 2.2
@@ -305,6 +361,9 @@ libndpi.so.3.0 libndpi3.0 #MINVER#
  ndpi_packet_dst_ip_get@Base 2.6
  ndpi_packet_src_ip_eql@Base 2.6
  ndpi_packet_src_ip_get@Base 2.6
+ ndpi_parameters_bd@Base 3.0
+ ndpi_parameters_splt@Base 3.0
+ ndpi_parse_ip_string@Base 3.0
  ndpi_parse_packet_line_info@Base 2.6
  ndpi_parse_packet_line_info_any@Base 2.6
  ndpi_patricia_lookup@Base 2.6
@@ -322,11 +381,14 @@ libndpi.so.3.0 libndpi3.0 #MINVER#
  ndpi_protocol2id@Base 2.6
  ndpi_protocol2name@Base 1.7
  ndpi_realloc@Base 2.6
+ ndpi_reset_serializer@Base 3.0
  ndpi_revision@Base 1.4.0+svn6712
+ ndpi_search_104_tcp@Base 3.0
  ndpi_search_activesync@Base 2.6
  ndpi_search_afp@Base 2.6
  ndpi_search_aimini@Base 2.6
  ndpi_search_ajp@Base 2.6
+ ndpi_search_amazon_video@Base 3.0
  ndpi_search_amqp@Base 2.6
  ndpi_search_apple_push@Base 2.6
  ndpi_search_applejuice_tcp@Base 2.6
@@ -350,6 +412,7 @@ libndpi.so.3.0 libndpi3.0 #MINVER#
  ndpi_search_diameter@Base 2.6
  ndpi_search_direct_download_link_tcp@Base 2.6
  ndpi_search_directconnect@Base 2.6
+ ndpi_search_dnp3_tcp@Base 3.0
  ndpi_search_dns@Base 2.6
  ndpi_search_dofus@Base 2.6
  ndpi_search_drda@Base 2.6
@@ -370,10 +433,10 @@ libndpi.so.3.0 libndpi3.0 #MINVER#
  ndpi_search_h323@Base 2.6
  ndpi_search_halflife2@Base 2.6
  ndpi_search_hangout@Base 2.6
- ndpi_search_hep@Base 2.6
  ndpi_search_http_tcp@Base 2.6
  ndpi_search_iax@Base 2.6
  ndpi_search_icecast_tcp@Base 2.6
+ ndpi_search_imo@Base 3.0
  ndpi_search_in_non_tcp_udp@Base 2.6
  ndpi_search_ipp@Base 2.6
  ndpi_search_irc_ssl_detect_ninety_percent_but_very_fast@Base 2.6
@@ -383,6 +446,7 @@ libndpi.so.3.0 libndpi3.0 #MINVER#
  ndpi_search_kerberos@Base 2.6
  ndpi_search_kontiki@Base 2.6
  ndpi_search_ldap@Base 2.6
+ ndpi_search_line@Base 3.0
  ndpi_search_lisp@Base 2.6
  ndpi_search_lotus_notes@Base 2.6
  ndpi_search_mail_imap_tcp@Base 2.6
@@ -444,12 +508,12 @@ libndpi.so.3.0 libndpi3.0 #MINVER#
  ndpi_search_spotify@Base 2.6
  ndpi_search_ssdp@Base 2.6
  ndpi_search_ssh_tcp@Base 2.6
- ndpi_search_ssl_tcp@Base 2.6
  ndpi_search_starcraft@Base 2.6
  ndpi_search_stealthnet@Base 2.6
  ndpi_search_steam@Base 2.6
  ndpi_search_stun@Base 2.6
  ndpi_search_syslog@Base 2.6
+ ndpi_search_targus_getdata@Base 3.0
  ndpi_search_tcp_or_udp@Base 2.6
  ndpi_search_tcp_or_udp_raw@Base 2.6
  ndpi_search_teamspeak@Base 2.6
@@ -460,6 +524,7 @@ libndpi.so.3.0 libndpi3.0 #MINVER#
  ndpi_search_tftp@Base 2.6
  ndpi_search_thunder@Base 2.6
  ndpi_search_tinc@Base 2.6
+ ndpi_search_tls_tcp_udp@Base 3.0
  ndpi_search_tor@Base 2.6
  ndpi_search_tvants_udp@Base 2.6
  ndpi_search_tvuplayer@Base 2.6
@@ -473,6 +538,7 @@ libndpi.so.3.0 libndpi3.0 #MINVER#
  ndpi_search_warcraft3@Base 2.6
  ndpi_search_whatsapp@Base 2.6
  ndpi_search_whois_das@Base 2.6
+ ndpi_search_wireguard@Base 3.0
  ndpi_search_world_of_kung_fu@Base 2.6
  ndpi_search_worldofwarcraft@Base 2.6
  ndpi_search_xbox@Base 2.6
@@ -480,6 +546,30 @@ libndpi.so.3.0 libndpi3.0 #MINVER#
  ndpi_search_yahoo@Base 2.6
  ndpi_search_zattoo@Base 2.6
  ndpi_search_zmq@Base 2.6
+ ndpi_serialize_binary_int64@Base 3.0
+ ndpi_serialize_end_of_block@Base 3.0
+ ndpi_serialize_end_of_record@Base 3.0
+ ndpi_serialize_start_of_block@Base 3.0
+ ndpi_serialize_string_binary@Base 3.0
+ ndpi_serialize_string_float@Base 3.0
+ ndpi_serialize_string_int32@Base 3.0
+ ndpi_serialize_string_int64@Base 3.0
+ ndpi_serialize_string_string@Base 3.0
+ ndpi_serialize_string_uint32@Base 3.0
+ ndpi_serialize_string_uint32_format@Base 3.0
+ ndpi_serialize_string_uint64@Base 3.0
+ ndpi_serialize_uint32_float@Base 3.0
+ ndpi_serialize_uint32_int32@Base 3.0
+ ndpi_serialize_uint32_int64@Base 3.0
+ ndpi_serialize_uint32_string@Base 3.0
+ ndpi_serialize_uint32_uint32@Base 3.0
+ ndpi_serialize_uint32_uint64@Base 3.0
+ ndpi_serializer_create_snapshot@Base 3.0
+ ndpi_serializer_get_buffer@Base 3.0
+ ndpi_serializer_get_buffer_len@Base 3.0
+ ndpi_serializer_rollback_snapshot@Base 3.0
+ ndpi_serializer_set_buffer_len@Base 3.0
+ ndpi_serializer_set_csv_separator@Base 3.0
  ndpi_set_bitmask_protocol_detection@Base 2.6
  ndpi_set_detected_protocol@Base 1.7
  ndpi_set_detection_preferences@Base 2.6
@@ -488,14 +578,23 @@ libndpi.so.3.0 libndpi3.0 #MINVER#
  ndpi_set_proto_category@Base 2.2
  ndpi_set_proto_defaults@Base 1.4.0+svn6712
  ndpi_set_protocol_detection_bitmask2@Base 1.4.0+svn6712
+ ndpi_ssl_version2str@Base 3.0
  ndpi_strdup@Base 2.6
  ndpi_strncasestr@Base 2.6
  ndpi_strnstr@Base 1.8
  ndpi_tdelete@Base 1.4.0+svn6712
  ndpi_tdestroy@Base 1.4.0+svn6712
+ ndpi_term_serializer@Base 3.0
  ndpi_tfind@Base 1.4.0+svn6712
+ ndpi_timer_clear@Base 3.0
+ ndpi_timer_eq@Base 3.0
+ ndpi_timer_lt@Base 3.0
+ ndpi_timer_sub@Base 3.0
+ ndpi_timeval_to_microseconds@Base 3.0
+ ndpi_timeval_to_milliseconds@Base 3.0
  ndpi_tsearch@Base 1.4.0+svn6712
  ndpi_twalk@Base 1.4.0+svn6712
+ ndpi_update_params@Base 3.0
  node_assign_id@Base 2.6
  node_create@Base 2.6
  node_create_next@Base 2.6
@@ -518,6 +617,6 @@ libndpi.so.3.0 libndpi3.0 #MINVER#
  set_ndpi_malloc@Base 1.8
  sha1_compress@Base 2.6
  sort@Base 2.6
- sslDetectProtocolFromCertificate@Base 2.6
  sslInitExtraPacketProcessing@Base 2.6
  sslTryAndRetrieveServerCertificate@Base 2.6
+ tlsDetectProtocolFromCertificate@Base 3.0
