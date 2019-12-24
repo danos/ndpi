@@ -6,13 +6,13 @@ Index: ndpi/example/Makefile.in
 ===================================================================
 --- ndpi.orig/example/Makefile.in
 +++ ndpi/example/Makefile.in
-@@ -1,14 +1,15 @@
- CC=@CC@
+@@ -2,14 +2,15 @@ CC=@CC@
+ CXX=@CXX@
  CFLAGS=-g -I../src/include -DHAVE_JSON_C @CFLAGS@
  LIBNDPI=../src/lib/libndpi.a
--LDFLAGS=$(LIBNDPI) @PCAP_LIB@ -lpthread @LDFLAGS@
+-LDFLAGS=$(LIBNDPI) @PCAP_LIB@ -lpthread -lm @LDFLAGS@
 +LDFLAGS=-L../src/lib -lndpi @PCAP_LIB@ -lpthread -lm @LDFLAGS@
- OBJS=ndpiReader.o ndpi_util.o
+ OBJS=ndpiReader.o reader_util.o
  PREFIX?=@prefix@
  
  all: ndpiReader @DPDK_TARGET@

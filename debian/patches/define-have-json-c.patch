@@ -8,10 +8,11 @@ Index: ndpi/example/Makefile.in
 ===================================================================
 --- ndpi.orig/example/Makefile.in
 +++ ndpi/example/Makefile.in
-@@ -1,5 +1,5 @@
+@@ -1,6 +1,6 @@
  CC=@CC@
+ CXX=@CXX@
 -CFLAGS=-g -I../src/include @CFLAGS@
 +CFLAGS=-g -I../src/include -DHAVE_JSON_C @CFLAGS@
  LIBNDPI=../src/lib/libndpi.a
- LDFLAGS=$(LIBNDPI) @PCAP_LIB@ -lpthread @LDFLAGS@
- OBJS=ndpiReader.o ndpi_util.o
+ LDFLAGS=$(LIBNDPI) @PCAP_LIB@ -lpthread -lm @LDFLAGS@
+ OBJS=ndpiReader.o reader_util.o

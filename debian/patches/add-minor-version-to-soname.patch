@@ -7,7 +7,7 @@ Index: ndpi/src/lib/Makefile.in
 --- ndpi.orig/src/lib/Makefile.in
 +++ ndpi/src/lib/Makefile.in
 @@ -20,6 +20,7 @@ RANLIB     = ranlib
- OBJECTS   = $(patsubst protocols/%.c, protocols/%.o, $(wildcard protocols/*.c)) $(patsubst third_party/src/%.c, third_party/src/%.o, $(wildcard third_party/src/*.c)) ndpi_main.o
+ OBJECTS   = $(patsubst protocols/%.c, protocols/%.o, $(wildcard protocols/*.c)) $(patsubst third_party/src/%.c, third_party/src/%.o, $(wildcard third_party/src/*.c)) $(patsubst ./%.c, ./%.o, $(wildcard ./*.c))
  HEADERS   = $(wildcard ../include/*.h)
  NDPI_VERSION_MAJOR   = @NDPI_MAJOR@
 +NDPI_VERSION_MINOR   = @NDPI_MINOR@
@@ -26,19 +26,17 @@ Index: ndpi/src/lib/Makefile.in
 @@ -47,7 +48,7 @@ $(NDPI_LIB_STATIC): $(OBJECTS)
  $(NDPI_LIB_SHARED): $(OBJECTS)
  	$(CC) -shared -fPIC $(SONAME_FLAG) -o $@ $(OBJECTS)
- 	ln -Ffs $(NDPI_LIB_SHARED) $(NDPI_LIB_SHARED_BASE)
--	ln -Ffs $(NDPI_LIB_SHARED) $(NDPI_LIB_SHARED_BASE).$(NDPI_VERSION_MAJOR)
-+	ln -Ffs $(NDPI_LIB_SHARED) $(NDPI_LIB_SHARED_BASE).$(NDPI_VERSION_MAJOR).$(NDPI_VERSION_MINOR)
+ 	ln -fs $(NDPI_LIB_SHARED) $(NDPI_LIB_SHARED_BASE)
+-	ln -fs $(NDPI_LIB_SHARED) $(NDPI_LIB_SHARED_BASE).$(NDPI_VERSION_MAJOR)
++	ln -fs $(NDPI_LIB_SHARED) $(NDPI_LIB_SHARED_BASE).$(NDPI_VERSION_MAJOR).$(NDPI_VERSION_MINOR)
  
  %.o: %.c $(HEADERS) Makefile
  	$(CC) $(CFLAGS) -c $< -o $@
-@@ -61,7 +62,7 @@ distclean: clean
- install: $(NDPI_LIBS)
+@@ -65,6 +66,6 @@ install: $(NDPI_LIBS)
  	mkdir -p $(DESTDIR)$(libdir)
  	cp $(NDPI_LIBS) $(DESTDIR)$(libdir)/
--	ln -Ffs $(DESTDIR)$(libdir)/$(NDPI_LIB_SHARED) $(DESTDIR)$(libdir)/$(NDPI_LIB_SHARED_BASE)
--	ln -Ffs $(DESTDIR)$(libdir)/$(NDPI_LIB_SHARED) $(DESTDIR)$(libdir)/$(NDPI_LIB_SHARED_BASE).$(NDPI_VERSION_MAJOR)
-+	ln -Ffs $(NDPI_LIB_SHARED) $(DESTDIR)$(libdir)/$(NDPI_LIB_SHARED_BASE)
-+	ln -Ffs $(NDPI_LIB_SHARED) $(DESTDIR)$(libdir)/$(NDPI_LIB_SHARED_BASE).$(NDPI_VERSION_MAJOR).$(NDPI_VERSION_MINOR)
+ 	cp -P $(NDPI_LIB_SHARED_BASE) $(DESTDIR)$(libdir)/
+-	cp -P $(NDPI_LIB_SHARED_BASE).$(NDPI_VERSION_MAJOR) $(DESTDIR)$(libdir)/
++	cp -P $(NDPI_LIB_SHARED_BASE).$(NDPI_VERSION_MAJOR).$(NDPI_VERSION_MINOR) $(DESTDIR)$(libdir)/
  	mkdir -p $(DESTDIR)$(includedir)
  	cp ../include/*.h $(DESTDIR)$(includedir)
