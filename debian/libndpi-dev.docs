@@ -1,2 +1,7 @@
+example/categories.txt
+example/mining_hosts.txt
 example/ndpiReader.c
 example/protos.txt
+example/reader_util.c
+example/reader_util.h
+example/uthash.h
