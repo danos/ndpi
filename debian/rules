@@ -37,19 +37,4 @@ override_dh_strip:
 	dh_strip --dbgsym-migration='libndpi-dbg (<< 1.8-1~)'
 
 
-PACKAGE = ndpi
-GIT_COMMIT := $(shell echo $(DEB_VERSION_UPSTREAM) | grep -E -o '[~+]git[0-9]+\..*' | cut -d . -f 2 )
-TARBALL = $(PACKAGE)_$(DEB_VERSION_UPSTREAM).orig.tar.gz
-UPSTREAM_GIT_REPO = https://github.com/ntop/nDPI
-
-get-orig-source:
-	@echo DEB_VERSION_UPSTREAM $(DEB_VERSION_UPSTREAM)
-	@echo GIT_COMMIT $(GIT_COMMIT)
-ifeq ($(findstring git,$(DEB_VERSION_UPSTREAM)),)
-	# Download and use upstream vanilla tarball
-	uscan --verbose --force-download --download-version $(DEB_VERSION_UPSTREAM)
-else
-	wget $(UPSTREAM_GIT_REPO)/archive/$(GIT_COMMIT).tar.gz -O ../$(TARBALL)
-endif
-
-.PHONY: override_dh_auto_configure override_dh_strip get-orig-source
+.PHONY: override_dh_auto_configure override_dh_strip
