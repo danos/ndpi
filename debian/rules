@@ -16,6 +16,10 @@ override_dh_auto_configure:
 	./autogen.sh
 	dh_auto_configure -- --prefix=/usr
 
+override_dh_auto_install:
+	dh_auto_install
+	rm $(CURDIR)/debian/tmp/usr/sbin/ndpi/*.txt
+
 override_dh_auto_test:
 ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
 	# disable tests with a broken pcap file
