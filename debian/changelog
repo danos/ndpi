@@ -1,17 +1,27 @@
-ndpi (3.0-1) UNRELEASED; urgency=medium
+ndpi (3.0-1) unstable; urgency=medium
 
   * New upstream version 3.0
-  * Refresh patches.
+  * Refresh patches
   * Remove patches merged upstream:
+    - 662.patch
+    - aea91781aa476589361e16ece6aa6c10102e0f33.patca
+    - cross.patch
     - ndpireader-no-free.patch
-    - quic.patch
     - packet-direction.patch
-  * Rename package libndpi2.6 to libndpi2.8.
-  * Update symbols file for libndpi2.8.
-  * Remove executable bit from debian/libndpi-wireshark.* files.
-  * Update changelog.
+    - quic.patch
+  * Rename package libndpi2.6 to libndpi3.0
+  * Update symbols file for libndpi3.0
+  * Update copyright
+  * Remove unnecessary override_dh_install, export WIRESHARK_PLUGINDIR, and
+    whitelist it in lintian.
+  * Update Standards-Version to 4.4.1
+  * Add all sources needed to build ndpiReader to libndpi-dev docs
+  * Remove .txt files installed in /usr/sbin
+  * Drop get-orig-source target from rules file
+  * Bump build-dependency on libwireshark-dev >= 3.0 as required by the
+    ndpi.lua plugin
 
- -- Ludovico Cavedon <cavedon@debian.org>  Tue, 24 Dec 2019 13:42:29 +0100
+ -- Ludovico Cavedon <cavedon@debian.org>  Tue, 24 Dec 2019 19:22:40 +0100
 
 ndpi (2.6-5) unstable; urgency=medium
 
