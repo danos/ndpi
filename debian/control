@@ -72,3 +72,24 @@ Description: extensible deep packet inspection library - ndpiReader
  (e.g. detect http non ports other than 80), and also the opposite.
  .
  This package contains the ndpiReader binary.
+
+Package: vyatta-ndpi-application-names-v1-yang
+Architecture: all
+Section: contrib/admin
+Depends: ${misc:Depends}, ${yang:Depends}
+Description: ndpi application name yang definitions
+ The nDPI application name YANG definitions
+
+Package: vyatta-ndpi-application-types-v1-yang
+Architecture: all
+Section: contrib/admin
+Depends: ${misc:Depends}, ${yang:Depends}
+Description: ndpi application type yang definitions
+ The nDPI application type YANG definitions
+
+Package: vyatta-ndpi-show-name
+Architecture: any
+Section: contrib/admin
+Depends: ${misc:Depends}, ${shlibs:Depends},
+Description: show information about nDPI names
+ Show nDPI name/type mapping information
