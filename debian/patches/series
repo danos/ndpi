@@ -3,3 +3,4 @@ add-minor-version-to-soname.patch
 define-have-json-c.patch
 ndpireader-dynamic-link.patch
 additional-cppflags.patch
+vyatta-app-names.patch
