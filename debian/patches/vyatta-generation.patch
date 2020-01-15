@@ -1,0 +1,582 @@
+From: Paul Aitken <paul.aitken@att.com>
+Date: Wed, 15 Jan 2020 11:23:06 +0000
+Subject: Add vyatta nDPI generation scripts
+
+---
+ Makefile.am                          |   2 +-
+ configure.seed                       |   2 +-
+ generation/Makefile.in               |  11 +++
+ generation/README.md                 |  25 +++++++
+ generation/application_names_yang.sh | 113 +++++++++++++++++++++++++++++
+ generation/application_types_yang.sh | 113 +++++++++++++++++++++++++++++
+ generation/applications_list.c       | 135 +++++++++++++++++++++++++++++++++++
+ generation/ndpi_show_name.c          | 104 +++++++++++++++++++++++++++
+ 8 files changed, 503 insertions(+), 2 deletions(-)
+ create mode 100644 generation/Makefile.in
+ create mode 100644 generation/README.md
+ create mode 100755 generation/application_names_yang.sh
+ create mode 100755 generation/application_types_yang.sh
+ create mode 100644 generation/applications_list.c
+ create mode 100644 generation/ndpi_show_name.c
+
+diff --git a/Makefile.am b/Makefile.am
+index 4090817..502856d 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -1,5 +1,5 @@
+ ACLOCAL_AMFLAGS = -I m4
+-SUBDIRS = src/lib example tests
++SUBDIRS = src/lib generation example tests
+ 
+ pkgconfigdir = $(libdir)/pkgconfig
+ pkgconfig_DATA = libndpi.pc
+diff --git a/configure.seed b/configure.seed
+index a3cc646..5fc70f3 100644
+--- a/configure.seed
++++ b/configure.seed
+@@ -141,7 +141,7 @@ AC_ARG_ENABLE([debug-messages],
+ 
+ AC_CHECK_LIB(pthread, pthread_setaffinity_np, AC_DEFINE_UNQUOTED(HAVE_PTHREAD_SETAFFINITY_NP, 1, [libc has pthread_setaffinity_np]))
+ 
+-AC_CONFIG_FILES([Makefile example/Makefile example/Makefile.dpdk tests/Makefile libndpi.pc src/include/ndpi_define.h src/lib/Makefile python/Makefile])
++AC_CONFIG_FILES([Makefile generation/Makefile example/Makefile example/Makefile.dpdk tests/Makefile libndpi.pc src/include/ndpi_define.h src/lib/Makefile python/Makefile])
+ AC_CONFIG_HEADERS(src/include/ndpi_config.h)
+ AC_SUBST(GIT_RELEASE)
+ AC_SUBST(NDPI_MAJOR)
+diff --git a/generation/Makefile.in b/generation/Makefile.in
+new file mode 100644
+index 0000000..886e17e
+--- /dev/null
++++ b/generation/Makefile.in
+@@ -0,0 +1,11 @@
++CC=@CC@
++CFLAGS=-g -I../src/include @CFLAGS@
++LIBNDPI=../src/lib/libndpi.a
++LDFLAGS=$(LIBNDPI) @PCAP_LIB@ -lpthread -lm @LDFLAGS@
++
++all: applications_list ndpi_show_name
++
++%: %.c Makefile
++	$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS)
++
++install: ;
+diff --git a/generation/README.md b/generation/README.md
+new file mode 100644
+index 0000000..c61e395
+--- /dev/null
++++ b/generation/README.md
+@@ -0,0 +1,25 @@
++# Generation scripts
++
++Scripts to generate yang files and show-command scripts.
++
++## Usage
++
++The scripts are `application_names_yang.sh`, `application_types_yang.sh`.
++
++These accept the `OLD_YANG_FILE` environment variable to use an old yang
++file's "header" information (description, copyright, revisions, etc) rather
++than starting from fresh.
++
++These will prompt the user via stderr for revision notes, which are
++pulled from /dev/stdin, so can be piped in.
++
++## Examples
++
++Generate a new nDPI application names yang file, using `/path/base.yang` as a base,
++"Revision notes" as the notes for the revision, and writing it to
++`new_applications.yang`.
++`application_types_yang.sh` is invoked similarly.
++
++```
++echo "Revision Notes" | OLD_YANG_FILE=/path/base.yang ./application_names_yang.sh > new_applications.yang
++```
+diff --git a/generation/application_names_yang.sh b/generation/application_names_yang.sh
+new file mode 100755
+index 0000000..770d65c
+--- /dev/null
++++ b/generation/application_names_yang.sh
+@@ -0,0 +1,113 @@
++#!/bin/bash
++
++# Copyright (c) 2020, AT&T Intellectual Property. All rights reserved.
++
++# Create a new/updated vyatta-ndpi-applications-names.yang file,
++# writing to stdout.
++# ./application_list must exist.
++#
++# If OLD_YANG_FILE is set, the file will be read in, have the existing names
++# removed and used instead of a fresh file.
++#
++# Revision notes will be taken from stdin and added to the resulting yang with
++# today's date as a new revision.
++
++# If OLD_YANG_FILE set, read it, cut out the pre-existing names and use the
++# remainder as the header.
++# Otherwise, use the heredoc.
++heading=
++if [ -z "${OLD_YANG_FILE}" ]; then
++	read -r -d '' heading << EndOfHeader
++module vyatta-ndpi-application-names-v1 {
++	namespace "urn:vyatta.com:mgmt:vyatta-ndpi-application-names:1";
++	prefix vyatta-ndpi-application-names-v1;
++
++	organization "AT&T Inc.";
++	contact	"AT&T
++		 Postal: 208 S. Akard Street
++		         Dallas, TX 75202, USA
++		 Web: www.att.com";
++
++	description
++		"Copyright (c) 2020, AT&T Intellectual Property
++		 All rights reserved.
++
++		 Redistribution and use in source and binary forms,
++		 with or without modification, are permitted provided
++		 that the following conditions are met:
++
++		 1. Redistributions of source code must retain the
++		    above copyright notice, this list of conditions and
++		    the following disclaimer.
++		 2. Redistributions in binary form must reproduce
++		    the above copyright notice, this list of conditions
++		    and the following disclaimer in the documentation
++		    and/or other materials provided with the distribution.
++		 3. Neither the name of the copyright holder nor the
++		    names of its contributors may be used to endorse or
++		    promote products derived from this software without
++		    specific prior written permission.
++
++		 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS
++		 AND CONTRIBUTORS 'AS IS' AND ANY EXPRESS OR IMPLIED
++		 WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
++		 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
++		 PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
++		 THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
++		 ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
++		 OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
++		 TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
++		 OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
++		 HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
++		 IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
++		 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
++		 USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
++		 OF SUCH DAMAGE.
++
++		 SPDX-License-Identifier: BSD-3-Clause
++
++		 Application names associated with the nDPI engine.
++
++		 This file was auto-generated with
++		 generation/application_names_yang.sh";
++EndOfHeader
++else
++	heading=$(sed '1,/typedef application-names /!d' ${OLD_YANG_FILE} | head -n -1)
++fi
++
++# Get the all names from applications_list
++new_list=$(./applications_list --names | sort -u)
++
++# Get the names from the old yang file, which may be empty
++if [ -n "$OLD_YANG_FILE" ]; then
++  old_list=$(sed '1,/typedef application-names/d' ${OLD_YANG_FILE} | grep -o 'enum ".*"' | cut -d '"' -f 2)
++
++  # Extract the new names and append them to the old list
++  TMP=/tmp/app_name_yang.tmp
++  echo "$old_list" > $TMP
++  apps=$(echo "${old_list}" && comm -13 $TMP - <<< $new_list | sed '/^[[:blank:]]*$/d')
++  rm -f $TMP
++else
++  apps=$new_list
++fi
++
++# Convert each name into an application_names enum variant with correct indentation.
++yang="$(awk -F, '{print "\t\t\t" "enum \"" $1 "\";"}' <<< $apps)"
++
++# Prompt the user for revision notes.
++>&2 echo "Enter revision notes:"
++changes=$(</dev/stdin)
++
++# Glue everything together and dump it to stdout.
++echo -e "$heading\n"
++echo -en "\trevision $(date -I) {\n\t\tdescription \""
++echo "$changes" | { sed '2,$ s/^/\t\t\t/g' | head -c -1; echo "\";"; }
++echo -e "\t}\n"
++echo -e "\ttypedef application-names {"
++echo -e "\t\t/* New enums MUST only be added to the end of this list."
++echo -e "\t\t * Old enums MAY be deprecated or obsoleted, but must not be removed."
++echo -e "\t\t * It's not important to preserve alphabetical order."
++echo -e "\t\t */"
++echo -e "\t\ttype enumeration {"
++echo "$yang"
++echo -e "\t\t}\n\t}\n}"
+diff --git a/generation/application_types_yang.sh b/generation/application_types_yang.sh
+new file mode 100755
+index 0000000..e819b32
+--- /dev/null
++++ b/generation/application_types_yang.sh
+@@ -0,0 +1,113 @@
++#!/bin/bash
++
++# Copyright (c) 2020, AT&T Intellectual Property. All rights reserved.
++
++# Create a new/updated vyatta-ndpi-applications-types.yang file,
++# writing to stdout.
++# ./application_list must exist.
++#
++# If OLD_YANG_FILE is set, the file will be read in, have the existing types
++# removed and used instead of a fresh file.
++#
++# Revision notes will be taken from stdin and added to the resulting yang with
++# today's date as a new revision.
++
++# If OLD_YANG_FILE set, read it, cut out the pre-existing types and use the
++# remainder as the header.
++# Otherwise, use the heredoc.
++heading=
++if [ -z "${OLD_YANG_FILE}" ]; then
++	read -r -d '' heading << EndOfHeader
++module vyatta-ndpi-application-types-v1 {
++	namespace "urn:vyatta.com:mgmt:vyatta-ndpi-application-types:1";
++	prefix vyatta-ndpi-application-types-v1;
++
++	organization "AT&T Inc.";
++	contact	"AT&T
++		 Postal: 208 S. Akard Street
++		         Dallas, TX 75202, USA
++		 Web: www.att.com";
++
++	description
++		"Copyright (c) 2020, AT&T Intellectual Property
++		 All rights reserved.
++
++		 Redistribution and use in source and binary forms,
++		 with or without modification, are permitted provided
++		 that the following conditions are met:
++
++		 1. Redistributions of source code must retain the
++		    above copyright notice, this list of conditions and
++		    the following disclaimer.
++		 2. Redistributions in binary form must reproduce
++		    the above copyright notice, this list of conditions
++		    and the following disclaimer in the documentation
++		    and/or other materials provided with the distribution.
++		 3. Neither the name of the copyright holder nor the
++		    names of its contributors may be used to endorse or
++		    promote products derived from this software without
++		    specific prior written permission.
++
++		 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS
++		 AND CONTRIBUTORS 'AS IS' AND ANY EXPRESS OR IMPLIED
++		 WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
++		 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
++		 PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
++		 THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
++		 ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
++		 OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
++		 TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
++		 OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
++		 HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
++		 IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
++		 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
++		 USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
++		 OF SUCH DAMAGE.
++
++		 SPDX-License-Identifier: BSD-3-Clause
++
++		 Application types associated with the nDPI engine.
++
++		 This file was auto-generated with
++		 generation/application_types_yang.sh";
++EndOfHeader
++else
++	heading=$(sed '1,/typedef application-types /!d' ${OLD_YANG_FILE} | head -n -1)
++fi
++
++# Get the all types from applications_list
++new_list=$(./applications_list --types | sort -u)
++
++# Get the types from the old yang file, which may be empty
++if [ -n "$OLD_YANG_FILE" ]; then
++  old_list=$(sed '1,/typedef application-types/d' ${OLD_YANG_FILE} | grep -o 'enum ".*"' | cut -d '"' -f 2)
++
++  # Extract the new types and append them to the old list
++  TMP=/tmp/app_type_yang.tmp
++  echo "$old_list" > $TMP
++  apps=$(echo "${old_list}" && comm -13 $TMP - <<< $new_list | sed '/^[[:blank:]]*$/d')
++  rm -f $TMP
++else
++  apps=$new_list
++fi
++
++# Convert each type into an application_types enum variant with correct indentation.
++yang="$(awk -F, '{print "\t\t\t" "enum \"" $1 "\";"}' <<< $apps)"
++
++# Prompt the user for revision notes.
++>&2 echo "Enter revision notes:"
++changes=$(</dev/stdin)
++
++# Glue everything together and dump it to stdout.
++echo -e "$heading\n"
++echo -en "\trevision $(date -I) {\n\t\tdescription \""
++echo "$changes" | { sed '2,$ s/^/\t\t\t/g' | head -c -1; echo "\";"; }
++echo -e "\t}\n"
++echo -e "\ttypedef application-types {"
++echo -e "\t\t/* New enums MUST only be added to the end of this list."
++echo -e "\t\t * Old enums MAY be deprecated or obsoleted, but must not be removed."
++echo -e "\t\t * It's not important to preserve alphabetical order."
++echo -e "\t\t */"
++echo -e "\t\ttype enumeration {"
++echo "$yang"
++echo -e "\t\t}\n\t}\n}"
+diff --git a/generation/applications_list.c b/generation/applications_list.c
+new file mode 100644
+index 0000000..0332d8e
+--- /dev/null
++++ b/generation/applications_list.c
+@@ -0,0 +1,135 @@
++/*
++ * Copyright (c) 2020, AT&T Intellectual Property.  All rights reserved.
++ * All rights reserved.
++ *
++ * SPDX-License-Identifier: LGPL-2.1-only
++ */
++
++#include <stdio.h>
++#include <string.h>
++#include "ndpi_api.h"
++
++
++char *strlwr(const char *str)
++{
++	char *dup = strdup(str);
++
++	for (char *p = dup; *p; ++p) *p = tolower(*p);
++
++	return dup;
++}
++
++
++void show_categories(void)
++{
++	struct ndpi_detection_module_struct *ndpi_info_mod = ndpi_init_detection_module();
++	if (ndpi_info_mod == NULL) return;
++
++	for (int i = NDPI_PROTOCOL_CATEGORY_UNSPECIFIED + 1;
++	     i < NDPI_PROTOCOL_NUM_CATEGORIES;
++	     i++) {
++		const char *category_name = ndpi_category_get_name(ndpi_info_mod, i);
++		if ( (i >= CUSTOM_CATEGORY_MINING &&
++		      i <= CUSTOM_CATEGORY_ANTIMALWARE) ||
++		     ndpi_is_custom_category(i) ||
++		     (category_name == "") ) {
++			continue;
++		}
++
++		printf("%s\n", strlwr(category_name));
++	}
++
++	ndpi_exit_detection_module(ndpi_info_mod);
++}
++
++
++void show_protocols(void)
++{
++	struct ndpi_detection_module_struct *ndpi_info_mod = ndpi_init_detection_module();
++	if (ndpi_info_mod == NULL) return;
++
++	u_int num_protocols = ndpi_get_ndpi_num_supported_protocols(ndpi_info_mod);
++
++	for (int i = NDPI_PROTOCOL_UNKNOWN;
++	     i < num_protocols;
++	     i++) {
++		const char *proto_name = ndpi_get_proto_name(ndpi_info_mod, i);
++		if (proto_name == "") {
++			continue;
++		}
++
++		printf("%s\n", strlwr(proto_name));
++	}
++
++	ndpi_exit_detection_module(ndpi_info_mod);
++}
++
++
++void show_mapping(void)
++{
++	struct ndpi_detection_module_struct *ndpi_info_mod = ndpi_init_detection_module();
++	if (ndpi_info_mod == NULL) return;
++
++	u_int num_protocols = ndpi_get_ndpi_num_supported_protocols(ndpi_info_mod);
++
++	ndpi_proto_defaults_t *pd = ndpi_get_proto_defaults(ndpi_info_mod);
++
++	for (int i = NDPI_PROTOCOL_UNKNOWN; i < num_protocols; i++) {
++		const char *proto_name = ndpi_get_proto_name(ndpi_info_mod, i);
++		if (proto_name == "") {
++			continue;
++		}
++
++		ndpi_protocol_category_t category = pd[i].protoCategory;
++		const char *category_name = ndpi_category_get_name(ndpi_info_mod, category);
++		printf("%s %s\n", strlwr(proto_name), strlwr(category_name));
++	}
++
++	ndpi_exit_detection_module(ndpi_info_mod);
++}
++
++
++void dump_protocols(void)
++{
++	struct ndpi_detection_module_struct *ndpi_info_mod = ndpi_init_detection_module();
++	if (ndpi_info_mod == NULL) return;
++
++	ndpi_dump_protocols(ndpi_info_mod);
++
++	ndpi_exit_detection_module(ndpi_info_mod);
++}
++
++
++void usage(char *name)
++{
++	printf("Usage: %s [--names | --types | --mapping | --dump | --revision]\n", name);
++}
++
++
++int main(int argc, char **argv)
++{
++	if (argc < 2) {
++		usage(argv[0]);
++		return -1;
++	}
++
++	if (!strcmp(argv[1], "--revision"))
++		printf("Revision: %s\n", ndpi_revision());
++
++	else if (!strcmp(argv[1], "--types"))
++		show_categories();
++
++	else if (!strcmp(argv[1], "--names"))
++		show_protocols();
++
++	else if (!strcmp(argv[1], "--mapping"))
++		show_mapping();
++
++	else if (!strcmp(argv[1], "--dump"))
++		dump_protocols();
++
++	else {
++		usage(argv[0]);
++		return -1;
++	}
++}
+diff --git a/generation/ndpi_show_name.c b/generation/ndpi_show_name.c
+new file mode 100644
+index 0000000..f243e19
+--- /dev/null
++++ b/generation/ndpi_show_name.c
+@@ -0,0 +1,104 @@
++/*
++ * Copyright (c) 2020, AT&T Intellectual Property.  All rights reserved.
++ * All rights reserved.
++ *
++ * SPDX-License-Identifier: LGPL-2.1-only
++ */
++
++#include <stdio.h>
++#include <string.h>
++#include "ndpi_api.h"
++
++
++char *strlwr(const char *str)
++{
++	char *dup = strdup(str);
++
++	for (char *p = dup; *p; ++p) *p = tolower(*p);
++
++	return dup;
++}
++
++
++/*
++ * Show the application names associated with the given application type.
++ */
++void show_type(char *type)
++{
++	struct ndpi_detection_module_struct *ndpi_info_mod = ndpi_init_detection_module();
++	if (ndpi_info_mod == NULL) return;
++
++	int id = ndpi_get_category_id(ndpi_info_mod, type);
++	if (id == -1) return;
++
++	u_int num_protocols = ndpi_get_ndpi_num_supported_protocols(ndpi_info_mod);
++
++	ndpi_proto_defaults_t *pd = ndpi_get_proto_defaults(ndpi_info_mod);
++
++	printf("%s includes the following applications:\n", type);
++
++	for (int i = NDPI_PROTOCOL_UNKNOWN; i < num_protocols; i++) {
++		ndpi_protocol_category_t category = pd[i].protoCategory;
++
++		if (category == id) {
++			const char *proto_name = strlwr(ndpi_get_proto_name(ndpi_info_mod, i));
++			if (proto_name == "") {
++				continue;
++			}
++
++			printf("%s ", proto_name);
++		}
++	}
++
++	printf("\n");
++	ndpi_exit_detection_module(ndpi_info_mod);
++}
++
++
++/*
++ * Show the application type associated with the given application name.
++ */
++void show_name(char *name)
++{
++	struct ndpi_detection_module_struct *ndpi_info_mod = ndpi_init_detection_module();
++	if (ndpi_info_mod == NULL) return;
++
++	int id = ndpi_get_protocol_id(ndpi_info_mod, name);
++	if (id == -1) return;
++
++	ndpi_proto_defaults_t *pd = ndpi_get_proto_defaults(ndpi_info_mod);
++
++	ndpi_protocol_category_t category = pd[id].protoCategory;
++	const char *category_name = strlwr(ndpi_category_get_name(ndpi_info_mod, category));
++
++	printf("%s is included in the following application types:\n%s\n",
++		name, category_name);
++
++	ndpi_exit_detection_module(ndpi_info_mod);
++}
++
++
++void usage(char *name)
++{
++	printf("Usage: %s [name | type] <application>\n", name);
++}
++
++
++int main(int argc, char **argv)
++{
++	if (argc != 3) {
++		usage(argv[0]);
++		return -1;
++	}
++
++	if (!strcmp(argv[1], "type")) {
++		show_type(argv[2]);
++	}
++	else if (!strcmp(argv[1], "name")) {
++		show_name(argv[2]);
++	}
++	else {
++		usage(argv[0]);
++		return -1;
++	}
++}

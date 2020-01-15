@@ -4,3 +4,5 @@ define-have-json-c.patch
 ndpireader-dynamic-link.patch
 additional-cppflags.patch
 vyatta-app-names.patch
+vyatta-generation.patch
+vyatta-generated.patch

@@ -1,0 +1,425 @@
+From: Paul Aitken <paul.aitken@att.com>
+Date: Wed, 15 Jan 2020 11:23:06 +0000
+Subject: Add generated vyatta yang for nDPI
+
+---
+ yang/vyatta-ndpi-application-names-v1.yang | 312 +++++++++++++++++++++++++++++
+ yang/vyatta-ndpi-application-types-v1.yang |  90 +++++++++
+ 2 files changed, 402 insertions(+)
+ create mode 100644 yang/vyatta-ndpi-application-names-v1.yang
+ create mode 100644 yang/vyatta-ndpi-application-types-v1.yang
+
+diff --git a/yang/vyatta-ndpi-application-names-v1.yang b/yang/vyatta-ndpi-application-names-v1.yang
+new file mode 100644
+index 0000000..e1290fd
+--- /dev/null
++++ b/yang/vyatta-ndpi-application-names-v1.yang
+@@ -0,0 +1,312 @@
++module vyatta-ndpi-application-names-v1 {
++	namespace "urn:vyatta.com:mgmt:vyatta-ndpi-application-names:1";
++	prefix vyatta-ndpi-application-names-v1;
++
++	organization "AT&T Inc.";
++	contact	"AT&T
++		 Postal: 208 S. Akard Street
++		         Dallas, TX 75202, USA
++		 Web: www.att.com";
++
++	description
++		"Copyright (c) 2020, AT&T Intellectual Property
++		 All rights reserved.
++
++		 Redistribution and use in source and binary forms,
++		 with or without modification, are permitted provided
++		 that the following conditions are met:
++
++		 1. Redistributions of source code must retain the
++		    above copyright notice, this list of conditions and
++		    the following disclaimer.
++		 2. Redistributions in binary form must reproduce
++		    the above copyright notice, this list of conditions
++		    and the following disclaimer in the documentation
++		    and/or other materials provided with the distribution.
++		 3. Neither the name of the copyright holder nor the
++		    names of its contributors may be used to endorse or
++		    promote products derived from this software without
++		    specific prior written permission.
++
++		 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS
++		 AND CONTRIBUTORS 'AS IS' AND ANY EXPRESS OR IMPLIED
++		 WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
++		 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
++		 PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
++		 THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
++		 ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
++		 OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
++		 TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
++		 OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
++		 HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
++		 IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
++		 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
++		 USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
++		 OF SUCH DAMAGE.
++
++		 SPDX-License-Identifier: BSD-3-Clause
++
++		 Application names associated with the nDPI engine.
++
++		 This file was auto-generated with
++		 generation/application_names_yang.sh";
++
++	revision 2020-01-06 {
++		description "Initial revision based on nDPI 3.0.0.";
++	}
++
++	typedef application-names {
++		/* New enums MUST only be added to the end of this list.
++		 * Old enums MAY be deprecated or obsoleted, but must not be removed.
++		 * It's not important to preserve alphabetical order.
++		 */
++		type enumeration {
++			enum "104";
++			enum "afp";
++			enum "aimini";
++			enum "ajp";
++			enum "amazon";
++			enum "amazonvideo";
++			enum "amqp";
++			enum "apple";
++			enum "appleicloud";
++			enum "appleitunes";
++			enum "applejuice";
++			enum "applepush";
++			enum "applestore";
++			enum "armagetron";
++			enum "ayiya";
++			enum "battlefield";
++			enum "bgp";
++			enum "bittorrent";
++			enum "bjnp";
++			enum "checkmk";
++			enum "ciscoskinny";
++			enum "ciscovpn";
++			enum "citrix";
++			enum "cloudflare";
++			enum "cnn";
++			enum "coap";
++			enum "collectd";
++			enum "corba";
++			enum "crossfire";
++			enum "csgo";
++			enum "datasaver";
++			enum "dce_rpc";
++			enum "deezer";
++			enum "dhcp";
++			enum "dhcpv6";
++			enum "diameter";
++			enum "direct_download_link";
++			enum "directconnect";
++			enum "dnp3";
++			enum "dns";
++			enum "dnscrypt";
++			enum "dnsoverhttps";
++			enum "dofus";
++			enum "drda";
++			enum "dropbox";
++			enum "eaq";
++			enum "ebay";
++			enum "edonkey";
++			enum "egp";
++			enum "facebook";
++			enum "facebookzero";
++			enum "fasttrack";
++			enum "fiesta";
++			enum "fix";
++			enum "florensia";
++			enum "ftp_control";
++			enum "ftp_data";
++			enum "git";
++			enum "github";
++			enum "gmail";
++			enum "gnutella";
++			enum "google";
++			enum "googledocs";
++			enum "googledrive";
++			enum "googlehangoutduo";
++			enum "googlemaps";
++			enum "googleplus";
++			enum "googleservices";
++			enum "gre";
++			enum "gtp";
++			enum "guildwars";
++			enum "h323";
++			enum "halflife2";
++			enum "hotmail";
++			enum "hotspotshield";
++			enum "http";
++			enum "http_activesync";
++			enum "http_connect";
++			enum "http_download";
++			enum "http_proxy";
++			enum "hulu";
++			enum "iax";
++			enum "icecast";
++			enum "icmp";
++			enum "icmpv6";
++			enum "iflix";
++			enum "igmp";
++			enum "imap";
++			enum "imaps";
++			enum "imo";
++			enum "instagram";
++			enum "ip_in_ip";
++			enum "ipp";
++			enum "ipsec";
++			enum "irc";
++			enum "kakaotalk";
++			enum "kakaotalk_voice";
++			enum "kerberos";
++			enum "kontiki";
++			enum "lastfm";
++			enum "ldap";
++			enum "line";
++			enum "linkedin";
++			enum "lisp";
++			enum "llmnr";
++			enum "lotusnotes";
++			enum "maplestory";
++			enum "mdns";
++			enum "megaco";
++			enum "memcached";
++			enum "messenger";
++			enum "mgcp";
++			enum "microsoft";
++			enum "mining";
++			enum "modbus";
++			enum "mpeg_ts";
++			enum "mqtt";
++			enum "ms_onedrive";
++			enum "msn";
++			enum "mssql_tds";
++			enum "mysql";
++			enum "nestlogsink";
++			enum "netbios";
++			enum "netflix";
++			enum "netflow";
++			enum "nfs";
++			enum "nintendo";
++			enum "noe";
++			enum "ntop";
++			enum "ntp";
++			enum "ocs";
++			enum "office365";
++			enum "ookla";
++			enum "opendns";
++			enum "openft";
++			enum "openvpn";
++			enum "oracle";
++			enum "oscar";
++			enum "ospf";
++			enum "pando_media_booster";
++			enum "pandora";
++			enum "pastebin";
++			enum "pcanywhere";
++			enum "playstation";
++			enum "playstore";
++			enum "pop3";
++			enum "pops";
++			enum "postgresql";
++			enum "pplive";
++			enum "ppstream";
++			enum "pptp";
++			enum "ps_vue";
++			enum "qq";
++			enum "qqlive";
++			enum "quic";
++			enum "radius";
++			enum "rdp";
++			enum "redis";
++			enum "remotescan";
++			enum "rsync";
++			enum "rtcp";
++			enum "rtmp";
++			enum "rtp";
++			enum "rtsp";
++			enum "rx";
++			enum "sap";
++			enum "sctp";
++			enum "sflow";
++			enum "shoutcast";
++			enum "signal";
++			enum "sip";
++			enum "skype";
++			enum "skypecall";
++			enum "slack";
++			enum "smbv1";
++			enum "smbv23";
++			enum "smpp";
++			enum "smtp";
++			enum "smtps";
++			enum "snapchat";
++			enum "snmp";
++			enum "socks";
++			enum "someip";
++			enum "sopcast";
++			enum "soulseek";
++			enum "soundcloud";
++			enum "spotify";
++			enum "ssdp";
++			enum "ssh";
++			enum "starcraft";
++			enum "stealthnet";
++			enum "steam";
++			enum "stun";
++			enum "syslog";
++			enum "targus_dataspeed";
++			enum "teamspeak";
++			enum "teamviewer";
++			enum "telegram";
++			enum "telnet";
++			enum "teredo";
++			enum "tftp";
++			enum "thunder";
++			enum "tiktok";
++			enum "tinc";
++			enum "tls";
++			enum "tor";
++			enum "truphone";
++			enum "tuenti";
++			enum "tvants";
++			enum "tvuplayer";
++			enum "twitch";
++			enum "twitter";
++			enum "ubntac2";
++			enum "ubuntuone";
++			enum "unencrypted_jabber";
++			enum "unknown";
++			enum "upnp";
++			enum "usenet";
++			enum "vevo";
++			enum "vhua";
++			enum "viber";
++			enum "vmware";
++			enum "vnc";
++			enum "vrrp";
++			enum "warcraft3";
++			enum "waze";
++			enum "webex";
++			enum "wechat";
++			enum "weibo";
++			enum "whatsapp";
++			enum "whatsappcall";
++			enum "whatsappfiles";
++			enum "whois_das";
++			enum "wikipedia";
++			enum "windowsupdate";
++			enum "wireguard";
++			enum "worldofkungfu";
++			enum "worldofwarcraft";
++			enum "xbox";
++			enum "xdmcp";
++			enum "yahoo";
++			enum "youtube";
++			enum "youtubeupload";
++			enum "zattoo";
++			enum "zeromq";
++			enum "zoom";
++		}
++	}
++}
+diff --git a/yang/vyatta-ndpi-application-types-v1.yang b/yang/vyatta-ndpi-application-types-v1.yang
+new file mode 100644
+index 0000000..1bad8ea
+--- /dev/null
++++ b/yang/vyatta-ndpi-application-types-v1.yang
+@@ -0,0 +1,90 @@
++module vyatta-ndpi-application-types-v1 {
++	namespace "urn:vyatta.com:mgmt:vyatta-ndpi-application-types:1";
++	prefix vyatta-ndpi-application-types-v1;
++
++	organization "AT&T Inc.";
++	contact	"AT&T
++		 Postal: 208 S. Akard Street
++		         Dallas, TX 75202, USA
++		 Web: www.att.com";
++
++	description
++		"Copyright (c) 2020, AT&T Intellectual Property
++		 All rights reserved.
++
++		 Redistribution and use in source and binary forms,
++		 with or without modification, are permitted provided
++		 that the following conditions are met:
++
++		 1. Redistributions of source code must retain the
++		    above copyright notice, this list of conditions and
++		    the following disclaimer.
++		 2. Redistributions in binary form must reproduce
++		    the above copyright notice, this list of conditions
++		    and the following disclaimer in the documentation
++		    and/or other materials provided with the distribution.
++		 3. Neither the name of the copyright holder nor the
++		    names of its contributors may be used to endorse or
++		    promote products derived from this software without
++		    specific prior written permission.
++
++		 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS
++		 AND CONTRIBUTORS 'AS IS' AND ANY EXPRESS OR IMPLIED
++		 WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
++		 WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
++		 PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL
++		 THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
++		 ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY,
++		 OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
++		 TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
++		 OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
++		 HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
++		 IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
++		 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
++		 USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
++		 OF SUCH DAMAGE.
++
++		 SPDX-License-Identifier: BSD-3-Clause
++
++		 Application types associated with the nDPI engine.
++
++		 This file was auto-generated with
++		 generation/application_types_yang.sh";
++
++	revision 2020-01-06 {
++		description "Initial revision based on nDPI 3.0.0.";
++	}
++
++	typedef application-types {
++		/* New enums MUST only be added to the end of this list.
++		 * Old enums MAY be deprecated or obsoleted, but must not be removed.
++		 * It's not important to preserve alphabetical order.
++		 */
++		type enumeration {
++			enum "chat";
++			enum "cloud";
++			enum "collaborative";
++			enum "database";
++			enum "datatransfer";
++			enum "download";
++			enum "email";
++			enum "filesharing";
++			enum "game";
++			enum "media";
++			enum "music";
++			enum "network";
++			enum "productivity";
++			enum "remoteaccess";
++			enum "rpc";
++			enum "shopping";
++			enum "socialnetwork";
++			enum "softwareupdate";
++			enum "streaming";
++			enum "system";
++			enum "video";
++			enum "voip";
++			enum "vpn";
++			enum "web";
++		}
++	}
++}
