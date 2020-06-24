@@ -7,3 +7,4 @@ vyatta-app-names.patch
 vyatta-generation.patch
 vyatta-generated.patch
 vyatta-increase-ndpi-num-bits.patch
+vyatta-category-file.patch
