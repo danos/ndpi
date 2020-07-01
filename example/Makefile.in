@@ -1,25 +1,34 @@
 CC=@CC@
 CXX=@CXX@
-CFLAGS=-g -I../src/include @CFLAGS@
-LIBNDPI=../src/lib/libndpi.a
-LDFLAGS=$(LIBNDPI) @PCAP_LIB@ -lpthread -lm @LDFLAGS@
-OBJS=ndpiReader.o reader_util.o
+SRCHOME=../src
+CFLAGS=-g -fPIC -DPIC -I$(SRCHOME)/include @CFLAGS@
+LIBNDPI=$(SRCHOME)/lib/libndpi.a
+LDFLAGS=$(LIBNDPI) @PCAP_LIB@ @ADDITIONAL_LIBS@ -lpthread -lm @LDFLAGS@
+HEADERS=intrusion_detection.h reader_util.h $(SRCHOME)/include/ndpi_api.h \
+        $(SRCHOME)/include/ndpi_typedefs.h $(SRCHOME)/include/ndpi_protocol_ids.h
+OBJS=ndpiReader.o reader_util.o intrusion_detection.o
 PREFIX?=@prefix@
 
 all: ndpiReader @DPDK_TARGET@
 
-ndpiReader: $(OBJS) $(LIBNDPI)
-	$(CXX) $(CFLAGS) $(OBJS) -o $@ $(LDFLAGS)
+EXECUTABLE_SOURCES := ndpiReader.c
+COMMON_SOURCES := $(filter-out $(EXECUTABLE_SOURCES),$(wildcard *.c ))
+
+libndpiReader.a: $(COMMON_SOURCES:%.c=%.o) $(LIBNDPI)
+	ar rsv libndpiReader.a $(COMMON_SOURCES:%.c=%.o)
+
+ndpiReader: libndpiReader.a $(LIBNDPI) $(EXECUTABLE_SOURCES:%.c=%.o)
+	$(CXX) $(CFLAGS) $(EXECUTABLE_SOURCES:%.c=%.o) libndpiReader.a -o $@ $(LDFLAGS)
 
 %.o: %.c $(HEADERS) Makefile
 	$(CC) $(CFLAGS) -c $< -o $@
 
 install:
 	mkdir -p $(DESTDIR)$(PREFIX)/bin/
-	mkdir -p $(DESTDIR)$(PREFIX)/sbin/ndpi
+	mkdir -p $(DESTDIR)$(PREFIX)/share/ndpi
 	cp ndpiReader $(DESTDIR)$(PREFIX)/bin/
-	cp protos.txt $(DESTDIR)$(PREFIX)/sbin/ndpi/ndpiProtos.txt
-	cp mining_hosts.txt $(DESTDIR)$(PREFIX)/sbin/ndpi/ndpiCustomCategory.txt
+	cp protos.txt $(DESTDIR)$(PREFIX)/share/ndpi/ndpiProtos.txt
+	cp mining_hosts.txt $(DESTDIR)$(PREFIX)/share/ndpi/ndpiCustomCategory.txt
 	[ -f build/app/ndpiReader.dpdk ] && cp build/app/ndpiReader.dpdk $(DESTDIR)$(PREFIX)/bin/ || true
 	[ -f ndpiReader.dpdk ] && cp ndpiReader.dpdk $(DESTDIR)$(PREFIX)/bin/ || true
 
@@ -27,7 +36,7 @@ dpdk:
 	make -f Makefile.dpdk
 
 check:
-	 cppcheck --template='{file}:{line}:{severity}:{message}' --quiet --enable=all --force -I../src/include  -I/usr/local/include/json-c  *.c
+	 cppcheck --template='{file}:{line}:{severity}:{message}' --quiet --enable=all --force -I$(SRCHOME)/include *.c
 
 clean:
 	/bin/rm -f *.o ndpiReader ndpiReader.dpdk

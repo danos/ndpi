@@ -1,7 +1,7 @@
 /*
  * quic.c
  *
- * Copyright (C) 2012-19 - ntop.org
+ * Copyright (C) 2012-20 - ntop.org
  *
  * This module is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -129,23 +129,21 @@ void ndpi_search_quic(struct ndpi_detection_module_struct *ndpi_struct,
 	      sni_offset++;
 
 	    if((sni_offset+len) < udp_len) {
-	      if(!ndpi_struct->disable_metadata_export) {
-		int max_len = sizeof(flow->host_server_name)-1, j = 0;
-		ndpi_protocol_match_result ret_match;
-		
-		if(len > max_len) len = max_len;
-		
-		while((len > 0) && (sni_offset < udp_len)) {
-		  flow->host_server_name[j++] = packet->payload[sni_offset];
-		  sni_offset++, len--;
-		}
-		
-		ndpi_match_host_subprotocol(ndpi_struct, flow, 
-					    (char *)flow->host_server_name,
-					    strlen((const char*)flow->host_server_name),
-					    &ret_match,
-					    NDPI_PROTOCOL_QUIC);
+	      int max_len = sizeof(flow->host_server_name)-1, j = 0;
+	      ndpi_protocol_match_result ret_match;
+	      
+	      if(len > max_len) len = max_len;
+	      
+	      while((len > 0) && (sni_offset < udp_len)) {
+		flow->host_server_name[j++] = packet->payload[sni_offset];
+		sni_offset++, len--;
 	      }
+	      
+	      ndpi_match_host_subprotocol(ndpi_struct, flow, 
+					  (char *)flow->host_server_name,
+					  strlen((const char*)flow->host_server_name),
+					  &ret_match,
+					  NDPI_PROTOCOL_QUIC);	      
 	    }
 
 	    break;

@@ -2,7 +2,7 @@
  * rtp.c
  *
  * Copyright (C) 2009-2011 by ipoque GmbH
- * Copyright (C) 2011-19 - ntop.org
+ * Copyright (C) 2011-20 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -95,21 +95,6 @@ static void ndpi_rtp_search(struct ndpi_detection_module_struct *ndpi_struct,
 	 /* http://www.iana.org/assignments/rtp-parameters/rtp-parameters.xhtml */
        )
     ) {
-    struct ndpi_packet_struct *packet = &flow->packet;
-
-    if(packet->iph) {
-      /* 125.209.252.xxx */
-      if(((ntohl(packet->iph->saddr) & 0xFFFFFF00 /* 255.255.255.0 */) == 0x7DD1FC00)
-	 || ((ntohl(packet->iph->daddr) & 0xFFFFFF00 /* 255.255.255.0 */) == 0x7DD1FC00)) {
-	if((flow->packet.payload[0] == 0x80)
-	   && ((flow->packet.payload[1] == 0x78) || (flow->packet.payload[1] == 0xE8))
-	  ) {
-	  ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_LINE, NDPI_PROTOCOL_LINE);
-	  return;
-	}
-      }
-    }
-
     NDPI_LOG_INFO(ndpi_struct, "Found RTP\n");
     ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_RTP, NDPI_PROTOCOL_UNKNOWN);
     return;
@@ -139,12 +124,17 @@ static void ndpi_rtp_search(struct ndpi_detection_module_struct *ndpi_struct,
 void ndpi_search_rtp(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 {
   struct ndpi_packet_struct *packet = &flow->packet;
-
+  u_int16_t source = ntohs(packet->udp->source);
+  u_int16_t dest = ntohs(packet->udp->dest);
+  
+  // printf("==> %s()\n", __FUNCTION__);
+  
   /* printf("*** %s(pkt=%d)\n", __FUNCTION__, flow->packet_counter); */
 
   if((packet->udp != NULL)
-     /* && (ntohs(packet->udp->source) > 1023) */
-     && (ntohs(packet->udp->dest) > 1023))
+     && (source != 30303) && (dest != 30303 /* Avoid to mix it with Ethereum that looks alike */)
+     && (dest > 1023)
+     )
     ndpi_rtp_search(ndpi_struct, flow, packet->payload, packet->payload_packet_len);
 }
 
