@@ -1,7 +1,7 @@
 /*
  * ndpi_typedefs.h
  *
- * Copyright (C) 2011-19 - ntop.org
+ * Copyright (C) 2011-20 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -41,6 +41,21 @@ typedef enum {
 	      ndpi_l4_proto_udp_only,
 	      ndpi_l4_proto_tcp_and_udp,
 } ndpi_l4_proto_info;
+
+typedef enum {
+  ndpi_no_tunnel = 0,
+  ndpi_gtp_tunnel,
+  ndpi_capwap_tunnel,
+  ndpi_tzsp_tunnel,
+  ndpi_l2tp_tunnel,
+} ndpi_packet_tunnel;
+
+typedef enum {
+  ndpi_url_no_problem = 0,
+  ndpi_url_possible_xss,
+  ndpi_url_possible_sql_injection,
+  ndpi_url_possible_rce_injection
+} ndpi_url_risk;
 
 /* NDPI_VISIT */
 typedef enum {
@@ -623,17 +638,19 @@ struct ndpi_flow_tcp_struct {
   /* NDPI_PROTOCOL_TELNET */
   u_int32_t telnet_stage:2;			// 0 - 2
 
-  void* tls_srv_cert_fingerprint_ctx;
+  struct {
+    struct {
+      u_int8_t *buffer;
+      u_int buffer_len, buffer_used;
+    } message;
+    
+    void* srv_cert_fingerprint_ctx; /* SHA-1 */
   
-  /* NDPI_PROTOCOL_TLS */
-  u_int8_t tls_seen_client_cert:1,
-    tls_seen_server_cert:1,
-    tls_seen_certificate:1,
-    tls_srv_cert_fingerprint_found:1,
-    tls_srv_cert_fingerprint_processed:1,
-    tls_stage:2, _pad:1; // 0 - 5
-  int16_t tls_record_offset, tls_fingerprint_len; /* Need to be signed */
-  u_int8_t tls_sha1_certificate_fingerprint[20];
+    /* NDPI_PROTOCOL_TLS */
+    u_int8_t hello_processed:1, certificate_processed:1, subprotocol_detected:1,
+	fingerprint_set:1, _pad:4;
+    u_int8_t sha1_certificate_fingerprint[20];
+  } tls;
   
   /* NDPI_PROTOCOL_POSTGRES */
   u_int32_t postgres_stage:3;
@@ -926,10 +943,7 @@ typedef enum {
 } ndpi_protocol_category_t;
 
 typedef enum {
-   ndpi_pref_http_dont_dissect_response = 0,
-   ndpi_pref_dns_dont_dissect_response,
-   ndpi_pref_direction_detect_disable,
-   ndpi_pref_disable_metadata_export,
+   ndpi_pref_direction_detect_disable = 0,
 } ndpi_detection_preference;
 
 /* ntop extensions */
@@ -989,6 +1003,15 @@ struct hs {
 };
 #endif
 
+#ifdef HAVE_PCRE
+#include <pcre.h>
+
+struct pcre_struct {
+  pcre *compiled;
+  pcre_extra *optimized;
+};
+#endif
+
 struct ndpi_detection_module_struct {
   NDPI_PROTOCOL_BITMASK detection_bitmask;
   NDPI_PROTOCOL_BITMASK generic_http_packet_bitmask;
@@ -1045,7 +1068,8 @@ struct ndpi_detection_module_struct {
     content_automa,                            /* Used for HTTP subprotocol_detection */
     subprotocol_automa,                        /* Used for HTTP subprotocol_detection */
     bigrams_automa, impossible_bigrams_automa; /* TOR */
-
+  /* IMPORTANT: please update ndpi_finalize_initalization() whenever you add a new automa */
+  
   struct {
 #ifdef HAVE_HYPERSCAN
     struct hs *hostnames;
@@ -1105,10 +1129,8 @@ struct ndpi_detection_module_struct {
 
   ndpi_proto_defaults_t proto_defaults[NDPI_MAX_SUPPORTED_PROTOCOLS+NDPI_MAX_NUM_CUSTOM_PROTOCOLS];
 
-  u_int8_t http_dont_dissect_response:1, dns_dont_dissect_response:1,
-    direction_detect_disable:1, /* disable internal detection of packet direction */
-    disable_metadata_export:1   /* No metadata is exported */
-    ;
+  u_int8_t direction_detect_disable:1, /* disable internal detection of packet direction */
+    _pad:7;
 
   void *hyperscan; /* Intel Hyperscan */
 };
@@ -1130,7 +1152,8 @@ struct ndpi_flow_struct {
 
   /* init parameter, internal used to set up timestamp,... */
   u_int16_t guessed_protocol_id, guessed_host_protocol_id, guessed_category, guessed_header_category;
-  u_int8_t l4_proto, protocol_id_already_guessed:1, host_already_guessed:1, init_finished:1, setup_packet_direction:1, packet_direction:1, check_extra_packets:1;
+  u_int8_t l4_proto, protocol_id_already_guessed:1, host_already_guessed:1,
+    init_finished:1, setup_packet_direction:1, packet_direction:1, check_extra_packets:1;
 
   /*
     if ndpi_struct->direction_detect_disable == 1
@@ -1153,13 +1176,16 @@ struct ndpi_flow_struct {
     struct ndpi_flow_udp_struct udp;
   } l4;
 
+  /* Place textual flow info here */
+  char flow_extra_info[16];
+  
   /*
     Pointer to src or dst that identifies the
     server of this connection
   */
   struct ndpi_id_struct *server_id;
   /* HTTP host or DNS query */
-  u_char host_server_name[256];
+  u_char host_server_name[240];
 
   /*
     This structure below will not not stay inside the protos
@@ -1170,11 +1196,21 @@ struct ndpi_flow_struct {
   */
   struct {
     ndpi_http_method method;
-    char *url, *content_type;
+    char *url, *content_type, *user_agent;
     u_int8_t num_request_headers, num_response_headers;
     u_int8_t request_version; /* 0=1.0 and 1=1.1. Create an enum for this? */
     u_int16_t response_status_code; /* 200, 404, etc. */
   } http;
+
+  /* 
+     Put outside of the union to avoid issues in case the protocol
+     is remapped to somethign pther than Kerberos due to a faulty
+     dissector
+  */
+  struct {    
+    char *pktbuf;
+    u_int16_t pktbuf_maxlen, pktbuf_currlen;
+  } kerberos_buf;
 
   union {
     /* the only fields useful for nDPI and ntopng */
@@ -1190,13 +1226,14 @@ struct ndpi_flow_struct {
     } ntp;
 
     struct {
-      char cname[24], realm[24];
+      char hostname[48], domain[48], username[48];
     } kerberos;
 
     struct {
       struct {
-	u_int16_t ssl_version;
-	char client_certificate[64], server_certificate[64], server_organization[64];
+	u_int16_t ssl_version, server_names_len;
+	char client_requested_server_name[64], *server_names, server_organization[64],
+	  *alpn, *tls_supported_versions;
 	u_int32_t notBefore, notAfter;
 	char ja3_client[33], ja3_server[33];
 	u_int16_t server_cipher;
@@ -1220,6 +1257,14 @@ struct ndpi_flow_struct {
     } imo;
     
     struct {
+      u_int8_t username_detected:1, username_found:1,
+	password_detected:1, password_found:1,
+	_pad:4;
+      u_int8_t character_id;
+      char username[32], password[32];
+    } telnet;
+    
+    struct {
       char answer[96];
     } mdns;
 
@@ -1234,6 +1279,11 @@ struct ndpi_flow_struct {
       u_char nat_ip[24];
     } http;
 
+    struct {
+      u_int8_t auth_found:1, auth_failed:1, _pad:5;
+      char username[16], password[16];
+    } ftp_imap_pop_smtp;
+  
     struct {
       /* Bittorrent hash */
       u_char hash[20];
@@ -1269,7 +1319,6 @@ struct ndpi_flow_struct {
 
   /* NDPI_PROTOCOL_HTTP */
   u_int8_t http_detected:1;
-  u_int16_t http_upper_protocol, http_lower_protocol;
 
   /* NDPI_PROTOCOL_RTSP */
   u_int8_t rtsprdt_stage:2, rtsp_control_flow:1;
@@ -1356,6 +1405,14 @@ typedef struct {
   u_int8_t value;
 } ndpi_network;
 
+typedef u_int32_t ndpi_init_prefs;
+
+typedef enum
+  {
+   ndpi_no_prefs = 0,
+   ndpi_dont_load_tor_hosts,
+  } ndpi_prefs;
+
 typedef struct {
   int protocol_id;
   ndpi_protocol_category_t protocol_category;
@@ -1437,5 +1494,9 @@ struct ndpi_analyze_struct {
 #define DEFAULT_SERIES_LEN  64
 #define MAX_SERIES_LEN      512
 #define MIN_SERIES_LEN      8
+
+/* **************************************** */
+
+typedef struct ndpi_ptree ndpi_ptree_t;
 
 #endif /* __NDPI_TYPEDEFS_H__ */

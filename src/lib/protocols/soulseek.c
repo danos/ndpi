@@ -1,7 +1,7 @@
 /*
  * soulseek.c
  *
- * Copyright (C) 2016-19 - ntop.org
+ * Copyright (C) 2016-20 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -259,7 +259,9 @@ void ndpi_search_soulseek_tcp(struct ndpi_detection_module_struct *ndpi_struct,
       SOULSEEK_DETECT;
       return;
     }
+    
     if(flow->l4.tcp.soulseek_stage && flow->packet_counter < 11) {
+      ;
     } else {
       NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
     }

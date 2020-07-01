@@ -12,6 +12,8 @@ BuildRoot:  %{_tmppath}/%{name}-%{version}-root
 %{?el6:Requires: glibc >= 2.3.4 numactl coreutils }
 AutoReqProv: no
 
+%define debug_package %{nil}
+
 %description
 nDPI Open and Extensible LGPLv3 Deep Packet Inspection Library.
 
@@ -75,6 +77,8 @@ rm -fr $RPM_BUILD_ROOT
 /usr/local/lib/libndpi.so.@MAJOR_RELEASE@
 /usr/local/lib/libndpi.so.@PACKAGE_VERSION@
 /usr/local/bin/ndpiReader
+/usr/local/share/ndpi/ndpiCustomCategory.txt
+/usr/local/share/ndpi/ndpiProtos.txt
 /etc/ld.so.conf.d/ndpi.conf
 %{libdir}/pkgconfig/libndpi.pc
 

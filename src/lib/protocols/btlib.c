@@ -1,7 +1,7 @@
 /*
  * btlib.c
  *
- * Copyright (C) 2011-19 - ntop.org
+ * Copyright (C) 2011-20 - ntop.org
  *               Contributed by Vitaly Lavrov <vel21ripn@gmail.com>
  *
  * This file is part of nDPI, an open source deep packet inspection
@@ -39,7 +39,9 @@ typedef unsigned long long int u_int64_t;
 
 #include <stdint.h>
 #include <stdlib.h>
+#ifndef WIN32
 #include <arpa/inet.h>
+#endif
 #endif
 
 #include "btlib.h"

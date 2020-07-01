@@ -1,7 +1,7 @@
 #!/bin/sh
 
 NDPI_MAJOR="3"
-NDPI_MINOR="0"
+NDPI_MINOR="2"
 NDPI_PATCH="0"
 NDPI_VERSION_SHORT="$NDPI_MAJOR.$NDPI_MINOR.$NDPI_PATCH"
 
@@ -45,4 +45,4 @@ cat configure | sed "s/#define PACKAGE/#define NDPI_PACKAGE/g" | sed "s/#define 
 cat configure.tmp > configure
 
 chmod +x configure
-./configure $*
+./configure "$*"

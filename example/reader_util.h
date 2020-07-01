@@ -32,6 +32,7 @@
 #include "uthash.h"
 #include <pcap.h>
 #include "ndpi_classify.h"
+#include "ndpi_typedefs.h"
 
 #ifdef USE_DPDK
 #include <rte_eal.h>
@@ -93,7 +94,7 @@ typedef struct ndpi_ja3_info {
 
 // external hash table (host ip -> <ip string, hash table ja3c, hash table ja3s>)
 // used to aggregate ja3 fingerprints by hosts
-typedef struct ndpi_host_ja3_fingerprints{
+typedef struct ndpi_host_ja3_fingerprints {
    u_int32_t ip;
    char *ip_string;
    char *dns_name;
@@ -160,49 +161,66 @@ typedef struct ndpi_flow_info {
   u_int16_t dst_port;
   u_int8_t detection_completed, protocol, bidirectional, check_extra_packets;
   u_int16_t vlan_id;
+  ndpi_packet_tunnel tunnel_type;
   struct ndpi_flow_struct *ndpi_flow;
   char src_name[48], dst_name[48];
   u_int8_t ip_version;
+  u_int32_t cwr_count, src2dst_cwr_count, dst2src_cwr_count;
+  u_int32_t ece_count, src2dst_ece_count, dst2src_ece_count;
+  u_int32_t urg_count, src2dst_urg_count, dst2src_urg_count;
+  u_int32_t ack_count, src2dst_ack_count, dst2src_ack_count;
+  u_int32_t psh_count, src2dst_psh_count, dst2src_psh_count;
+  u_int32_t syn_count, src2dst_syn_count, dst2src_syn_count;
+  u_int32_t fin_count, src2dst_fin_count, dst2src_fin_count;
+  u_int32_t rst_count, src2dst_rst_count, dst2src_rst_count;
+  u_int32_t c_to_s_init_win, s_to_c_init_win;
   u_int64_t first_seen, last_seen;
   u_int64_t src2dst_bytes, dst2src_bytes;
+  u_int64_t src2dst_goodput_bytes, dst2src_goodput_bytes;
   u_int32_t src2dst_packets, dst2src_packets;
   u_int32_t has_human_readeable_strings;
   char human_readeable_string_buffer[32];
-  
+
   // result only, not used for flow identification
   ndpi_protocol detected_protocol;
 
   // Flow data analysis
   struct ndpi_analyze_struct *iat_c_to_s, *iat_s_to_c, *iat_flow,
     *pktlen_c_to_s, *pktlen_s_to_c;
-    
-  char info[96];
-  char host_server_name[256];
+
+  char info[160];
+  char flow_extra_info[16];
+  char host_server_name[240];
   char bittorent_hash[41];
   char dhcp_fingerprint[48];
 
   struct {
     u_int16_t ssl_version;
-    char client_info[64], server_info[64],
-      client_hassh[33], server_hassh[33],
+    char client_requested_server_name[64], server_info[64],
+      client_hassh[33], server_hassh[33], *server_names,
+      *tls_alpn, *tls_supported_versions,
       server_organization[64],
       ja3_client[33], ja3_server[33],
       sha1_cert_fingerprint[20];
+    u_int8_t sha1_cert_fingerprint_set;
     time_t notBefore, notAfter;
     u_int16_t server_cipher;
-    ndpi_cipher_weakness client_unsafe_cipher, server_unsafe_cipher;    
+    ndpi_cipher_weakness client_unsafe_cipher, server_unsafe_cipher;
   } ssh_tls;
 
   struct {
-    char url[256];
+    char url[256], content_type[64], user_agent[128];
     u_int response_status_code;
   } http;
-  
+
+  struct {
+    char username[32], password[32];
+  } telnet;
+
   void *src_id, *dst_id;
 
   struct ndpi_entropy entropy;
   struct ndpi_entropy last_entropy;
-  
 } ndpi_flow_info_t;
 
 
@@ -299,6 +317,7 @@ int ndpi_workflow_node_cmp(const void *a, const void *b);
 void process_ndpi_collected_info(struct ndpi_workflow * workflow, struct ndpi_flow_info *flow);
 u_int32_t ethernet_crc32(const void* data, size_t n_bytes);
 void ndpi_flow_info_freer(void *node);
+void ndpi_free_flow_data_analysis(struct ndpi_flow_info *flow);
 const char* print_cipher_id(u_int32_t cipher);
 float ndpi_flow_get_byte_count_entropy(const uint32_t byte_count[256], unsigned int num_bytes);
 
