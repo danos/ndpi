@@ -6,8 +6,8 @@ Files: *
 Copyright: 2011-2019 ntop.org
            2014 Tomasz Bujlow <tomasz@skatnet.dk>
            2013 Remy Mudingay <mudingay@ill.fr>
-	   2012 Gianluca Costa xplico.org
-	   2009-2011 ipoque GmbH
+           2012 Gianluca Costa xplico.org
+           2009-2011 ipoque GmbH
 License: LGPL-3.0+
 
 Files: src/lib/ndpi_classify.c

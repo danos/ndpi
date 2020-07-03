@@ -1,3 +1,9 @@
+ndpi (3.2-2) UNRELEASED; urgency=low
+
+  * debian/copyright: use spaces rather than tabs to start continuation lines.
+
+ -- Debian Janitor <janitor@jelmer.uk>  Fri, 03 Jul 2020 16:56:08 -0000
+
 ndpi (3.2-1) unstable; urgency=medium
 
 **** TODO ****
