@@ -1,5 +1,13 @@
 ndpi (3.2-1) unstable; urgency=medium
 
+**** TODO ****
+- consider depending on libpcre3-dev and clang to enable sanitizer and pcre
+with: --with-llvm-sanitizer and --with-pcre
+- fix BE build issues
+- move the library from 3.2 to just 3, since the minor soname version is
+useless?
+- consider making libndpiReader.a dynamic too
+
   * New upstream version 3.2
   * Bump libndpi to 3.2
   * Bump std-version to 4.5.0, and compat level to 13
