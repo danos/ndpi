@@ -1,3 +1,15 @@
+ndpi (3.2-1) unstable; urgency=medium
+
+  * New upstream version 3.2
+  * Bump libndpi to 3.2
+  * Bump std-version to 4.5.0, and compat level to 13
+  * Drop old define-have-json-c.patch: not needed anymore
+  * Rebase patches for new release (keeping one little library as static)
+  * Drop dh_auto_install override: txt files are now correctly
+    installed upstream
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Fri, 03 Jul 2020 12:10:51 +0200
+
 ndpi (3.0-1) unstable; urgency=medium
 
   * New upstream version 3.0
