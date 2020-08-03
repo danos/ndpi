@@ -1,3 +1,14 @@
+ndpi (3.0-2) unstable; urgency=medium
+
+  * Remove libndpi-wireshark package
+  * Change nDPI names to suit the vyatta CLI
+  * Add nDPI packages for application names and types
+  * Vyatta nDPI
+  * patch to increase NDPI_NUM_BITS from 512 to 1024
+  * add category name to category file
+
+ -- Paul Aitken <paul.aitken@att.com>  Mon, 03 Aug 2020 11:25:50 +0100
+
 ndpi (3.0-1) unstable; urgency=medium
 
   * New upstream version 3.0
