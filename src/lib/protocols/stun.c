@@ -1,7 +1,7 @@
 /*
  * stun.c
  *
- * Copyright (C) 2011-19 - ntop.org
+ * Copyright (C) 2011-20 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -27,7 +27,7 @@
 
 #include "ndpi_api.h"
 
-#define MAX_NUM_STUN_PKTS     8
+#define MAX_NUM_STUN_PKTS     3
 
 // #define DEBUG_STUN 1
 // #define DEBUG_LRU  1
@@ -37,7 +37,6 @@ struct stun_packet_header {
   u_int32_t cookie;
   u_int8_t  transaction_id[8];
 };
-
 
 /* ************************************************************ */
 
@@ -89,7 +88,12 @@ void ndpi_int_stun_add_connection(struct ndpi_detection_module_struct *ndpi_stru
 #endif
 
 	  ndpi_lru_add_to_cache(ndpi_struct->stun_cache, key, app_proto);
+	  if(ndpi_struct->ndpi_notify_lru_add_handler_ptr)
+	    ndpi_struct->ndpi_notify_lru_add_handler_ptr(ndpi_stun_cache, key, app_proto);
+
 	  ndpi_lru_add_to_cache(ndpi_struct->stun_cache, key_rev, app_proto);
+	  if(ndpi_struct->ndpi_notify_lru_add_handler_ptr)
+	    ndpi_struct->ndpi_notify_lru_add_handler_ptr(ndpi_stun_cache, key_rev, app_proto);
 	}
       }
     }
@@ -118,15 +122,15 @@ static int is_google_ip_address(u_int32_t host) {
 /* ************************************************************ */
 
 /*
- WhatsApp
- 31.13.86.48
- 31.13.92.50
- 157.240.20.51
- 157.240.21.51
- 185.60.216.51
+  WhatsApp
+  31.13.86.48
+  31.13.92.50
+  157.240.20.51
+  157.240.21.51
+  185.60.216.51
 
- Messenger
- 31.13.86.5
+  Messenger
+  31.13.86.5
 */
 
 static int is_messenger_ip_address(u_int32_t host) {
@@ -143,12 +147,13 @@ static ndpi_int_stun_t ndpi_int_check_stun(struct ndpi_detection_module_struct *
 					   const u_int8_t * payload,
 					   const u_int16_t payload_length) {
   u_int16_t msg_type, msg_len;
-  struct stun_packet_header *h = (struct stun_packet_header*)payload;
   int rc;
   
-  /* STUN over TCP does not look good */
-  if (flow->packet.tcp)
+  /* No need to do ntohl() with 0xFFFFFFFF */
+  if(flow->packet.iph && (flow->packet.iph->daddr == 0xFFFFFFFF /* 255.255.255.255 */)) {
+    NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
     return(NDPI_IS_NOT_STUN);
+  }
 
   if(payload_length >= 512) {
     return(NDPI_IS_NOT_STUN);
@@ -156,7 +161,7 @@ static ndpi_int_stun_t ndpi_int_check_stun(struct ndpi_detection_module_struct *
     /* This looks like an invalid packet */
 
     if(flow->protos.stun_ssl.stun.num_udp_pkts > 0) {
-      flow->guessed_host_protocol_id = NDPI_PROTOCOL_WHATSAPP_CALL;
+      // flow->guessed_host_protocol_id = NDPI_PROTOCOL_WHATSAPP_CALL;
       return(NDPI_IS_STUN);
     } else
       return(NDPI_IS_NOT_STUN);
@@ -168,37 +173,38 @@ static ndpi_int_stun_t ndpi_int_check_stun(struct ndpi_detection_module_struct *
     goto udp_stun_found;
   }
 
-  msg_type = ntohs(h->msg_type), msg_len = ntohs(h->msg_len);
+  msg_type = ntohs(*((u_int16_t*)payload));
+  msg_len  = ntohs(*((u_int16_t*)&payload[2]));
 
   if(msg_type == 0)
     return(NDPI_IS_NOT_STUN);  
   
   /* https://www.iana.org/assignments/stun-parameters/stun-parameters.xhtml */
-  if ((msg_type & 0x3EEF) > 0x000B && msg_type != 0x0800) {
+  if((msg_type & 0x3EEF) > 0x000B && msg_type != 0x0800) {
 #ifdef DEBUG_STUN
     printf("[STUN] msg_type = %04X\n", msg_type);
 #endif
 
     /*
-     If we're here it's because this does not look like STUN anymore
-     as this was a flow that started as STUN and turned into something
-     else. Let's investigate what is that about
-     */
-    if (payload[0] == 0x16) {
+      If we're here it's because this does not look like STUN anymore
+      as this was a flow that started as STUN and turned into something
+      else. Let's investigate what is that about
+    */
+    if(payload[0] == 0x16) {
       /* Let's check if this is DTLS used by some socials */
       struct ndpi_packet_struct *packet = &flow->packet;
       u_int16_t total_len, version = htons(*((u_int16_t*) &packet->payload[1]));
 
       switch (version) {
-        case 0xFEFF: /* DTLS 1.0 */
-        case 0xFEFD: /* DTLS 1.2 */
-          total_len = ntohs(*((u_int16_t*) &packet->payload[11])) + 13;
+      case 0xFEFF: /* DTLS 1.0 */
+      case 0xFEFD: /* DTLS 1.2 */
+	total_len = ntohs(*((u_int16_t*) &packet->payload[11])) + 13;
 
-          if (payload_length == total_len) {
-            /* This is DTLS and the only protocol we know behaves like this is signal */
-            flow->guessed_host_protocol_id = NDPI_PROTOCOL_SIGNAL;
-            return(NDPI_IS_STUN);
-          }
+	if(payload_length == total_len) {
+	  /* This is DTLS and the only protocol we know behaves like this is signal */
+	  flow->guessed_host_protocol_id = NDPI_PROTOCOL_SIGNAL;
+	  return(NDPI_IS_STUN);
+	}
       }
     }
 
@@ -208,11 +214,11 @@ static ndpi_int_stun_t ndpi_int_check_stun(struct ndpi_detection_module_struct *
 #if 0
   if((flow->packet.udp->dest == htons(3480)) ||
      (flow->packet.udp->source == htons(3480))
-    )
+     )
     printf("[STUN] Here we go\n");;
 #endif
 
-  if (ndpi_struct->stun_cache) {
+  if(ndpi_struct->stun_cache) {
     u_int16_t proto;
     u_int32_t key = get_stun_lru_key(flow, 0);
     int rc = ndpi_lru_find_cache(ndpi_struct->stun_cache, key, &proto,
@@ -222,7 +228,7 @@ static ndpi_int_stun_t ndpi_int_check_stun(struct ndpi_detection_module_struct *
     printf("[LRU] Searching %u\n", key);
 #endif
 
-    if (!rc) {
+    if(!rc) {
       key = get_stun_lru_key(flow, 1);
       rc = ndpi_lru_find_cache(ndpi_struct->stun_cache, key, &proto,
                                0 /* Don't remove it as it can be used for other connections */);
@@ -232,7 +238,7 @@ static ndpi_int_stun_t ndpi_int_check_stun(struct ndpi_detection_module_struct *
 #endif
     }
 
-    if (rc) {
+    if(rc) {
 #ifdef DEBUG_LRU
       printf("[LRU] Cache FOUND %u / %u\n", key, proto);
 #endif
@@ -253,18 +259,18 @@ static ndpi_int_stun_t ndpi_int_check_stun(struct ndpi_detection_module_struct *
   if(msg_type == 0x01 /* Binding Request */) {
     flow->protos.stun_ssl.stun.num_binding_requests++;
 
-    if (!msg_len && flow->guessed_host_protocol_id == NDPI_PROTOCOL_GOOGLE)
+    if(!msg_len && flow->guessed_host_protocol_id == NDPI_PROTOCOL_GOOGLE)
       flow->guessed_host_protocol_id = NDPI_PROTOCOL_HANGOUT_DUO;
     else
       flow->guessed_protocol_id = NDPI_PROTOCOL_STUN;
 
-    if (!msg_len) {
+    if(!msg_len) {
       /* flow->protos.stun_ssl.stun.num_udp_pkts++; */
       return(NDPI_IS_NOT_STUN); /* This to keep analyzing STUN instead of giving up */
     }
   }
 
-  if (!msg_len && flow->guessed_host_protocol_id == NDPI_PROTOCOL_UNKNOWN) {
+  if(!msg_len && flow->guessed_host_protocol_id == NDPI_PROTOCOL_UNKNOWN) {
     NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
     return(NDPI_IS_NOT_STUN);
   }
@@ -275,12 +281,12 @@ static ndpi_int_stun_t ndpi_int_check_stun(struct ndpi_detection_module_struct *
     flow->guessed_host_protocol_id = NDPI_PROTOCOL_WHATSAPP_CALL;
     return(NDPI_IS_STUN); /* This is WhatsApp Call */
   } else if((payload[0] == 0x90) && (((msg_len+11) == payload_length) ||
-                (flow->protos.stun_ssl.stun.num_binding_requests >= 4))) {
+				     (flow->protos.stun_ssl.stun.num_binding_requests >= 4))) {
     flow->guessed_host_protocol_id = NDPI_PROTOCOL_WHATSAPP_CALL;
     return(NDPI_IS_STUN); /* This is WhatsApp Call */
   }
 
-  if (payload[0] != 0x80 && (msg_len + 20) > payload_length)
+  if(payload[0] != 0x80 && (msg_len + 20) > payload_length)
     return(NDPI_IS_NOT_STUN);
   else {
     switch(flow->guessed_protocol_id) {
@@ -296,25 +302,25 @@ static ndpi_int_stun_t ndpi_int_check_stun(struct ndpi_detection_module_struct *
     }
   }
 
-  if (payload_length == (msg_len+20)) {
-    if ((msg_type & 0x3EEF) <= 0x000B) /* http://www.3cx.com/blog/voip-howto/stun-details/ */ {
+  if(payload_length == (msg_len+20)) {
+    if((msg_type & 0x3EEF) <= 0x000B) /* http://www.3cx.com/blog/voip-howto/stun-details/ */ {
       u_int offset = 20;
 
       /*
-       This can either be the standard RTCP or Ms Lync RTCP that
-       later will become Ms Lync RTP. In this case we need to
-       be careful before deciding about the protocol before dissecting the packet
+	This can either be the standard RTCP or Ms Lync RTCP that
+	later will become Ms Lync RTP. In this case we need to
+	be careful before deciding about the protocol before dissecting the packet
 
-       MS Lync = Skype
-       https://en.wikipedia.org/wiki/Skype_for_Business
-       */
+	MS Lync = Skype
+	https://en.wikipedia.org/wiki/Skype_for_Business
+      */
 
-      while((offset+2) < payload_length) {
+      while((offset+4) < payload_length) {
         u_int16_t attribute = ntohs(*((u_int16_t*)&payload[offset]));
         u_int16_t len = ntohs(*((u_int16_t*)&payload[offset+2]));
         u_int16_t x = (len + 4) % 4;
 
-        if (x)
+        if(x)
           len += 4-x;
 
 #ifdef DEBUG_STUN
@@ -336,36 +342,40 @@ static ndpi_int_stun_t ndpi_int_check_stun(struct ndpi_detection_module_struct *
           break;
 
         case 0x0014: /* Realm */
-        {
-          u_int16_t realm_len = ntohs(*((u_int16_t*)&payload[offset+2]));
+	  {
+	    u_int16_t realm_len = ntohs(*((u_int16_t*)&payload[offset+2]));
 
-          if(flow->host_server_name[0] == '\0') {
-            u_int j, i = (realm_len > sizeof(flow->host_server_name)) ? sizeof(flow->host_server_name) : realm_len;
-            u_int k = offset+4;
+	    if(flow->host_server_name[0] == '\0') {
+	      u_int j, i = (realm_len > sizeof(flow->host_server_name)) ? sizeof(flow->host_server_name) : realm_len;
+	      u_int k = offset+4;
 
-            memset(flow->host_server_name, 0, sizeof(flow->host_server_name));
+	      memset(flow->host_server_name, 0, sizeof(flow->host_server_name));
 
-            for(j=0; j<i; j++)
-              flow->host_server_name[j] = payload[k++];
-
+	      for(j=0; j<i; j++) {
+		if((k+i) < payload_length)
+		  flow->host_server_name[j] = payload[k++];
+		else
+		  break;
+	      }
+	    
 #ifdef DEBUG_STUN
-            printf("==> [%s]\n", flow->host_server_name);
+	      printf("==> [%s]\n", flow->host_server_name);
 #endif
 
-            if (strstr((char*) flow->host_server_name, "google.com") != NULL) {
+	      if(strstr((char*) flow->host_server_name, "google.com") != NULL) {
                 flow->guessed_host_protocol_id = NDPI_PROTOCOL_HANGOUT_DUO;
                 return(NDPI_IS_STUN);
-            } else if (strstr((char*) flow->host_server_name, "whispersystems.org") != NULL) {
-              flow->guessed_host_protocol_id = NDPI_PROTOCOL_SIGNAL;
-              return(NDPI_IS_STUN);
-            }
-          }
-        }
-        break;
+	      } else if(strstr((char*) flow->host_server_name, "whispersystems.org") != NULL) {
+		flow->guessed_host_protocol_id = NDPI_PROTOCOL_SIGNAL;
+		return(NDPI_IS_STUN);
+	      }
+	    }
+	  }
+	  break;
 
         case 0xC057: /* Messeger */
-          if (msg_type == 0x0001) {
-            if ((msg_len == 100) || (msg_len == 104)) {
+          if(msg_type == 0x0001) {
+            if((msg_len == 100) || (msg_len == 104)) {
               flow->guessed_host_protocol_id = NDPI_PROTOCOL_MESSENGER;
               return(NDPI_IS_STUN);
             } else if(msg_len == 76) {
@@ -416,7 +426,7 @@ static ndpi_int_stun_t ndpi_int_check_stun(struct ndpi_detection_module_struct *
           break;
 
         case 0x8070: /* Implementation Version */
-          if (len == 4 && ((offset+7) < payload_length)
+          if(len == 4 && ((offset+7) < payload_length)
              && (payload[offset+4] == 0x00) && (payload[offset+5] == 0x00) && (payload[offset+6] == 0x00) &&
              ((payload[offset+7] == 0x02) || (payload[offset+7] == 0x03))) {
 #ifdef DEBUG_STUN
@@ -450,13 +460,13 @@ static ndpi_int_stun_t ndpi_int_check_stun(struct ndpi_detection_module_struct *
     }
   }
 
-  if ((flow->protos.stun_ssl.stun.num_udp_pkts > 0) && (msg_type <= 0x00FF)) {
+  if((flow->protos.stun_ssl.stun.num_udp_pkts > 0) && (msg_type <= 0x00FF)) {
     flow->guessed_host_protocol_id = NDPI_PROTOCOL_WHATSAPP_CALL;
     return(NDPI_IS_STUN);
   } else
     return(NDPI_IS_NOT_STUN);
 
-udp_stun_found:
+ udp_stun_found:
   flow->protos.stun_ssl.stun.num_processed_pkts++;
 
   struct ndpi_packet_struct *packet = &flow->packet;
@@ -474,7 +484,6 @@ udp_stun_found:
 
   return rc;
 }
-
 
 void ndpi_search_stun(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 {
@@ -507,7 +516,7 @@ void ndpi_search_stun(struct ndpi_detection_module_struct *ndpi_struct, struct n
   if(ndpi_int_check_stun(ndpi_struct, flow, packet->payload,
 			 packet->payload_packet_len) == NDPI_IS_STUN) {
   udp_stun_match:
-    if (flow->guessed_protocol_id == NDPI_PROTOCOL_UNKNOWN)
+    if(flow->guessed_protocol_id == NDPI_PROTOCOL_UNKNOWN)
       flow->guessed_protocol_id = NDPI_PROTOCOL_STUN;
 
     if(flow->guessed_host_protocol_id == NDPI_PROTOCOL_UNKNOWN) {
@@ -521,13 +530,12 @@ void ndpi_search_stun(struct ndpi_detection_module_struct *ndpi_struct, struct n
     return;
   }
 
-  if(flow->protos.stun_ssl.stun.num_udp_pkts >= MAX_NUM_STUN_PKTS)
-    NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
-
   if(flow->packet_counter > 0) {
     /* This might be a RTP stream: let's make sure we check it */
     NDPI_CLR(&flow->excluded_protocol_bitmask, NDPI_PROTOCOL_RTP);
   }
+
+  NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
 }
 
 
@@ -536,7 +544,7 @@ void init_stun_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int
   ndpi_set_bitmask_protocol_detection("STUN", ndpi_struct, detection_bitmask, *id,
 				      NDPI_PROTOCOL_STUN,
 				      ndpi_search_stun,
-				      NDPI_SELECTION_BITMASK_PROTOCOL_TCP_OR_UDP_WITH_PAYLOAD,
+				      NDPI_SELECTION_BITMASK_PROTOCOL_UDP_WITH_PAYLOAD,
 				      SAVE_DETECTION_BITMASK_AS_UNKNOWN,
 				      ADD_TO_DETECTION_BITMASK);
 

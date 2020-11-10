@@ -1,7 +1,7 @@
 /*
  * dhcp.c
  *
- * Copyright (C) 2016-19 - ntop.org
+ * Copyright (C) 2016-20 - ntop.org
  *
  * nDPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -89,8 +89,10 @@ void ndpi_search_dhcp_udp(struct ndpi_detection_module_struct *ndpi_struct, stru
 	  u_int8_t len = ndpi_min(dhcp->options[i+1] /* len as found in the packet */,
 				  dhcp_options_size - (i+2) /* 1 for the type and 1 for the value */);
 
-	  if(len == 0) break;
-
+	  if(len == 0)
+	    break;
+	  
+	  
 #ifdef DHCP_DEBUG
 	  NDPI_LOG_DBG2(ndpi_struct, "[DHCP] Id=%d [len=%d]\n", id, len);
 #endif
@@ -100,45 +102,36 @@ void ndpi_search_dhcp_udp(struct ndpi_detection_module_struct *ndpi_struct, stru
 
 	    if(msg_type <= 8) foundValidMsgType = 1;
 	  } else if(id == 55 /* Parameter Request List / Fingerprint */) {
-	    if(!ndpi_struct->disable_metadata_export) {
-	      u_int idx, offset = 0;
+	    u_int idx, offset = 0;
+	    
+	    for(idx = 0; idx < len && offset < sizeof(flow->protos.dhcp.fingerprint) - 2; idx++) {
+	      int rc = snprintf((char*)&flow->protos.dhcp.fingerprint[offset],
+				sizeof(flow->protos.dhcp.fingerprint) - offset,
+				"%s%u", (idx > 0) ? "," : "",
+				(unsigned int)dhcp->options[i+2+idx] & 0xFF);
 	      
-	      for(idx = 0; idx < len && offset < sizeof(flow->protos.dhcp.fingerprint) - 2; idx++) {
-#if 1
-		offset += snprintf((char*)&flow->protos.dhcp.fingerprint[offset],
-				   sizeof(flow->protos.dhcp.fingerprint) - offset,
-				   "%s%u", (idx > 0) ? "," : "", dhcp->options[i+2+idx] & 0xFF);
-#else
-		offset += snprintf((char*)&flow->protos.dhcp.fingerprint[offset],
-				   sizeof(flow->protos.dhcp.fingerprint) - offset,
-				   "%02X", dhcp->options[i+2+idx] & 0xFF);
-#endif
-	      }
-	      
-	      flow->protos.dhcp.fingerprint[sizeof(flow->protos.dhcp.fingerprint) - 1] = '\0';
+	      if(rc < 0) break; else offset += rc;
 	    }
+	    
+	    flow->protos.dhcp.fingerprint[sizeof(flow->protos.dhcp.fingerprint) - 1] = '\0';	    
 	  } else if(id == 60 /* Class Identifier */) {
-	    if(!ndpi_struct->disable_metadata_export) {
-	      char *name = (char*)&dhcp->options[i+2];
-	      int j = 0;
-	      
-	      j = ndpi_min(len, sizeof(flow->protos.dhcp.class_ident)-1);
-	      strncpy((char*)flow->protos.dhcp.class_ident, name, j);
-	      flow->protos.dhcp.class_ident[j] = '\0';
-	    }
+	    char *name = (char*)&dhcp->options[i+2];
+	    int j = 0;
+	    
+	    j = ndpi_min(len, sizeof(flow->protos.dhcp.class_ident)-1);
+	    strncpy((char*)flow->protos.dhcp.class_ident, name, j);
+	    flow->protos.dhcp.class_ident[j] = '\0';
 	  } else if(id == 12 /* Host Name */) {
-	    if(!ndpi_struct->disable_metadata_export) {
-	      char *name = (char*)&dhcp->options[i+2];
-	      int j = 0;
-	      
+	    char *name = (char*)&dhcp->options[i+2];
+	    int j = 0;
+	    
 #ifdef DHCP_DEBUG
-	      NDPI_LOG_DBG2(ndpi_struct, "[DHCP] '%.*s'\n",name,len);
+	    NDPI_LOG_DBG2(ndpi_struct, "[DHCP] '%.*s'\n",name,len);
 	      //	    while(j < len) { printf( "%c", name[j]); j++; }; printf("\n");
 #endif
-	      j = ndpi_min(len, sizeof(flow->host_server_name)-1);
-	      strncpy((char*)flow->host_server_name, name, j);
-	      flow->host_server_name[j] = '\0';
-	    }
+	    j = ndpi_min(len, sizeof(flow->host_server_name)-1);
+	    strncpy((char*)flow->host_server_name, name, j);
+	    flow->host_server_name[j] = '\0';	    
 	  }
 
 	  i += len + 2;
@@ -159,8 +152,8 @@ void ndpi_search_dhcp_udp(struct ndpi_detection_module_struct *ndpi_struct, stru
 }
 
 
-void init_dhcp_dissector(struct ndpi_detection_module_struct *ndpi_struct, u_int32_t *id, NDPI_PROTOCOL_BITMASK *detection_bitmask)
-{
+void init_dhcp_dissector(struct ndpi_detection_module_struct *ndpi_struct,
+			 u_int32_t *id, NDPI_PROTOCOL_BITMASK *detection_bitmask) {
   ndpi_set_bitmask_protocol_detection("DHCP", ndpi_struct, detection_bitmask, *id,
 				      NDPI_PROTOCOL_DHCP,
 				      ndpi_search_dhcp_udp,

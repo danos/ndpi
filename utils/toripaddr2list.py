@@ -9,6 +9,18 @@ if len (sys.argv) != 2 :
             
 with open(sys.argv[1]) as fp:
     for cnt, line in enumerate(fp):
-        ipaddr = line.rstrip()
-        print(" { 0x"+socket.inet_aton(ipaddr).hex()+", /* "+ipaddr+" */, 32, NDPI_PROTOCOL_TOR },")
+        line = line.rstrip()
+
+        if(line != ""):
+            x = line.split("/")
+
+            if(len(x) == 2):
+                ipaddr = x[0]
+                cidr   = x[1]
+            else:
+                ipaddr = line
+                cidr = "32"
+
+            if(ipaddr != ""):
+                print(" { 0x"+socket.inet_aton(ipaddr).hex().upper()+" /* "+ipaddr+"/"+cidr+" */, "+cidr+", NDPI_PROTOCOL_XYX },")
 

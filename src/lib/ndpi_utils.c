@@ -1,7 +1,7 @@
 /*
  * ndpi_utils.c
  *
- * Copyright (C) 2011-19 - ntop.org
+ * Copyright (C) 2011-20 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -21,20 +21,20 @@
  *
  */
 
-#ifdef HAVE_CONFIG_H
-#include "ndpi_config.h"
-#endif
 
 #include <stdlib.h>
 #include <errno.h>
 #include <sys/types.h>
-#include "ahocorasick.h"
-#include "libcache.h"
+
 
 #define NDPI_CURRENT_PROTO NDPI_PROTOCOL_UNKNOWN
 
-#include "ndpi_api.h"
 #include "ndpi_config.h"
+#include "ndpi_api.h"
+#include "ndpi_includes.h"
+
+#include "ahocorasick.h"
+#include "libcache.h"
 
 #include <time.h>
 #ifndef WIN32
@@ -47,6 +47,11 @@
 
 #include "third_party/include/ndpi_patricia.h"
 #include "third_party/include/ht_hash.h"
+
+#include "third_party/include/libinjection.h"
+#include "third_party/include/libinjection_sqli.h"
+#include "third_party/include/libinjection_xss.h"
+#include "third_party/include/rce_injection.h"
 
 #define NDPI_CONST_GENERIC_PROTOCOL_NAME  "GenericProtocol"
 
@@ -211,10 +216,11 @@ void ndpi_tdestroy(void *vrootp, void (*freefct)(void *))
 
 u_int8_t ndpi_net_match(u_int32_t ip_to_check,
 			u_int32_t net,
-			u_int32_t num_bits)
-{
+			u_int32_t num_bits) {
   u_int32_t mask = 0;
 
+  num_bits &= 0x1F; /* Avoid overflows */
+  
   mask = ~(~mask >> num_bits);
 
   return(((ip_to_check & mask) == (net & mask)) ? 1 : 0);
@@ -228,7 +234,7 @@ u_int8_t ndpi_ips_match(u_int32_t src, u_int32_t dst,
 
 /* ****************************************** */
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(__MINGW32__)
 /* http://opensource.apple.com/source/Libc/Libc-186/string.subproj/strcasecmp.c */
 
 /*
@@ -331,6 +337,9 @@ u_int8_t ndpi_is_safe_ssl_cipher(u_int32_t cipher) {
 
 /* ***************************************************** */
 
+/*
+  Some values coming from packet-tls-utils.c (wireshark)
+*/
 const char* ndpi_cipher2str(u_int32_t cipher) {
   switch(cipher) {
   case 0x000000: return("TLS_NULL_WITH_NULL_NULL");
@@ -492,7 +501,31 @@ const char* ndpi_cipher2str(u_int32_t cipher) {
   case 0x0000C4: return("TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA256");
   case 0x0000C5: return("TLS_DH_anon_WITH_CAMELLIA_256_CBC_SHA256");
   case 0x0000FF: return("TLS_EMPTY_RENEGOTIATION_INFO_SCSV");
-  case 0x00c001: return("TLS_ECDH_ECDSA_WITH_NULL_SHA");
+    /* RFC 8701 */
+  case 0x0A0A: return("Reserved (GREASE)");
+    /* RFC 8446 */
+  case 0x1301: return("TLS_AES_128_GCM_SHA256");
+  case 0x1302: return("TLS_AES_256_GCM_SHA384");
+  case 0x1303: return("TLS_CHACHA20_POLY1305_SHA256");
+  case 0x1304: return("TLS_AES_128_CCM_SHA256");
+  case 0x1305: return("TLS_AES_128_CCM_8_SHA256");
+    /* RFC 8701 */
+  case 0x1A1A: return("Reserved (GREASE)");
+  case 0x2A2A: return("Reserved (GREASE)");
+  case 0x3A3A: return("Reserved (GREASE)");
+  case 0x4A4A: return("Reserved (GREASE)");
+    /* From RFC 7507 */
+  case 0x5600: return("TLS_FALLBACK_SCSV");
+    /* RFC 8701 */
+  case 0x5A5A: return("Reserved (GREASE)");
+  case 0x6A6A: return("Reserved (GREASE)");
+  case 0x7A7A: return("Reserved (GREASE)");
+  case 0x8A8A: return("Reserved (GREASE)");
+  case 0x9A9A: return("Reserved (GREASE)");
+  case 0xAAAA: return("Reserved (GREASE)");
+  case 0xBABA: return("Reserved (GREASE)");
+
+  case 0x00c001: return("TLS_ECDH_ECDSA_WITH_NULL_SHA");    
   case 0x00c002: return("TLS_ECDH_ECDSA_WITH_RC4_128_SHA");
   case 0x00c003: return("TLS_ECDH_ECDSA_WITH_3DES_EDE_CBC_SHA");
   case 0x00c004: return("TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA");
@@ -551,6 +584,148 @@ const char* ndpi_cipher2str(u_int32_t cipher) {
   case 0x00C039: return("TLS_ECDHE_PSK_WITH_NULL_SHA");
   case 0x00C03A: return("TLS_ECDHE_PSK_WITH_NULL_SHA256");
   case 0x00C03B: return("TLS_ECDHE_PSK_WITH_NULL_SHA384");
+    /* RFC 6209 */
+  case 0xC03C: return("TLS_RSA_WITH_ARIA_128_CBC_SHA256");
+  case 0xC03D: return("TLS_RSA_WITH_ARIA_256_CBC_SHA384");
+  case 0xC03E: return("TLS_DH_DSS_WITH_ARIA_128_CBC_SHA256");
+  case 0xC03F: return("TLS_DH_DSS_WITH_ARIA_256_CBC_SHA384");
+  case 0xC040: return("TLS_DH_RSA_WITH_ARIA_128_CBC_SHA256");
+  case 0xC041: return("TLS_DH_RSA_WITH_ARIA_256_CBC_SHA384");
+  case 0xC042: return("TLS_DHE_DSS_WITH_ARIA_128_CBC_SHA256");
+  case 0xC043: return("TLS_DHE_DSS_WITH_ARIA_256_CBC_SHA384");
+  case 0xC044: return("TLS_DHE_RSA_WITH_ARIA_128_CBC_SHA256");
+  case 0xC045: return("TLS_DHE_RSA_WITH_ARIA_256_CBC_SHA384");
+  case 0xC046: return("TLS_DH_anon_WITH_ARIA_128_CBC_SHA256");
+  case 0xC047: return("TLS_DH_anon_WITH_ARIA_256_CBC_SHA384");
+  case 0xC048: return("TLS_ECDHE_ECDSA_WITH_ARIA_128_CBC_SHA256");
+  case 0xC049: return("TLS_ECDHE_ECDSA_WITH_ARIA_256_CBC_SHA384");
+  case 0xC04A: return("TLS_ECDH_ECDSA_WITH_ARIA_128_CBC_SHA256");
+  case 0xC04B: return("TLS_ECDH_ECDSA_WITH_ARIA_256_CBC_SHA384");
+  case 0xC04C: return("TLS_ECDHE_RSA_WITH_ARIA_128_CBC_SHA256");
+  case 0xC04D: return("TLS_ECDHE_RSA_WITH_ARIA_256_CBC_SHA384");
+  case 0xC04E: return("TLS_ECDH_RSA_WITH_ARIA_128_CBC_SHA256");
+  case 0xC04F: return("TLS_ECDH_RSA_WITH_ARIA_256_CBC_SHA384");
+  case 0xC050: return("TLS_RSA_WITH_ARIA_128_GCM_SHA256");
+  case 0xC051: return("TLS_RSA_WITH_ARIA_256_GCM_SHA384");
+  case 0xC052: return("TLS_DHE_RSA_WITH_ARIA_128_GCM_SHA256");
+  case 0xC053: return("TLS_DHE_RSA_WITH_ARIA_256_GCM_SHA384");
+  case 0xC054: return("TLS_DH_RSA_WITH_ARIA_128_GCM_SHA256");
+  case 0xC055: return("TLS_DH_RSA_WITH_ARIA_256_GCM_SHA384");
+  case 0xC056: return("TLS_DHE_DSS_WITH_ARIA_128_GCM_SHA256");
+  case 0xC057: return("TLS_DHE_DSS_WITH_ARIA_256_GCM_SHA384");
+  case 0xC058: return("TLS_DH_DSS_WITH_ARIA_128_GCM_SHA256");
+  case 0xC059: return("TLS_DH_DSS_WITH_ARIA_256_GCM_SHA384");
+  case 0xC05A: return("TLS_DH_anon_WITH_ARIA_128_GCM_SHA256");
+  case 0xC05B: return("TLS_DH_anon_WITH_ARIA_256_GCM_SHA384");
+  case 0xC05C: return("TLS_ECDHE_ECDSA_WITH_ARIA_128_GCM_SHA256");
+  case 0xC05D: return("TLS_ECDHE_ECDSA_WITH_ARIA_256_GCM_SHA384");
+  case 0xC05E: return("TLS_ECDH_ECDSA_WITH_ARIA_128_GCM_SHA256");
+  case 0xC05F: return("TLS_ECDH_ECDSA_WITH_ARIA_256_GCM_SHA384");
+  case 0xC060: return("TLS_ECDHE_RSA_WITH_ARIA_128_GCM_SHA256");
+  case 0xC061: return("TLS_ECDHE_RSA_WITH_ARIA_256_GCM_SHA384");
+  case 0xC062: return("TLS_ECDH_RSA_WITH_ARIA_128_GCM_SHA256");
+  case 0xC063: return("TLS_ECDH_RSA_WITH_ARIA_256_GCM_SHA384");
+  case 0xC064: return("TLS_PSK_WITH_ARIA_128_CBC_SHA256");
+  case 0xC065: return("TLS_PSK_WITH_ARIA_256_CBC_SHA384");
+  case 0xC066: return("TLS_DHE_PSK_WITH_ARIA_128_CBC_SHA256");
+  case 0xC067: return("TLS_DHE_PSK_WITH_ARIA_256_CBC_SHA384");
+  case 0xC068: return("TLS_RSA_PSK_WITH_ARIA_128_CBC_SHA256");
+  case 0xC069: return("TLS_RSA_PSK_WITH_ARIA_256_CBC_SHA384");
+  case 0xC06A: return("TLS_PSK_WITH_ARIA_128_GCM_SHA256");
+  case 0xC06B: return("TLS_PSK_WITH_ARIA_256_GCM_SHA384");
+  case 0xC06C: return("TLS_DHE_PSK_WITH_ARIA_128_GCM_SHA256");
+  case 0xC06D: return("TLS_DHE_PSK_WITH_ARIA_256_GCM_SHA384");
+  case 0xC06E: return("TLS_RSA_PSK_WITH_ARIA_128_GCM_SHA256");
+  case 0xC06F: return("TLS_RSA_PSK_WITH_ARIA_256_GCM_SHA384");
+  case 0xC070: return("TLS_ECDHE_PSK_WITH_ARIA_128_CBC_SHA256");
+  case 0xC071: return("TLS_ECDHE_PSK_WITH_ARIA_256_CBC_SHA384");
+    /* RFC 6367 */
+  case 0xC072: return("TLS_ECDHE_ECDSA_WITH_CAMELLIA_128_CBC_SHA256");
+  case 0xC073: return("TLS_ECDHE_ECDSA_WITH_CAMELLIA_256_CBC_SHA384");
+  case 0xC074: return("TLS_ECDH_ECDSA_WITH_CAMELLIA_128_CBC_SHA256");
+  case 0xC075: return("TLS_ECDH_ECDSA_WITH_CAMELLIA_256_CBC_SHA384");
+  case 0xC076: return("TLS_ECDHE_RSA_WITH_CAMELLIA_128_CBC_SHA256");
+  case 0xC077: return("TLS_ECDHE_RSA_WITH_CAMELLIA_256_CBC_SHA384");
+  case 0xC078: return("TLS_ECDH_RSA_WITH_CAMELLIA_128_CBC_SHA256");
+  case 0xC079: return("TLS_ECDH_RSA_WITH_CAMELLIA_256_CBC_SHA384");
+  case 0xC07A: return("TLS_RSA_WITH_CAMELLIA_128_GCM_SHA256");
+  case 0xC07B: return("TLS_RSA_WITH_CAMELLIA_256_GCM_SHA384");
+  case 0xC07C: return("TLS_DHE_RSA_WITH_CAMELLIA_128_GCM_SHA256");
+  case 0xC07D: return("TLS_DHE_RSA_WITH_CAMELLIA_256_GCM_SHA384");
+  case 0xC07E: return("TLS_DH_RSA_WITH_CAMELLIA_128_GCM_SHA256");
+  case 0xC07F: return("TLS_DH_RSA_WITH_CAMELLIA_256_GCM_SHA384");
+  case 0xC080: return("TLS_DHE_DSS_WITH_CAMELLIA_128_GCM_SHA256");
+  case 0xC081: return("TLS_DHE_DSS_WITH_CAMELLIA_256_GCM_SHA384");
+  case 0xC082: return("TLS_DH_DSS_WITH_CAMELLIA_128_GCM_SHA256");
+  case 0xC083: return("TLS_DH_DSS_WITH_CAMELLIA_256_GCM_SHA384");
+  case 0xC084: return("TLS_DH_anon_WITH_CAMELLIA_128_GCM_SHA256");
+  case 0xC085: return("TLS_DH_anon_WITH_CAMELLIA_256_GCM_SHA384");
+  case 0xC086: return("TLS_ECDHE_ECDSA_WITH_CAMELLIA_128_GCM_SHA256");
+  case 0xC087: return("TLS_ECDHE_ECDSA_WITH_CAMELLIA_256_GCM_SHA384");
+  case 0xC088: return("TLS_ECDH_ECDSA_WITH_CAMELLIA_128_GCM_SHA256");
+  case 0xC089: return("TLS_ECDH_ECDSA_WITH_CAMELLIA_256_GCM_SHA384");
+  case 0xC08A: return("TLS_ECDHE_RSA_WITH_CAMELLIA_128_GCM_SHA256");
+  case 0xC08B: return("TLS_ECDHE_RSA_WITH_CAMELLIA_256_GCM_SHA384");
+  case 0xC08C: return("TLS_ECDH_RSA_WITH_CAMELLIA_128_GCM_SHA256");
+  case 0xC08D: return("TLS_ECDH_RSA_WITH_CAMELLIA_256_GCM_SHA384");
+  case 0xC08E: return("TLS_PSK_WITH_CAMELLIA_128_GCM_SHA256");
+  case 0xC08F: return("TLS_PSK_WITH_CAMELLIA_256_GCM_SHA384");
+  case 0xC090: return("TLS_DHE_PSK_WITH_CAMELLIA_128_GCM_SHA256");
+  case 0xC091: return("TLS_DHE_PSK_WITH_CAMELLIA_256_GCM_SHA384");
+  case 0xC092: return("TLS_RSA_PSK_WITH_CAMELLIA_128_GCM_SHA256");
+  case 0xC093: return("TLS_RSA_PSK_WITH_CAMELLIA_256_GCM_SHA384");
+  case 0xC094: return("TLS_PSK_WITH_CAMELLIA_128_CBC_SHA256");
+  case 0xC095: return("TLS_PSK_WITH_CAMELLIA_256_CBC_SHA384");
+  case 0xC096: return("TLS_DHE_PSK_WITH_CAMELLIA_128_CBC_SHA256");
+  case 0xC097: return("TLS_DHE_PSK_WITH_CAMELLIA_256_CBC_SHA384");
+  case 0xC098: return("TLS_RSA_PSK_WITH_CAMELLIA_128_CBC_SHA256");
+  case 0xC099: return("TLS_RSA_PSK_WITH_CAMELLIA_256_CBC_SHA384");
+  case 0xC09A: return("TLS_ECDHE_PSK_WITH_CAMELLIA_128_CBC_SHA256");
+  case 0xC09B: return("TLS_ECDHE_PSK_WITH_CAMELLIA_256_CBC_SHA384");
+    /* RFC 6655 */
+  case 0xC09C: return("TLS_RSA_WITH_AES_128_CCM");
+  case 0xC09D: return("TLS_RSA_WITH_AES_256_CCM");
+  case 0xC09E: return("TLS_DHE_RSA_WITH_AES_128_CCM");
+  case 0xC09F: return("TLS_DHE_RSA_WITH_AES_256_CCM");
+  case 0xC0A0: return("TLS_RSA_WITH_AES_128_CCM_8");
+  case 0xC0A1: return("TLS_RSA_WITH_AES_256_CCM_8");
+  case 0xC0A2: return("TLS_DHE_RSA_WITH_AES_128_CCM_8");
+  case 0xC0A3: return("TLS_DHE_RSA_WITH_AES_256_CCM_8");
+  case 0xC0A4: return("TLS_PSK_WITH_AES_128_CCM");
+  case 0xC0A5: return("TLS_PSK_WITH_AES_256_CCM");
+  case 0xC0A6: return("TLS_DHE_PSK_WITH_AES_128_CCM");
+  case 0xC0A7: return("TLS_DHE_PSK_WITH_AES_256_CCM");
+  case 0xC0A8: return("TLS_PSK_WITH_AES_128_CCM_8");
+  case 0xC0A9: return("TLS_PSK_WITH_AES_256_CCM_8");
+  case 0xC0AA: return("TLS_PSK_DHE_WITH_AES_128_CCM_8");
+  case 0xC0AB: return("TLS_PSK_DHE_WITH_AES_256_CCM_8");
+    /* RFC 7251 */
+  case 0xC0AC: return("TLS_ECDHE_ECDSA_WITH_AES_128_CCM");
+  case 0xC0AD: return("TLS_ECDHE_ECDSA_WITH_AES_256_CCM");
+  case 0xC0AE: return("TLS_ECDHE_ECDSA_WITH_AES_128_CCM_8");
+  case 0xC0AF: return("TLS_ECDHE_ECDSA_WITH_AES_256_CCM_8");
+    /* RFC 8492 */
+  case 0xC0B0: return("TLS_ECCPWD_WITH_AES_128_GCM_SHA256");
+  case 0xC0B1: return("TLS_ECCPWD_WITH_AES_256_GCM_SHA384");
+  case 0xC0B2: return("TLS_ECCPWD_WITH_AES_128_CCM_SHA256");
+  case 0xC0B3: return("TLS_ECCPWD_WITH_AES_256_CCM_SHA384");
+    /* draft-camwinget-tls-ts13-macciphersuites */
+  case 0xC0B4: return("TLS_SHA256_SHA256");
+  case 0xC0B5: return("TLS_SHA384_SHA384");
+    /* https://www.ietf.org/archive/id/draft-cragie-tls-ecjpake-01.txt */
+  case 0xC0FF: return("TLS_ECJPAKE_WITH_AES_128_CCM_8");
+    /* draft-smyshlyaev-tls12-gost-suites */
+  case 0xC100: return("TLS_GOSTR341112_256_WITH_KUZNYECHIK_CTR_OMAC");
+  case 0xC101: return("TLS_GOSTR341112_256_WITH_MAGMA_CTR_OMAC");
+  case 0xC102: return("TLS_GOSTR341112_256_WITH_28147_CNT_IMIT");
+    /* draft-smyshlyaev-tls13-gost-suites */
+  case 0xC103: return("TLS_GOSTR341112_256_WITH_KUZNYECHIK_MGM_L");
+  case 0xC104: return("TLS_GOSTR341112_256_WITH_MAGMA_MGM_L");
+  case 0xC105: return("TLS_GOSTR341112_256_WITH_KUZNYECHIK_MGM_S");
+  case 0xC106: return("TLS_GOSTR341112_256_WITH_MAGMA_MGM_S");
+    /* RFC 8701 */
+  case 0xCACA: return("Reserved (GREASE)");
+
   case 0x00CC13: return("TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256");
   case 0x00CC14: return("TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256");
   case 0x00CC15: return("TLS_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256");
@@ -589,11 +764,6 @@ const char* ndpi_cipher2str(u_int32_t cipher) {
   case 0x060040: return("SSL2_DES_64_CBC_WITH_MD5");
   case 0x0700c0: return("SSL2_DES_192_EDE3_CBC_WITH_MD5");
   case 0x080080: return("SSL2_RC4_64_WITH_MD5");
-  case 0x001301: return("TLS_AES_128_GCM_SHA256");
-  case 0x001302: return("TLS_AES_256_GCM_SHA384");
-  case 0x001303: return("TLS_CHACHA20_POLY1305_SHA256");
-  case 0x001304: return("TLS_AES_128_CCM_SHA256");
-  case 0x001305: return("TLS_AES_128_CCM_8_SHA256");
 
   default:
     {
@@ -627,7 +797,6 @@ static int ndpi_is_valid_char(char c) {
 }
 
 /* ******************************************************************** */
-
 
 static int ndpi_find_non_eng_bigrams(struct ndpi_detection_module_struct *ndpi_struct,
 				     char *str) {
@@ -710,11 +879,12 @@ int ndpi_has_human_readeable_string(struct ndpi_detection_module_struct *ndpi_st
 
 /* ********************************** */
 
-char* ndpi_ssl_version2str(u_int16_t version, u_int8_t *unknown_tls_version) {
-  static char v[12];
+char* ndpi_ssl_version2str(struct ndpi_flow_struct *flow,
+                           u_int16_t version, u_int8_t *unknown_tls_version) {
 
-  *unknown_tls_version = 0;
-  
+  if(unknown_tls_version)
+    *unknown_tls_version = 0;
+
   switch(version) {
   case 0x0300: return("SSLv3");
   case 0x0301: return("TLSv1");
@@ -724,15 +894,911 @@ char* ndpi_ssl_version2str(u_int16_t version, u_int8_t *unknown_tls_version) {
   case 0XFB1A: return("TLSv1.3 (Fizz)"); /* https://engineering.fb.com/security/fizz/ */
   case 0XFEFF: return("DTLSv1.0");
   case 0XFEFD: return("DTLSv1.2");
+  case 0x0A0A:
+  case 0x1A1A:
+  case 0x2A2A:
+  case 0x3A3A:
+  case 0x4A4A:
+  case 0x5A5A:
+  case 0x6A6A:
+  case 0x7A7A:
+  case 0x8A8A:
+  case 0x9A9A:
+  case 0xAAAA:
+  case 0xBABA:
+  case 0xCACA:
+  case 0xDADA:
+  case 0xEAEA:
+  case 0xFAFA: return("GREASE");
   }
 
   if((version >= 0x7f00) && (version <= 0x7fff))
     return("TLSv1.3 (draft)");
 
-  *unknown_tls_version = 1;
-  snprintf(v, sizeof(v), "TLS (%04X)", version);
-  
-  return(v);
+  if(unknown_tls_version)
+    *unknown_tls_version = 1;
+
+  if(flow != NULL) {
+    snprintf(flow->protos.stun_ssl.ssl.ssl_version_str,
+	     sizeof(flow->protos.stun_ssl.ssl.ssl_version_str), "TLS (%04X)", version);
+    
+    return(flow->protos.stun_ssl.ssl.ssl_version_str);
+  } else
+    return("");
+}
+
+/* ***************************************************** */
+
+void ndpi_patchIPv6Address(char *str) {
+  int i = 0, j = 0;
+
+  while(str[i] != '\0') {
+    if((str[i] == ':')
+       && (str[i+1] == '0')
+       && (str[i+2] == ':')) {
+      str[j++] = ':';
+      str[j++] = ':';
+      i += 3;
+    } else
+      str[j++] = str[i++];
+  }
+
+  if(str[j] != '\0') str[j] = '\0';
 }
 
 /* ********************************** */
+
+void ndpi_user_pwd_payload_copy(u_int8_t *dest, u_int dest_len,
+				u_int offset,
+				const u_int8_t *src, u_int src_len) {
+  u_int i, j=0, k = dest_len-1;
+
+  for(i=offset; (i<src_len) && (j<=k); i++) {
+    if((j == k) || (src[i] < ' '))
+      break;
+
+    dest[j++] = src[i];
+  }
+
+  dest[j <=k ? j : k] = '\0';
+}
+
+/* ********************************** */
+/* ********************************** */
+
+/* http://web.mit.edu/freebsd/head/contrib/wpa/src/utils/base64.c */
+
+static const unsigned char base64_table[65] =
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+/**
+ * base64_decode - Base64 decode
+ * @src: Data to be decoded
+ * @len: Length of the data to be decoded
+ * @out_len: Pointer to output length variable
+ * Returns: Allocated buffer of out_len bytes of decoded data,
+ * or %NULL on failure
+ *
+ * Caller is responsible for freeing the returned buffer.
+ */
+u_char* ndpi_base64_decode(const u_char *src, size_t len, size_t *out_len) {
+  u_char dtable[256], *out, *pos, block[4], tmp;
+  size_t i, count, olen;
+  int pad = 0;
+
+  memset(dtable, 0x80, 256);
+  for (i = 0; i < sizeof(base64_table) - 1; i++)
+    dtable[base64_table[i]] = (u_char) i;
+  dtable['='] = 0;
+
+  count = 0;
+  for (i = 0; i < len; i++) {
+    if (dtable[src[i]] != 0x80)
+      count++;
+  }
+
+  if (count == 0 || count % 4)
+    return NULL;
+
+  olen = count / 4 * 3;
+  pos = out = ndpi_malloc(olen);
+  if (out == NULL)
+    return NULL;
+
+  count = 0;
+  for (i = 0; i < len; i++) {
+    tmp = dtable[src[i]];
+    if (tmp == 0x80)
+      continue;
+
+    if (src[i] == '=')
+      pad++;
+    block[count] = tmp;
+    count++;
+    if (count == 4) {
+      *pos++ = (block[0] << 2) | (block[1] >> 4);
+      *pos++ = (block[1] << 4) | (block[2] >> 2);
+      *pos++ = (block[2] << 6) | block[3];
+      count = 0;
+      if (pad) {
+	if (pad == 1)
+	  pos--;
+	else if (pad == 2)
+	  pos -= 2;
+	else {
+	  /* Invalid padding */
+	  ndpi_free(out);
+	  return NULL;
+	}
+	break;
+      }
+    }
+  }
+
+  *out_len = pos - out;
+
+  return out;
+}
+
+/* ********************************** */
+
+/* NOTE: caller MUST free returned pointer */
+char* ndpi_base64_encode(unsigned char const* bytes_to_encode, size_t in_len) {
+  size_t len = 0, ret_size;
+  char *ret;
+  int i = 0;
+  unsigned char char_array_3[3];
+  unsigned char char_array_4[4];
+
+  ret_size = ((in_len+2)/3)*4;
+
+  if((ret = (char*)ndpi_malloc(ret_size+1)) == NULL)
+    return NULL;
+
+  while (in_len--) {
+    char_array_3[i++] = *(bytes_to_encode++);
+    if(i == 3) {
+      char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
+      char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
+      char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
+      char_array_4[3] = char_array_3[2] & 0x3f;
+
+      for(i = 0; i < 4; i++)
+        ret[len++] = base64_table[char_array_4[i]];
+      i = 0;
+    }
+  }
+
+  if(i) {
+    for(int j = i; j < 3; j++)
+      char_array_3[j] = '\0';
+
+    char_array_4[0] = (char_array_3[0] & 0xfc) >> 2;
+    char_array_4[1] = ((char_array_3[0] & 0x03) << 4) + ((char_array_3[1] & 0xf0) >> 4);
+    char_array_4[2] = ((char_array_3[1] & 0x0f) << 2) + ((char_array_3[2] & 0xc0) >> 6);
+    char_array_4[3] = char_array_3[2] & 0x3f;
+
+    for(int j = 0; (j < i + 1); j++)
+      ret[len++] = base64_table[char_array_4[j]];
+
+    while((i++ < 3))
+      ret[len++] = '=';
+  }
+
+  ret[len++] = '\0';
+
+  return ret;
+}
+
+/* ********************************** */
+
+void ndpi_serialize_risk(ndpi_serializer *serializer,
+			 struct ndpi_flow_struct *flow) {
+  if(flow->risk != 0) {
+    u_int32_t i;
+
+    ndpi_serialize_start_of_block(serializer, "flow_risk");
+    
+    for(i = 0; i < NDPI_MAX_RISK; i++) {
+      ndpi_risk_enum r = (ndpi_risk_enum)i;
+      
+      if(NDPI_ISSET_BIT(flow->risk, r))
+	ndpi_serialize_uint32_string(serializer, i, ndpi_risk2str(r));
+    }
+    
+    ndpi_serialize_end_of_block(serializer);
+  }
+}
+
+/* ********************************** */
+/* ********************************** */
+
+/* NOTE: serializer must have been already initialized */
+int ndpi_dpi2json(struct ndpi_detection_module_struct *ndpi_struct,
+		  struct ndpi_flow_struct *flow,
+		  ndpi_protocol l7_protocol,
+		  ndpi_serializer *serializer) {
+  char buf[64];
+
+  if(flow == NULL) return(-1);
+  
+  ndpi_serialize_start_of_block(serializer, "ndpi");
+  ndpi_serialize_risk(serializer, flow);
+  ndpi_serialize_string_string(serializer, "proto", ndpi_protocol2name(ndpi_struct, l7_protocol, buf, sizeof(buf)));
+  if(l7_protocol.category != NDPI_PROTOCOL_CATEGORY_UNSPECIFIED)
+    ndpi_serialize_string_string(serializer, "category", ndpi_category_get_name(ndpi_struct, l7_protocol.category));
+  ndpi_serialize_end_of_block(serializer);
+
+  switch(l7_protocol.master_protocol ? l7_protocol.master_protocol : l7_protocol.app_protocol) {
+  case NDPI_PROTOCOL_DHCP:
+    ndpi_serialize_start_of_block(serializer, "dhcp");
+    ndpi_serialize_string_string(serializer, "fingerprint", flow->protos.dhcp.fingerprint);
+    ndpi_serialize_end_of_block(serializer);
+    break;
+
+  case NDPI_PROTOCOL_BITTORRENT:
+    {
+      u_int i, j, n = 0;
+      char bittorent_hash[32];
+
+      for(i=0, j = 0; j < sizeof(bittorent_hash)-1; i++) {
+	sprintf(&bittorent_hash[j], "%02x",
+		flow->protos.bittorrent.hash[i]);
+
+	j += 2, n += flow->protos.bittorrent.hash[i];
+      }
+
+      if(n == 0) bittorent_hash[0] = '\0';
+
+      ndpi_serialize_start_of_block(serializer, "bittorrent");
+      ndpi_serialize_string_string(serializer, "hash", bittorent_hash);
+      ndpi_serialize_end_of_block(serializer);
+    }
+    break;
+
+  case NDPI_PROTOCOL_DNS:
+    ndpi_serialize_start_of_block(serializer, "dns");
+    if(flow->host_server_name[0] != '\0')
+      ndpi_serialize_string_string(serializer, "query", (const char*)flow->host_server_name);
+    ndpi_serialize_string_uint32(serializer, "num_queries", flow->protos.dns.num_queries);
+    ndpi_serialize_string_uint32(serializer, "num_answers", flow->protos.dns.num_answers);
+    ndpi_serialize_string_uint32(serializer, "reply_code",  flow->protos.dns.reply_code);
+    ndpi_serialize_string_uint32(serializer, "query_type",  flow->protos.dns.query_type);
+    ndpi_serialize_string_uint32(serializer, "rsp_type",    flow->protos.dns.rsp_type);
+
+    inet_ntop(AF_INET, &flow->protos.dns.rsp_addr, buf, sizeof(buf));
+    ndpi_serialize_string_string(serializer, "rsp_addr",    buf);
+    ndpi_serialize_end_of_block(serializer);
+    break;
+
+  case NDPI_PROTOCOL_MDNS:
+    ndpi_serialize_start_of_block(serializer, "mdns");
+    ndpi_serialize_string_string(serializer, "answer", (const char*)flow->host_server_name);
+    ndpi_serialize_end_of_block(serializer);
+    break;
+
+  case NDPI_PROTOCOL_UBNTAC2:
+    ndpi_serialize_start_of_block(serializer, "ubntac2");
+    ndpi_serialize_string_string(serializer, "version", flow->protos.ubntac2.version);
+    ndpi_serialize_end_of_block(serializer);
+    break;
+
+  case NDPI_PROTOCOL_KERBEROS:
+    ndpi_serialize_start_of_block(serializer, "kerberos");    
+    ndpi_serialize_string_string(serializer, "hostname", flow->protos.kerberos.hostname);
+    ndpi_serialize_string_string(serializer, "domain", flow->protos.kerberos.domain);
+    ndpi_serialize_string_string(serializer, "username", flow->protos.kerberos.username);
+    ndpi_serialize_end_of_block(serializer);
+    break;
+
+  case NDPI_PROTOCOL_TELNET:
+    ndpi_serialize_start_of_block(serializer, "telnet");
+    ndpi_serialize_string_string(serializer, "username", flow->protos.telnet.username);
+    ndpi_serialize_string_string(serializer, "password", flow->protos.telnet.password);
+    ndpi_serialize_end_of_block(serializer);
+    break;
+
+  case NDPI_PROTOCOL_HTTP:
+    ndpi_serialize_start_of_block(serializer, "http");
+    if(flow->host_server_name[0] != '\0')
+      ndpi_serialize_string_string(serializer, "hostname", (const char*)flow->host_server_name);
+    if(flow->http.url != NULL){
+      ndpi_serialize_string_string(serializer,   "url", flow->http.url);
+      ndpi_serialize_string_uint32(serializer,   "code", flow->http.response_status_code);
+      ndpi_serialize_string_string(serializer,   "content_type", flow->http.content_type);
+      ndpi_serialize_string_string(serializer,   "user_agent", flow->http.user_agent);
+    }
+    ndpi_serialize_end_of_block(serializer);
+    break;
+
+  case NDPI_PROTOCOL_QUIC:
+    ndpi_serialize_start_of_block(serializer, "quic");
+    if(flow->host_server_name[0] != '\0')
+      ndpi_serialize_string_string(serializer, "hostname", (const char*)flow->host_server_name);
+    ndpi_serialize_end_of_block(serializer);
+    break;
+
+  case NDPI_PROTOCOL_MAIL_IMAP:
+    ndpi_serialize_start_of_block(serializer, "imap");
+    ndpi_serialize_string_string(serializer,  "user", flow->protos.ftp_imap_pop_smtp.username);
+    ndpi_serialize_string_string(serializer,  "password", flow->protos.ftp_imap_pop_smtp.password);
+    ndpi_serialize_end_of_block(serializer);
+    break;
+
+  case NDPI_PROTOCOL_MAIL_POP:
+    ndpi_serialize_start_of_block(serializer, "pop");
+    ndpi_serialize_string_string(serializer,  "user", flow->protos.ftp_imap_pop_smtp.username);
+    ndpi_serialize_string_string(serializer,  "password", flow->protos.ftp_imap_pop_smtp.password);
+    ndpi_serialize_end_of_block(serializer);
+    break;
+
+  case NDPI_PROTOCOL_MAIL_SMTP:
+    ndpi_serialize_start_of_block(serializer, "smtp");
+    ndpi_serialize_string_string(serializer,  "user", flow->protos.ftp_imap_pop_smtp.username);
+    ndpi_serialize_string_string(serializer,  "password", flow->protos.ftp_imap_pop_smtp.password);
+    ndpi_serialize_end_of_block(serializer);
+    break;
+
+  case NDPI_PROTOCOL_FTP_CONTROL:
+    ndpi_serialize_start_of_block(serializer, "ftp");
+    ndpi_serialize_string_string(serializer,  "user", flow->protos.ftp_imap_pop_smtp.username);
+    ndpi_serialize_string_string(serializer,  "password", flow->protos.ftp_imap_pop_smtp.password);
+    ndpi_serialize_string_uint32(serializer,  "auth_failed", flow->protos.ftp_imap_pop_smtp.auth_failed);
+    ndpi_serialize_end_of_block(serializer);
+    break;
+
+  case NDPI_PROTOCOL_SSH:
+    ndpi_serialize_start_of_block(serializer, "ssh");
+    ndpi_serialize_string_string(serializer,  "client_signature", flow->protos.ssh.client_signature);
+    ndpi_serialize_string_string(serializer,  "server_signature", flow->protos.ssh.server_signature);
+    ndpi_serialize_string_string(serializer,  "hassh_client", flow->protos.ssh.hassh_client);
+    ndpi_serialize_string_string(serializer,  "hassh_server", flow->protos.ssh.hassh_server);
+    ndpi_serialize_end_of_block(serializer);
+    break;
+
+  case NDPI_PROTOCOL_TLS:
+    if(flow->protos.stun_ssl.ssl.ssl_version) {
+      char notBefore[32], notAfter[32];
+      struct tm a, b, *before = NULL, *after = NULL;
+      u_int i, off;
+      u_int8_t unknown_tls_version;
+      char *version = ndpi_ssl_version2str(flow, flow->protos.stun_ssl.ssl.ssl_version, &unknown_tls_version);
+
+      if(flow->protos.stun_ssl.ssl.notBefore)
+        before = gmtime_r((const time_t *)&flow->protos.stun_ssl.ssl.notBefore, &a);
+      if(flow->protos.stun_ssl.ssl.notAfter)
+        after  = gmtime_r((const time_t *)&flow->protos.stun_ssl.ssl.notAfter, &b);
+
+      if(!unknown_tls_version) {
+	ndpi_serialize_start_of_block(serializer, "tls");
+	ndpi_serialize_string_string(serializer, "version", version);
+	ndpi_serialize_string_string(serializer, "client_requested_server_name",
+				     flow->protos.stun_ssl.ssl.client_requested_server_name);
+	if(flow->protos.stun_ssl.ssl.server_names)
+	  ndpi_serialize_string_string(serializer, "server_names", flow->protos.stun_ssl.ssl.server_names);
+
+	if(before) {
+          strftime(notBefore, sizeof(notBefore), "%Y-%m-%d %H:%M:%S", before);
+          ndpi_serialize_string_string(serializer, "notbefore", notBefore);
+        }
+
+	if(after) {
+	  strftime(notAfter, sizeof(notAfter), "%Y-%m-%d %H:%M:%S", after);
+          ndpi_serialize_string_string(serializer, "notafter", notAfter);
+        }
+	ndpi_serialize_string_string(serializer, "ja3", flow->protos.stun_ssl.ssl.ja3_client);
+	ndpi_serialize_string_string(serializer, "ja3s", flow->protos.stun_ssl.ssl.ja3_server);
+	ndpi_serialize_string_uint32(serializer, "unsafe_cipher", flow->protos.stun_ssl.ssl.server_unsafe_cipher);
+	ndpi_serialize_string_string(serializer, "cipher", ndpi_cipher2str(flow->protos.stun_ssl.ssl.server_cipher));
+
+	if(flow->protos.stun_ssl.ssl.issuerDN)
+	  ndpi_serialize_string_string(serializer, "issuerDN", flow->protos.stun_ssl.ssl.issuerDN);
+	
+	if(flow->protos.stun_ssl.ssl.subjectDN)
+	  ndpi_serialize_string_string(serializer, "issuerDN", flow->protos.stun_ssl.ssl.subjectDN);
+
+	if(flow->protos.stun_ssl.ssl.alpn)
+	  ndpi_serialize_string_string(serializer, "alpn", flow->protos.stun_ssl.ssl.alpn);
+	
+	if(flow->protos.stun_ssl.ssl.tls_supported_versions)
+	  ndpi_serialize_string_string(serializer, "tls_supported_versions", flow->protos.stun_ssl.ssl.tls_supported_versions);	
+	
+	if(flow->l4.tcp.tls.sha1_certificate_fingerprint[0] != '\0') {
+	  for(i=0, off=0; i<20; i++) {
+	    int rc = snprintf(&buf[off], sizeof(buf)-off,"%s%02X", (i > 0) ? ":" : "",
+			      flow->l4.tcp.tls.sha1_certificate_fingerprint[i] & 0xFF);
+	    
+	    if(rc <= 0) break; else off += rc;
+	  }
+
+	  ndpi_serialize_string_string(serializer, "fingerprint", buf);
+	}
+
+	ndpi_serialize_end_of_block(serializer);
+      }
+    }
+    break;
+  } /* switch */
+
+  return(0);
+}
+
+/* ********************************** */
+
+/* NOTE: serializer is initialized by the function */
+int ndpi_flow2json(struct ndpi_detection_module_struct *ndpi_struct,
+		   struct ndpi_flow_struct *flow,
+		   u_int8_t ip_version,
+		   u_int8_t l4_protocol, u_int16_t vlan_id,
+		   u_int32_t src_v4, u_int32_t dst_v4,
+		   struct ndpi_in6_addr *src_v6, struct ndpi_in6_addr *dst_v6,
+		   u_int16_t src_port, u_int16_t dst_port,
+		   ndpi_protocol l7_protocol,
+		   ndpi_serializer *serializer) {
+  char src_name[32], dst_name[32];
+
+  if(ndpi_init_serializer(serializer, ndpi_serialization_format_json) == -1)
+    return(-1);
+
+  if(ip_version == 4) {
+    inet_ntop(AF_INET, &src_v4, src_name, sizeof(src_name));
+    inet_ntop(AF_INET, &dst_v4, dst_name, sizeof(dst_name));
+  } else {
+    inet_ntop(AF_INET6, src_v6, src_name, sizeof(src_name));
+    inet_ntop(AF_INET6, dst_v6, dst_name, sizeof(dst_name));
+    /* For consistency across platforms replace :0: with :: */
+    ndpi_patchIPv6Address(src_name), ndpi_patchIPv6Address(dst_name);
+  }
+
+  ndpi_serialize_string_string(serializer, "src_ip", src_name);
+  ndpi_serialize_string_string(serializer, "dest_ip", dst_name);
+  if(src_port) ndpi_serialize_string_uint32(serializer, "src_port", src_port);
+  if(dst_port) ndpi_serialize_string_uint32(serializer, "dst_port", dst_port);
+
+  switch(l4_protocol) {
+  case IPPROTO_TCP:
+    ndpi_serialize_string_string(serializer, "proto", "TCP");
+    break;
+
+  case IPPROTO_UDP:
+    ndpi_serialize_string_string(serializer, "proto", "UDP");
+    break;
+
+  case IPPROTO_ICMP:
+    ndpi_serialize_string_string(serializer, "proto", "ICMP");
+    break;
+
+  default:
+    ndpi_serialize_string_uint32(serializer, "proto", l4_protocol);
+    break;
+  }
+
+  return(ndpi_dpi2json(ndpi_struct, flow, l7_protocol, serializer));
+}
+
+/* ********************************** */
+
+const char* ndpi_tunnel2str(ndpi_packet_tunnel tt) {
+  switch(tt) {
+  case ndpi_no_tunnel:
+    return("No-Tunnel");
+    break;
+    
+  case ndpi_gtp_tunnel:
+    return("GTP");
+    break;
+    
+  case ndpi_capwap_tunnel:
+    return("CAPWAP");
+    break;
+    
+  case ndpi_tzsp_tunnel:
+    return("TZSP");
+    break;
+
+  case ndpi_l2tp_tunnel:
+    return("L2TP");
+    break;
+  }
+
+  return("");
+}
+
+/* ********************************** */
+
+/*
+  /dv/vulnerabilities/xss_r/?name=%3Cscript%3Econsole.log%28%27JUL2D3WXHEGWRAFJE2PI7OS71Z4Z8RFUHXGNFLUFYVP6M3OL55%27%29%3Bconsole.log%28document.cookie%29%3B%3C%2Fscript%3E
+  /dv/vulnerabilities/sqli/?id=1%27+and+1%3D1+union+select+null%2C+table_name+from+information_schema.tables%23&Submit=Submit
+*/
+
+/* https://www.rosettacode.org/wiki/URL_decoding#C */
+static int ishex(int x) {
+  return(x >= '0' && x <= '9') || (x >= 'a' && x <= 'f') || (x >= 'A' && x <= 'F');
+}
+
+/* ********************************** */
+
+static int ndpi_url_decode(const char *s, char *out) {
+  char *o;
+  const char *end = s + strlen(s);
+  int c;
+
+  for(o = out; s <= end; o++) {
+    c = *s++;
+    if(c == '+') c = ' ';
+    else if(c == '%' && (!ishex(*s++)||
+			  !ishex(*s++)||
+			 !sscanf(s - 2, "%2x", (unsigned int*)&c)))
+      return(-1);
+
+    if(out) *o = c;
+  }
+
+  return(o - out);
+}
+
+/* ********************************** */
+
+static int ndpi_is_sql_injection(char* query) {
+  struct libinjection_sqli_state state;
+
+  size_t qlen = strlen(query);
+  libinjection_sqli_init(&state, query, qlen, FLAG_NONE);
+
+  return libinjection_is_sqli(&state);
+}
+
+/* ********************************** */
+
+static int ndpi_is_xss_injection(char* query) {
+  size_t qlen = strlen(query);
+  return libinjection_xss(query, qlen);
+}
+
+/* ********************************** */
+
+#ifdef HAVE_PCRE
+
+static void ndpi_compile_rce_regex() {
+  const char *pcreErrorStr;
+  int pcreErrorOffset;
+
+  for(int i = 0; i < N_RCE_REGEX; i++) {
+    comp_rx[i] = (struct pcre_struct*)ndpi_malloc(sizeof(struct pcre_struct));
+
+    comp_rx[i]->compiled = pcre_compile(rce_regex[i], 0, &pcreErrorStr,
+                                        &pcreErrorOffset, NULL);
+
+    if(comp_rx[i]->compiled == NULL) {
+      #ifdef DEBUG
+      NDPI_LOG_ERR(ndpi_str, "ERROR: Could not compile '%s': %s\n", rce_regex[i],
+                   pcreErrorStr);
+      #endif
+
+      continue;
+    }
+
+    comp_rx[i]->optimized = pcre_study(comp_rx[i]->compiled, 0, &pcreErrorStr);
+
+    #ifdef DEBUG
+    if(pcreErrorStr != NULL) {
+      NDPI_LOG_ERR(ndpi_str, "ERROR: Could not study '%s': %s\n", rce_regex[i],
+                   pcreErrorStr);
+    }
+    #endif
+  }
+
+  free((void *)pcreErrorStr);
+}
+
+static int ndpi_is_rce_injection(char* query) {
+  if (!initialized_comp_rx) {
+    ndpi_compile_rce_regex();
+    initialized_comp_rx = 1;
+  }
+
+  int pcreExecRet;
+  int subStrVec[30];
+
+  for(int i = 0; i < N_RCE_REGEX; i++) {
+    unsigned int length = strlen(query);
+
+    pcreExecRet = pcre_exec(comp_rx[i]->compiled,
+                            comp_rx[i]->optimized,
+                            query, length, 0, 0, subStrVec, 30);
+
+    if (pcreExecRet >= 0) {
+      return 1;
+    }
+    #ifdef DEBUG
+    else {
+      switch(pcreExecRet) {
+        case PCRE_ERROR_NOMATCH:
+          NDPI_LOG_ERR(ndpi_str, "ERROR: String did not match the pattern\n");
+          break;
+        case PCRE_ERROR_NULL:
+          NDPI_LOG_ERR(ndpi_str, "ERROR: Something was null\n");
+          break;
+        case PCRE_ERROR_BADOPTION:
+          NDPI_LOG_ERR(ndpi_str, "ERROR: A bad option was passed\n");
+          break;
+        case PCRE_ERROR_BADMAGIC:
+          NDPI_LOG_ERR(ndpi_str, "ERROR: Magic number bad (compiled re corrupt?)\n");
+          break;
+        case PCRE_ERROR_UNKNOWN_NODE:
+          NDPI_LOG_ERR(ndpi_str, "ERROR: Something kooky in the compiled re\n");
+          break;
+        case PCRE_ERROR_NOMEMORY:
+          NDPI_LOG_ERR(ndpi_str, "ERROR: Ran out of memory\n");
+          break;
+        default:
+          NDPI_LOG_ERR(ndpi_str, "ERROR: Unknown error\n");
+          break;
+      }
+    }
+    #endif
+  }
+
+  size_t ushlen = sizeof(ush_commands) / sizeof(ush_commands[0]);
+
+  for(int i = 0; i < ushlen; i++) {
+    if(strstr(query, ush_commands[i]) != NULL) {
+      return 1;
+    }
+  }
+
+  size_t pwshlen = sizeof(pwsh_commands) / sizeof(pwsh_commands[0]);
+
+  for(int i = 0; i < pwshlen; i++) {
+    if(strstr(query, pwsh_commands[i]) != NULL) {
+      return 1;
+    }
+  }
+
+  return 0;
+}
+
+#endif
+
+/* ********************************** */
+
+ndpi_risk_enum ndpi_validate_url(char *url) {
+  char *orig_str = NULL, *str = NULL, *question_mark = strchr(url, '?');
+  ndpi_risk_enum rc = NDPI_NO_RISK;
+
+  if(question_mark) {
+    char *tmp;
+
+    orig_str = str = ndpi_strdup(&question_mark[1]); /* Skip ? */
+
+    if(!str) goto validate_rc;
+
+    str = strtok_r(str, "&", &tmp);
+
+    while(str != NULL) {
+      char *value = strchr(str, '=');
+      char *decoded;
+
+      if(!value)
+	break;
+      else
+	value = &value[1];
+
+      if(value[0] != '\0') {
+	if(!(decoded = (char*)ndpi_malloc(strlen(value)+1)))
+	  break;
+
+	if(ndpi_url_decode(value, decoded) < 0) {
+	  /* Invalid string */
+	} else if(decoded[0] != '\0') {
+	  /* Valid string */
+
+	  if(ndpi_is_xss_injection(decoded))
+	    rc = NDPI_URL_POSSIBLE_XSS;
+	  else if(ndpi_is_sql_injection(decoded))
+	    rc = NDPI_URL_POSSIBLE_SQL_INJECTION;
+#ifdef HAVE_PCRE
+	  else if(ndpi_is_rce_injection(decoded))
+	    rc = NDPI_URL_POSSIBLE_RCE_INJECTION;
+#endif
+
+#ifdef URL_CHECK_DEBUG
+	  printf("=>> [rc: %u] %s\n", rc, decoded);
+#endif
+	}
+
+	ndpi_free(decoded);
+
+	if(rc != NDPI_NO_RISK)
+	  break;
+      }
+      
+      str = strtok_r(NULL, "&", &tmp);
+    }
+  }
+
+ validate_rc:
+  if(orig_str) ndpi_free(orig_str);
+
+  if(rc == NDPI_NO_RISK) {
+    /* Let's do an extra check */
+    if(strstr(url, "..")) {
+      /* 127.0.0.1/msadc/..%255c../..%255c../..%255c../winnt/system32/cmd.exe */
+      rc = NDPI_HTTP_SUSPICIOUS_URL;
+    }
+  }
+  
+  return(rc);
+}
+
+/* ******************************************************************** */
+
+u_int8_t ndpi_is_protocol_detected(struct ndpi_detection_module_struct *ndpi_str,
+				   ndpi_protocol proto) {
+  if((proto.master_protocol != NDPI_PROTOCOL_UNKNOWN)
+     || (proto.app_protocol != NDPI_PROTOCOL_UNKNOWN)
+     || (proto.category != NDPI_PROTOCOL_CATEGORY_UNSPECIFIED))
+    return(1);
+  else
+    return(0);
+}
+
+/* ******************************************************************** */
+
+const char* ndpi_risk2str(ndpi_risk_enum risk) {
+  static char buf[16];
+  
+  switch(risk) {
+  case NDPI_URL_POSSIBLE_XSS:
+    return("XSS attack");
+
+  case NDPI_URL_POSSIBLE_SQL_INJECTION:
+    return("SQL injection");
+
+  case NDPI_URL_POSSIBLE_RCE_INJECTION:
+    return("RCE injection");
+
+  case NDPI_BINARY_APPLICATION_TRANSFER:
+    return("Binary application transfer");
+
+  case NDPI_KNOWN_PROTOCOL_ON_NON_STANDARD_PORT:
+    return("Known protocol on non standard port");
+
+  case NDPI_TLS_SELFSIGNED_CERTIFICATE:
+    return("Self-signed Certificate");
+
+  case NDPI_TLS_OBSOLETE_VERSION:
+    return("Obsolete TLS version (< 1.1)");
+
+  case NDPI_TLS_WEAK_CIPHER:
+    return("Weak TLS cipher");
+
+  case NDPI_TLS_CERTIFICATE_EXPIRED:
+    return("TLS Expired Certificate");
+    
+  case NDPI_TLS_CERTIFICATE_MISMATCH:
+    return("TLS Certificate Mismatch");
+
+  case NDPI_HTTP_SUSPICIOUS_USER_AGENT:
+    return("HTTP Suspicious User-Agent");
+
+  case NDPI_HTTP_NUMERIC_IP_HOST:
+    return("HTTP Numeric IP Address");
+
+  case NDPI_HTTP_SUSPICIOUS_URL:
+    return("HTTP Suspicious URL");
+
+  case NDPI_HTTP_SUSPICIOUS_HEADER:
+    return("HTTP Suspicious Header");
+    
+  case NDPI_TLS_NOT_CARRYING_HTTPS:
+    return("TLS (probably) not carrying HTTPS");
+
+  case NDPI_SUSPICIOUS_DGA_DOMAIN:
+    return("Suspicious DGA domain name");
+
+  case NDPI_MALFORMED_PACKET:
+    return("Malformed packet");
+
+  case NDPI_SSH_OBSOLETE_CLIENT_VERSION_OR_CIPHER:
+    return("SSH Obsolete Client Version/Cipher");
+
+  case NDPI_SSH_OBSOLETE_SERVER_VERSION_OR_CIPHER:
+    return("SSH Obsolete Server Version/Cipher");
+    
+  case NDPI_SMB_INSECURE_VERSION:
+    return("SMB Insecure Version");
+
+  case NDPI_TLS_SUSPICIOUS_ESNI_USAGE:
+    return("TLS Suspicious ESNI Usage");
+
+  case NDPI_UNSAFE_PROTOCOL:
+    return("Unsafe Protocol");
+
+  case NDPI_DNS_SUSPICIOUS_TRAFFIC:
+    return("Suspicious DNS traffic"); /* Exfiltration ? */
+    
+  case NDPI_TLS_MISSING_SNI:
+    return("SNI TLS extension was missing");
+    
+  default:
+    snprintf(buf, sizeof(buf), "%d", (int)risk);
+    return(buf);
+  }
+}
+
+/* ******************************************************************** */
+
+const char* ndpi_http_method2str(ndpi_http_method m) {
+  switch(m) {
+  case NDPI_HTTP_METHOD_UNKNOWN: break;
+  case NDPI_HTTP_METHOD_OPTIONS: return("OPTIONS");
+  case NDPI_HTTP_METHOD_GET:     return("GET");
+  case NDPI_HTTP_METHOD_HEAD:    return("HEAD");
+  case NDPI_HTTP_METHOD_PATCH:   return("PATCH");
+  case NDPI_HTTP_METHOD_POST:    return("POST");
+  case NDPI_HTTP_METHOD_PUT:     return("PUT");
+  case NDPI_HTTP_METHOD_DELETE:  return("DELETE");
+  case NDPI_HTTP_METHOD_TRACE:   return("TRACE");
+  case NDPI_HTTP_METHOD_CONNECT: return("CONNECT");
+  }
+  
+  return("Unknown HTTP method");
+}
+
+/* ******************************************************************** */
+
+ndpi_http_method ndpi_http_str2method(const char* method, ssize_t method_len) {
+  if(!method || method_len < 3)
+    return(NDPI_HTTP_METHOD_UNKNOWN);
+
+  switch(method[0]) {
+  case 'O': return(NDPI_HTTP_METHOD_OPTIONS);
+  case 'G': return(NDPI_HTTP_METHOD_GET);
+  case 'H': return(NDPI_HTTP_METHOD_HEAD);
+
+  case 'P':
+    switch(method[1]) {
+    case 'A':return(NDPI_HTTP_METHOD_PATCH);
+    case 'O':return(NDPI_HTTP_METHOD_POST);
+    case 'U':return(NDPI_HTTP_METHOD_PUT);
+    }
+    break;
+    
+  case 'D':  return(NDPI_HTTP_METHOD_DELETE);
+  case 'T':  return(NDPI_HTTP_METHOD_TRACE);
+  case 'C':  return(NDPI_HTTP_METHOD_CONNECT);
+  }
+
+  return(NDPI_HTTP_METHOD_UNKNOWN);
+}
+
+/* ******************************************************************** */
+
+#define ROR64(x,r) (((x)>>(r))|((x)<<(64-(r))))
+
+/*
+  'in_16_bytes_long` points to some 16 byte memory data to be hashed;
+  two independent 64-bit linear congruential generators are applied
+  results are mixed, scrambled and cast to 32-bit
+*/
+u_int32_t ndpi_quick_16_byte_hash(u_int8_t *in_16_bytes_long) {
+  u_int64_t a = *(u_int64_t*)(in_16_bytes_long + 0);
+  u_int64_t c = *(u_int64_t*)(in_16_bytes_long + 8);
+
+  // multipliers are taken from sprng.org, addends are prime
+  a = a * 0x2c6fe96ee78b6955 + 0x9af64480a3486659;
+  c = c * 0x369dea0f31a53f85 + 0xd0c6225445b76b5b;
+
+  // mix results
+  a += c;
+
+  // final scramble
+  a ^= ROR64(a, 13) ^ ROR64(a, 7);
+
+  // down-casting, also taking advantage of upper half
+  a ^= a >> 32;
+
+  return((u_int32_t)a);
+}
+

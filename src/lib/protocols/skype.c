@@ -1,7 +1,7 @@
 /*
  * skype.c
  *
- * Copyright (C) 2017-19 - ntop.org
+ * Copyright (C) 2017-20 - ntop.org
  *
  * nDPI is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -32,11 +32,17 @@ static void ndpi_check_skype(struct ndpi_detection_module_struct *ndpi_struct, s
   // const u_int8_t *packet_payload = packet->payload;
   u_int32_t payload_len = packet->payload_packet_len;
 
+  /* No need to do ntohl() with 0xFFFFFFFF */
+  if(packet->iph && (packet->iph->daddr == 0xFFFFFFFF /* 255.255.255.255 */)) {
+    NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
+    return;
+  }
+
   if(flow->host_server_name[0] != '\0')
     return;
-
+  
   // UDP check
-  if(packet->udp != NULL) {
+  if(packet->udp != NULL) {    
     flow->l4.udp.skype_packet_id++;
 
     if(flow->l4.udp.skype_packet_id < 5) {
@@ -49,15 +55,23 @@ static void ndpi_check_skype(struct ndpi_detection_module_struct *ndpi_struct, s
 	 ) {
 	;
       } else {
-	if(((payload_len == 3) && ((packet->payload[2] & 0x0F)== 0x0d)) ||
+	/* Too many false positives */
+	if(((payload_len == 3) && ((packet->payload[2] & 0x0F)== 0x0d))
+	   ||
 	   ((payload_len >= 16)
+	    && (((packet->payload[0] & 0xC0) >> 6) == 0x02 /* RTPv2 */
+		|| (((packet->payload[0] & 0xF0) >> 4) == 0 /* Zoom */)
+		|| (((packet->payload[0] & 0xF0) >> 4) == 0x07 /* Skype */)
+		)
 	    && (packet->payload[0] != 0x30) /* Avoid invalid SNMP detection */
+	    && (packet->payload[0] != 0x00) /* Avoid invalid CAPWAP detection */
 	    && (packet->payload[2] == 0x02))) {
 
-	  if(is_port(sport, dport, 8801))
+	  if(is_port(sport, dport, 8801)) {
 	    ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_ZOOM, NDPI_PROTOCOL_UNKNOWN);
-	  else
+	  } else if (payload_len >= 16 && packet->payload[0] != 0x01) /* Avoid invalid Cisco HSRP detection / RADIUS */ {
 	    ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_SKYPE_CALL, NDPI_PROTOCOL_SKYPE);
+	  }
 	}
       }
       

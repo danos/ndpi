@@ -2,7 +2,7 @@
  * rtp.c
  *
  * Copyright (C) 2009-2011 by ipoque GmbH
- * Copyright (C) 2011-19 - ntop.org
+ * Copyright (C) 2011-20 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -76,6 +76,8 @@ static u_int8_t isValidMSRTPType(u_int8_t payloadType) {
 static void ndpi_rtp_search(struct ndpi_detection_module_struct *ndpi_struct,
 			    struct ndpi_flow_struct *flow,
 			    const u_int8_t * payload, const u_int16_t payload_len) {
+  u_int8_t payloadType, payload_type;
+
   NDPI_LOG_DBG(ndpi_struct, "search RTP\n");
 
   if((payload_len < 2) || flow->protos.stun_ssl.stun.num_binding_requests) {
@@ -83,9 +85,8 @@ static void ndpi_rtp_search(struct ndpi_detection_module_struct *ndpi_struct,
     return;
   }
 
-  //struct ndpi_packet_struct *packet = &flow->packet;
-  u_int8_t payloadType, payload_type = payload[1] & 0x7F;
-
+  payload_type = payload[1] & 0x7F;
+  
   /* Check whether this is an RTP flow */
   if((payload_len >= 12)
      && (((payload[0] & 0xFF) == 0x80) || ((payload[0] & 0xFF) == 0xA0)) /* RTP magic byte[1] */
@@ -95,21 +96,6 @@ static void ndpi_rtp_search(struct ndpi_detection_module_struct *ndpi_struct,
 	 /* http://www.iana.org/assignments/rtp-parameters/rtp-parameters.xhtml */
        )
     ) {
-    struct ndpi_packet_struct *packet = &flow->packet;
-
-    if(packet->iph) {
-      /* 125.209.252.xxx */
-      if(((ntohl(packet->iph->saddr) & 0xFFFFFF00 /* 255.255.255.0 */) == 0x7DD1FC00)
-	 || ((ntohl(packet->iph->daddr) & 0xFFFFFF00 /* 255.255.255.0 */) == 0x7DD1FC00)) {
-	if((flow->packet.payload[0] == 0x80)
-	   && ((flow->packet.payload[1] == 0x78) || (flow->packet.payload[1] == 0xE8))
-	  ) {
-	  ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_LINE, NDPI_PROTOCOL_LINE);
-	  return;
-	}
-      }
-    }
-
     NDPI_LOG_INFO(ndpi_struct, "Found RTP\n");
     ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_RTP, NDPI_PROTOCOL_UNKNOWN);
     return;
@@ -120,13 +106,6 @@ static void ndpi_rtp_search(struct ndpi_detection_module_struct *ndpi_struct,
       NDPI_LOG_INFO(ndpi_struct, "Found Skype for Business (former MS Lync)\n");
       ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_SKYPE, NDPI_PROTOCOL_UNKNOWN);
       return;
-    } else /* RTCP */ {
-#if 0
-      /* If it's RTCP the RTCP decoder will catch it */
-      NDPI_LOG_INFO(ndpi_struct, "Found MS RTCP\n");
-      ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_RTCP, NDPI_PROTOCOL_UNKNOWN);
-      return;
-#endif
     }
   }
 
@@ -139,13 +118,20 @@ static void ndpi_rtp_search(struct ndpi_detection_module_struct *ndpi_struct,
 void ndpi_search_rtp(struct ndpi_detection_module_struct *ndpi_struct, struct ndpi_flow_struct *flow)
 {
   struct ndpi_packet_struct *packet = &flow->packet;
-
+  u_int16_t source = ntohs(packet->udp->source);
+  u_int16_t dest = ntohs(packet->udp->dest);
+  
+  // printf("==> %s()\n", __FUNCTION__);
+  
   /* printf("*** %s(pkt=%d)\n", __FUNCTION__, flow->packet_counter); */
 
   if((packet->udp != NULL)
-     /* && (ntohs(packet->udp->source) > 1023) */
-     && (ntohs(packet->udp->dest) > 1023))
+     && (source != 30303) && (dest != 30303 /* Avoid to mix it with Ethereum that looks alike */)
+     && (dest > 1023)
+     )
     ndpi_rtp_search(ndpi_struct, flow, packet->payload, packet->payload_packet_len);
+  else
+    NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
 }
 
 /* *************************************************************** */

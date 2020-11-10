@@ -1,7 +1,7 @@
 /*
  * ndpi_main.h
  *
- * Copyright (C) 2011-19 - ntop.org
+ * Copyright (C) 2011-20 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -114,6 +114,7 @@ extern "C" {
 
   extern int ndpi_parse_ip_string(const char *ip_str, ndpi_ip_addr_t *parsed_ip);
   extern char *ndpi_get_ip_string(const ndpi_ip_addr_t * ip, char *buf, u_int buf_len);
+  extern u_int8_t ndpi_is_ipv6(const ndpi_ip_addr_t *ip);
 
   extern char* ndpi_get_proto_by_id(struct ndpi_detection_module_struct *ndpi_mod, u_int id);
   u_int16_t ndpi_get_proto_by_name(struct ndpi_detection_module_struct *ndpi_mod, const char *name);
@@ -131,7 +132,7 @@ extern "C" {
 					       u_int16_t** tcp_master_proto,
 					       u_int16_t** udp_master_proto);
   #/* NDPI_PROTOCOL_NETBIOS */
-  int ndpi_netbios_name_interpret(char *in, char *out, u_int out_len);
+  int ndpi_netbios_name_interpret(char *in, size_t inlen, char *out, u_int out_len);
   
 #ifdef NDPI_ENABLE_DEBUG_MESSAGES
   void ndpi_debug_get_last_log_function_line(struct ndpi_detection_module_struct *ndpi_struct,
@@ -148,6 +149,10 @@ extern "C" {
   /* version of ndpi_match_prefix with string literal */
 #define ndpi_match_strprefix(payload, payload_len, str)			\
   ndpi_match_prefix((payload), (payload_len), (str), (sizeof(str)-1))
+
+#ifdef NDPI_DETECTION_SUPPORT_IPV6
+    int ndpi_handle_ipv6_extension_headers(struct ndpi_detection_module_struct *ndpi_str, const u_int8_t ** l4ptr, u_int16_t * l4len, u_int8_t * nxt_hdr);
+#endif
 
 #ifdef __cplusplus
 }

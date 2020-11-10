@@ -1,3 +1,28 @@
+ndpi (3.4-1) stable; urgency=medium
+
+  * Changes in debian folder for version 3.4
+    - refresh patch files for latest ndpi version (also kept old files)
+    - Update series file
+    - Update rules file ( disable tests with a broken pcap file )
+    - Update control file
+    - Update changelog file
+    - Added docs, symbols and install files for ndpi3.4 (kept old files)
+    - Added libndpi3.4 in libndpi3.4.symbols file
+  * Updated with latest nDPI code 
+  * Removed obsolete protocol files from nDPI src/lib/protocols
+    - battlefield.c
+    - line.c
+    - mdns_proto.c
+    - msn.c
+    - oscar.c
+    - pando.c
+    - pcanywhere.c
+    - pplive.c
+    - tvants.c
+    - yahoo.c 
+   
+ -- Subhajit Chatterjee <subhajit.chatterjee@cdot.in>  Tue, 10 Nov 2020 14:25:50 +0100
+
 ndpi (3.0-2) unstable; urgency=medium
 
   * Remove libndpi-wireshark package

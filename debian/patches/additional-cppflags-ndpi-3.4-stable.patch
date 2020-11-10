@@ -1,0 +1,53 @@
+From c67f8cdb6be7cf15605abdb4aac843a177653ede Mon Sep 17 00:00:00 2001
+From: Subhajit Chatterjee <subhajit.chatterjee@cdot.in>
+Date: Fri, 6 Nov 2020 07:14:58 +0000
+Subject: [PATCH] cpp flags added
+
+---
+ example/Makefile.in | 6 +++---
+ src/lib/Makefile.in | 4 ++--
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/example/Makefile.in b/example/Makefile.in
+index ec44acb..129861a 100644
+--- a/example/Makefile.in
++++ b/example/Makefile.in
+@@ -25,13 +25,13 @@ libndpiReader.a: $(COMMON_SOURCES:%.c=%.o) $(LIBNDPI)
+ 	ar rsv libndpiReader.a $(COMMON_SOURCES:%.c=%.o)
+ 
+ ndpiReader: libndpiReader.a $(LIBNDPI) ndpiReader.o
+-	$(CC) $(CFLAGS) ndpiReader.o libndpiReader.a -o $@ $(LDFLAGS)
++	$(CC) $(CPPFLAGS) $(CFLAGS) ndpiReader.o libndpiReader.a -o $@ $(LDFLAGS)
+ 
+ ndpiSimpleIntegration: ndpiSimpleIntegration.o
+-	$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS)
++	$(CC) $(CPPFLAGS) $(CFLAGS) $< -o $@ $(LDFLAGS)
+ 
+ %.o: %.c $(HEADERS) Makefile
+-	$(CC) $(CFLAGS) -c $< -o $@
++	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+ 
+ install: ndpiReader
+ 	mkdir -p $(DESTDIR)$(PREFIX)/bin/
+diff --git a/src/lib/Makefile.in b/src/lib/Makefile.in
+index 6c69485..86316ac 100644
+--- a/src/lib/Makefile.in
++++ b/src/lib/Makefile.in
+@@ -52,12 +52,12 @@ $(NDPI_LIB_STATIC): $(OBJECTS)
+ 	   $(RANLIB) $@      
+ 
+ $(NDPI_LIB_SHARED): $(OBJECTS)
+-	$(CC) -shared -fPIC $(SONAME_FLAG) -o $@ $(OBJECTS) $(LDFLAGS)
++	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) -shared -fPIC $(SONAME_FLAG) -o $@ $(OBJECTS)
+ 	ln -fs $(NDPI_LIB_SHARED) $(NDPI_LIB_SHARED_BASE)
+ 	ln -fs $(NDPI_LIB_SHARED) $(NDPI_LIB_SHARED_BASE).$(NDPI_VERSION_MAJOR).$(NDPI_VERSION_MINOR)
+ 
+ %.o: %.c $(HEADERS) Makefile
+-	$(CC) $(CFLAGS) -c $< -o $@
++	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+ 
+ clean:
+ 	/bin/rm -f $(NDPI_LIB_STATIC) $(OBJECTS) *.o *.so *.lo libndpi.so*
+-- 
+2.20.1
+

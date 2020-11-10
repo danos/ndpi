@@ -2,7 +2,7 @@
  * thunder.c
  *
  * Copyright (C) 2009-2011 by ipoque GmbH
- * Copyright (C) 2011-19 - ntop.org
+ * Copyright (C) 2011-20 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -39,10 +39,10 @@ static void ndpi_int_thunder_add_connection(struct ndpi_detection_module_struct 
   ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_THUNDER, NDPI_PROTOCOL_UNKNOWN);
 
   if (src != NULL) {
-    src->thunder_ts = packet->tick_timestamp;
+    src->thunder_ts = packet->current_time_ms;
   }
   if (dst != NULL) {
-    dst->thunder_ts = packet->tick_timestamp;
+    dst->thunder_ts = packet->current_time_ms;
   }
 }
 
@@ -118,6 +118,7 @@ void ndpi_int_search_thunder_tcp(struct ndpi_detection_module_struct
 	packet->content_line.len == 24 &&
 	memcmp(packet->content_line.ptr, "application/octet-stream",
 	       24) == 0 && packet->empty_line_position_set < (packet->payload_packet_len - 8)
+	&& packet->payload_packet_len > (packet->empty_line_position + 5)
 	&& packet->payload[packet->empty_line_position + 2] >= 0x30
 	&& packet->payload[packet->empty_line_position + 2] < 0x40
 	&& packet->payload[packet->empty_line_position + 3] == 0x00
@@ -151,15 +152,15 @@ void ndpi_int_search_thunder_http(struct ndpi_detection_module_struct
 
   if (packet->detected_protocol_stack[0] == NDPI_PROTOCOL_THUNDER) {
     if (src != NULL && ((u_int32_t)
-			(packet->tick_timestamp - src->thunder_ts) < ndpi_struct->thunder_timeout)) {
+			(packet->current_time_ms - src->thunder_ts) < ndpi_struct->thunder_timeout)) {
       NDPI_LOG_DBG2(ndpi_struct,
 	       "thunder : save src connection packet detected\n");
-      src->thunder_ts = packet->tick_timestamp;
+      src->thunder_ts = packet->current_time_ms;
     } else if (dst != NULL && ((u_int32_t)
-			       (packet->tick_timestamp - dst->thunder_ts) < ndpi_struct->thunder_timeout)) {
+			       (packet->current_time_ms - dst->thunder_ts) < ndpi_struct->thunder_timeout)) {
       NDPI_LOG_DBG2(ndpi_struct,
 	       "thunder : save dst connection packet detected\n");
-      dst->thunder_ts = packet->tick_timestamp;
+      dst->thunder_ts = packet->current_time_ms;
     }
     return;
   }

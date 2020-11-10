@@ -1,0 +1,25 @@
+From 5416aafbc68b97a1a53c4489a1e618b3227120db Mon Sep 17 00:00:00 2001
+From: Subhajit Chatterjee <subhajit.chatterjee@cdot.in>
+Date: Fri, 6 Nov 2020 06:42:16 +0000
+Subject: [PATCH] define have-json-c flag in ndpi-3.4
+
+---
+ example/Makefile.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/example/Makefile.in b/example/Makefile.in
+index ec44acb..3a74dd0 100644
+--- a/example/Makefile.in
++++ b/example/Makefile.in
+@@ -2,7 +2,7 @@ CC=@CC@
+ CXX=@CXX@
+ BUILD_MINGW=@BUILD_MINGW@
+ SRCHOME=../src
+-CFLAGS=-g -fPIC -DPIC -I$(SRCHOME)/include @PCAP_INC@ @CFLAGS@
++CFLAGS=-g -fPIC -DPIC -I$(SRCHOME)/include -DHAVE_JSON_C @PCAP_INC@ @CFLAGS@
+ LIBNDPI=$(SRCHOME)/lib/libndpi.a
+ LDFLAGS=$(LIBNDPI) @PCAP_LIB@ @LIBS@ @ADDITIONAL_LIBS@ -lpthread -lm @LDFLAGS@
+ HEADERS=intrusion_detection.h reader_util.h $(SRCHOME)/include/ndpi_api.h \
+-- 
+2.20.1
+

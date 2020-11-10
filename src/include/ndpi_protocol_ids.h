@@ -1,8 +1,7 @@
-
 /*
  * ndpi_protocol_ids.h
  *
- * Copyright (C) 2011-19 - ntop.org
+ * Copyright (C) 2011-20 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -23,12 +22,8 @@
  */
 
 
-#ifndef __NDPI_API_H__
-
-#endif
-
-#ifndef __NDPI_PROTOCOLS_DEFAULT_H__
-#define __NDPI_PROTOCOLS_DEFAULT_H__
+#ifndef __NDPI_PROTOCOLS_IDS_H__
+#define __NDPI_PROTOCOLS_IDS_H__
 
 #define NDPI_DETECTION_SUPPORT_IPV6
 #define NDPI_PROTOCOL_SIZE                  2
@@ -75,24 +70,24 @@ typedef enum {
   NDPI_PROTOCOL_SKYPE_CALL            = 38, /* Skype call and videocalls */
   NDPI_PROTOCOL_SIGNAL                = 39,
   NDPI_PROTOCOL_MEMCACHED             = 40, /* Memcached - Darryl Sokoloski <darryl@egloo.ca> */
-  NDPI_PROTOCOL_SMBV23                = 41, /* SMB version 2/3 */  
+  NDPI_PROTOCOL_SMBV23                = 41, /* SMB version 2/3 */
   NDPI_PROTOCOL_MINING                = 42, /* Bitcoin, Ethereum, ZCash, Monero */
   NDPI_PROTOCOL_NEST_LOG_SINK         = 43, /* Nest Log Sink (Nest Protect) - Darryl Sokoloski <darryl@egloo.ca> */
   NDPI_PROTOCOL_MODBUS                = 44, /* Modbus */
   NDPI_PROTOCOL_WHATSAPP_CALL         = 45, /* WhatsApp video ad audio calls go here */
-  NDPI_PROTOCOL_DATASAVER             = 46, /* Protocols used to save data on Internet communications */  
+  NDPI_PROTOCOL_DATASAVER             = 46, /* Protocols used to save data on Internet communications */
   NDPI_PROTOCOL_XBOX                  = 47,
   NDPI_PROTOCOL_QQ                    = 48,
   NDPI_PROTOCOL_TIKTOK                = 49,
   NDPI_PROTOCOL_RTSP                  = 50,
   NDPI_PROTOCOL_MAIL_IMAPS            = 51,
   NDPI_PROTOCOL_ICECAST               = 52,
-  NDPI_PROTOCOL_PPLIVE                = 53, /* Tomasz Bujlow <tomasz@skatnet.dk> */
+  NDPI_PROTOCOL_FREE_53               = 53,
   NDPI_PROTOCOL_PPSTREAM              = 54,
   NDPI_PROTOCOL_ZATTOO                = 55,
   NDPI_PROTOCOL_SHOUTCAST             = 56,
   NDPI_PROTOCOL_SOPCAST               = 57,
-  NDPI_PROTOCOL_TVANTS                = 58,
+  NDPI_PROTOCOL_DISCORD               = 58,
   NDPI_PROTOCOL_TVUPLAYER             = 59,
   NDPI_PROTOCOL_HTTP_DOWNLOAD         = 60,
   NDPI_PROTOCOL_QQLIVE                = 61,
@@ -102,10 +97,10 @@ typedef enum {
   NDPI_PROTOCOL_IRC                   = 65,
   NDPI_PROTOCOL_AYIYA                 = 66,
   NDPI_PROTOCOL_UNENCRYPTED_JABBER    = 67,
-  NDPI_PROTOCOL_MSN                   = 68,
-  NDPI_PROTOCOL_OSCAR                 = 69,
+  NDPI_PROTOCOL_NATS                  = 68,
+  NDPI_PROTOCOL_FREE_69               = 69, /* Free */
   NDPI_PROTOCOL_YAHOO                 = 70,
-  NDPI_PROTOCOL_BATTLEFIELD           = 71,
+  NDPI_PROTOCOL_FREE_71               = 71, /* Free */
   NDPI_PROTOCOL_GOOGLE_PLUS           = 72,
   NDPI_PROTOCOL_IP_VRRP               = 73,
   NDPI_PROTOCOL_STEAM                 = 74, /* Tomasz Bujlow <tomasz@skatnet.dk> */
@@ -124,7 +119,7 @@ typedef enum {
   NDPI_PROTOCOL_RTP                   = 87,
   NDPI_PROTOCOL_RDP                   = 88,
   NDPI_PROTOCOL_VNC                   = 89,
-  NDPI_PROTOCOL_PCANYWHERE            = 90,
+  NDPI_PROTOCOL_FREE90                = 90, /* Free */
   NDPI_PROTOCOL_TLS                   = 91,
   NDPI_PROTOCOL_SSH                   = 92,
   NDPI_PROTOCOL_USENET                = 93,
@@ -217,7 +212,7 @@ typedef enum {
   NDPI_PROTOCOL_CNN                   = 180, /* Tomasz Bujlow <tomasz@skatnet.dk> */
   NDPI_PROTOCOL_MEGACO                = 181, /* Gianluca Costa <g.costa@xplico.org> */
   NDPI_PROTOCOL_REDIS                 = 182,
-  NDPI_PROTOCOL_PANDO                 = 183, /* Tomasz Bujlow <tomasz@skatnet.dk> */
+  NDPI_PROTOCOL_FREE_183              = 183,
   NDPI_PROTOCOL_VHUA                  = 184,
   NDPI_PROTOCOL_TELEGRAM              = 185, /* Gianluca Costa <g.costa@xplico.org> */
   NDPI_PROTOCOL_VEVO                  = 186,
@@ -230,19 +225,19 @@ typedef enum {
   NDPI_PROTOCOL_KAKAOTALK             = 193, /* KakaoTalk Chat (no voice call) */
   NDPI_PROTOCOL_KAKAOTALK_VOICE       = 194, /* KakaoTalk Voice */
   NDPI_PROTOCOL_TWITCH                = 195, /* Edoardo Dominici <edoaramis@gmail.com> */
-  NDPI_PROTOCOL_DNS_OVER_HTTPS        = 196,
+  NDPI_PROTOCOL_DOH_DOT               = 196, /* DoH (DNS over HTTPS), DoT (DNS over TLS) */
   NDPI_PROTOCOL_WECHAT                = 197,
   NDPI_PROTOCOL_MPEGTS                = 198,
   NDPI_PROTOCOL_SNAPCHAT              = 199,
   NDPI_PROTOCOL_SINA                  = 200,
-  NDPI_PROTOCOL_HANGOUT_DUO           = 201, /* Google Hangout ad Duo (merged as they are very similar) */ 
+  NDPI_PROTOCOL_HANGOUT_DUO           = 201, /* Google Hangout ad Duo (merged as they are very similar) */
   NDPI_PROTOCOL_IFLIX                 = 202, /* www.vizuamatix.com R&D team & M.Mallawaarachchie <manoj_ws@yahoo.com> */
   NDPI_PROTOCOL_GITHUB                = 203,
   NDPI_PROTOCOL_BJNP                  = 204,
-  NDPI_PROTOCOL_LINE                  = 205, /* https://en.wikipedia.org/wiki/Line_(software) */
+  NDPI_PROTOCOL_FREE_205              = 205,
   NDPI_PROTOCOL_WIREGUARD             = 206,
   NDPI_PROTOCOL_SMPP                  = 207, /* Damir Franusic <df@release14.org> */
-  NDPI_PROTOCOL_DNSCRYPT              = 208,
+  NDPI_PROTOCOL_DNSCRYPT              = 208, /* Toni Uhlig <matzeton@googlemail.com> */
   NDPI_PROTOCOL_TINC                  = 209, /* William Guglielmo <william@deselmo.com> */
   NDPI_PROTOCOL_DEEZER                = 210,
   NDPI_PROTOCOL_INSTAGRAM             = 211, /* Andrea Buscarinu <andrea.buscarinu@gmail.com> */
@@ -253,7 +248,7 @@ typedef enum {
   NDPI_PROTOCOL_IMO                   = 216,
   NDPI_PROTOCOL_GOOGLE_DRIVE          = 217,
   NDPI_PROTOCOL_OCS                   = 218,
-  NDPI_PROTOCOL_OFFICE_365            = 219,
+  NDPI_PROTOCOL_MICROSOFT_365         = 219,
   NDPI_PROTOCOL_CLOUDFLARE            = 220,
   NDPI_PROTOCOL_MS_ONE_DRIVE          = 221,
   NDPI_PROTOCOL_MQTT                  = 222,
@@ -270,8 +265,8 @@ typedef enum {
   NDPI_PROTOCOL_LINKEDIN              = 233, /* Paulo Angelo <pa@pauloangelo.com> */
   NDPI_PROTOCOL_SOUNDCLOUD            = 234,
   NDPI_PROTOCOL_CSGO                  = 235, /* Counter-Strike Global Offensive, Dota = 2 */
-  NDPI_PROTOCOL_LISP	              = 236,
-  NDPI_PROTOCOL_DIAMETER	      = 237,
+  NDPI_PROTOCOL_LISP	                = 236,
+  NDPI_PROTOCOL_DIAMETER	            = 237,
   NDPI_PROTOCOL_APPLE_PUSH            = 238,
   NDPI_PROTOCOL_GOOGLE_SERVICES       = 239,
   NDPI_PROTOCOL_AMAZON_VIDEO          = 240,
@@ -279,14 +274,27 @@ typedef enum {
   NDPI_PROTOCOL_WHATSAPP_FILES        = 242, /* Videos, pictures, voice messages... */
   NDPI_PROTOCOL_TARGUS_GETDATA        = 243,
   NDPI_PROTOCOL_DNP3                  = 244,
-  NDPI_PROTOCOL_104                   = 245,    
-/*
+  NDPI_PROTOCOL_IEC60870              = 245, /* https://en.wikipedia.org/wiki/IEC_60870-5 */
+  NDPI_PROTOCOL_BLOOMBERG             = 246,
+  NDPI_PROTOCOL_CAPWAP                = 247,
+  NDPI_PROTOCOL_ZABBIX                = 248,
+  NDPI_PROTOCOL_S7COMM                = 249,
+  NDPI_PROTOCOL_MSTEAMS               = 250,
+  NDPI_PROTOCOL_WEBSOCKET             = 251, /* Leonn Paiva <leonn.paiva@gmail.com> */
+  NDPI_PROTOCOL_ANYDESK               = 252, /* Toni Uhlig <matzeton@googlemail.com> */
+  NDPI_PROTOCOL_SOAP                  = 253, /* Toni Uhlig <matzeton@googlemail.com> */
+
+#ifdef CUSTOM_NDPI_PROTOCOLS
+#include "../../../nDPI-custom/custom_ndpi_protocol_ids.h"
+#endif  
+
+  /*
     IMPORTANT
     before allocating a new identifier please fill up
     one of those named NDPI_PROTOCOL_FREE_XXX and not used
     (placeholders to avoid protocol renumbering)
   */
-  
+
   /* IMPORTANT:NDPI_LAST_IMPLEMENTED_PROTOCOL MUST BE THE LAST ELEMENT */
   NDPI_LAST_IMPLEMENTED_PROTOCOL
 } ndpi_protocol_id_t;
@@ -294,4 +302,5 @@ typedef enum {
 #define NDPI_PROTOCOL_NO_MASTER_PROTO    NDPI_PROTOCOL_UNKNOWN
 #define NDPI_MAX_SUPPORTED_PROTOCOLS     NDPI_LAST_IMPLEMENTED_PROTOCOL
 #define NDPI_MAX_NUM_CUSTOM_PROTOCOLS    (NDPI_NUM_BITS-NDPI_LAST_IMPLEMENTED_PROTOCOL)
-#endif
+
+#endif /* __NDPI_PROTOCOL_IDS_H__ */

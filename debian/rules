@@ -18,7 +18,7 @@ override_dh_auto_configure:
 
 override_dh_auto_install:
 	dh_auto_install
-	rm $(CURDIR)/debian/tmp/usr/sbin/ndpi/*.txt
+	rm $(CURDIR)/debian/tmp/usr/share/ndpi/*.txt
 
 override_dh_auto_test:
 ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
@@ -30,11 +30,33 @@ ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
 	rm -f tests/pcap/skype.pcap
 	rm -f tests/pcap/skype_no_unknown.pcap
 	rm -f tests/pcap/1kxun.pcap
+	rm -f tests/pcap/quic_q50.pcap
+	rm -f tests/pcap/quic_t50.pcap
+	rm -f tests/pcap/quic_t51.pcap
+	rm -f tests/pcap/quic-mvfst-exp.pcap
+	rm -f tests/pcap/quic-mvfst-27.pcap
+	rm -f tests/pcap/quic-mvfst-22.pcap
+	rm -f tests/pcap/quic-23.pcap
+	rm -f tests/pcap/quic-24.pcap
+	rm -f tests/pcap/quic-27.pcap
+	rm -f tests/pcap/quic-28.pcap
+	rm -f tests/pcap/quic-29.pcap
+	rm -f tests/pcap/gquic.pcap
+	rm -f tests/pcap/dnscrypt.pcap
+	rm -f tests/pcap/exe_download.pcap
+	rm -f tests/pcap/ftp_failed.pcap
+	rm -f tests/pcap/fuzz-2006-06-26-2594.pcap
+	rm -f tests/pcap/msnms.pcap
+	rm -f tests/pcap/quic-mvfst-exp.pcap
 	cd tests && LD_LIBRARY_PATH=$(CURDIR)/src/lib ./do.sh
 endif
 
 override_dh_strip:
 	dh_strip --dbgsym-migration='libndpi-dbg (<< 1.8-1~)'
+
+
+#override_dh_shlibdeps:
+#	dh_shlibdeps -l$(CURDIR)/src/lib --dpkg-shlibdeps-params=--ignore-missing-info
 
 
 .PHONY: override_dh_auto_configure override_dh_strip
