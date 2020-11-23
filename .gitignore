@@ -54,3 +54,6 @@ stamp-h1
 *.swp
 /test-driver
 /tests/Makefile
+/fuzz/.deps/
+/src/include/ndpi_api.h
+/src/include/Makefile.am

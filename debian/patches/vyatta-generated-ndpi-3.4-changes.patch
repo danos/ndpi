@@ -8,232 +8,59 @@ Subject: [PATCH] nDPI-3.4 related changes for yang files
  yang/vyatta-ndpi-application-types-v1.yang |  8 ++--
  2 files changed, 31 insertions(+), 21 deletions(-)
 
-diff --git a/yang/vyatta-ndpi-application-names-v1.yang b/yang/vyatta-ndpi-application-names-v1.yang
-index e1290fd..e648884 100644
 --- a/yang/vyatta-ndpi-application-names-v1.yang
 +++ b/yang/vyatta-ndpi-application-names-v1.yang
-@@ -51,8 +51,8 @@ module vyatta-ndpi-application-names-v1 {
- 		 This file was auto-generated with
- 		 generation/application_names_yang.sh";
- 
--	revision 2020-01-06 {
--		description "Initial revision based on nDPI 3.0.0.";
-+	revision 2020-11-02 {
-+		description "Revision based on nDPI version 3.4.0 (Stable)";
+@@ -55,6 +55,11 @@
+ 		description "Initial revision based on nDPI 3.0.0.";
  	}
  
++        revision 2020-11-02 {
++		description "Revision based on nDPI version 3.4.0 (Stable)";
++	}
++
++
  	typedef application-names {
-@@ -61,13 +61,13 @@ module vyatta-ndpi-application-names-v1 {
- 		 * It's not important to preserve alphabetical order.
- 		 */
- 		type enumeration {
--			enum "104";
- 			enum "afp";
- 			enum "aimini";
- 			enum "ajp";
- 			enum "amazon";
- 			enum "amazonvideo";
- 			enum "amqp";
-+			enum "anydesk";
- 			enum "apple";
- 			enum "appleicloud";
- 			enum "appleitunes";
-@@ -76,10 +76,11 @@ module vyatta-ndpi-application-names-v1 {
- 			enum "applestore";
- 			enum "armagetron";
- 			enum "ayiya";
--			enum "battlefield";
- 			enum "bgp";
- 			enum "bittorrent";
- 			enum "bjnp";
-+			enum "bloomberg";
-+			enum "capwap";
- 			enum "checkmk";
- 			enum "ciscoskinny";
- 			enum "ciscovpn";
-@@ -97,13 +98,14 @@ module vyatta-ndpi-application-names-v1 {
- 			enum "dhcp";
- 			enum "dhcpv6";
- 			enum "diameter";
--			enum "direct_download_link";
- 			enum "directconnect";
-+			enum "direct_download_link";
-+			enum "discord";
- 			enum "dnp3";
- 			enum "dns";
- 			enum "dnscrypt";
--			enum "dnsoverhttps";
- 			enum "dofus";
-+			enum "doh_dot";
- 			enum "drda";
- 			enum "dropbox";
- 			enum "eaq";
-@@ -116,6 +118,12 @@ module vyatta-ndpi-application-names-v1 {
- 			enum "fiesta";
- 			enum "fix";
- 			enum "florensia";
-+			enum "free183";
-+			enum "free_205";
-+			enum "free53";
-+			enum "free69";
-+			enum "free71";
-+			enum "free_90";
- 			enum "ftp_control";
- 			enum "ftp_data";
- 			enum "git";
-@@ -146,6 +154,7 @@ module vyatta-ndpi-application-names-v1 {
- 			enum "icecast";
- 			enum "icmp";
- 			enum "icmpv6";
-+			enum "iec60870";
- 			enum "iflix";
- 			enum "igmp";
- 			enum "imap";
-@@ -162,7 +171,6 @@ module vyatta-ndpi-application-names-v1 {
- 			enum "kontiki";
- 			enum "lastfm";
- 			enum "ldap";
--			enum "line";
- 			enum "linkedin";
- 			enum "lisp";
- 			enum "llmnr";
-@@ -174,14 +182,15 @@ module vyatta-ndpi-application-names-v1 {
- 			enum "messenger";
- 			enum "mgcp";
- 			enum "microsoft";
-+			enum "microsoft365";
- 			enum "mining";
- 			enum "modbus";
- 			enum "mpeg_ts";
- 			enum "mqtt";
- 			enum "ms_onedrive";
--			enum "msn";
--			enum "mssql_tds";
-+			enum "mssql-tds";
- 			enum "mysql";
-+			enum "nats";
- 			enum "nestlogsink";
- 			enum "netbios";
- 			enum "netflix";
-@@ -192,24 +201,19 @@ module vyatta-ndpi-application-names-v1 {
- 			enum "ntop";
- 			enum "ntp";
- 			enum "ocs";
--			enum "office365";
- 			enum "ookla";
- 			enum "opendns";
- 			enum "openft";
- 			enum "openvpn";
- 			enum "oracle";
--			enum "oscar";
- 			enum "ospf";
--			enum "pando_media_booster";
- 			enum "pandora";
- 			enum "pastebin";
--			enum "pcanywhere";
- 			enum "playstation";
- 			enum "playstore";
- 			enum "pop3";
- 			enum "pops";
- 			enum "postgresql";
--			enum "pplive";
- 			enum "ppstream";
- 			enum "pptp";
- 			enum "ps_vue";
-@@ -226,11 +230,13 @@ module vyatta-ndpi-application-names-v1 {
- 			enum "rtp";
- 			enum "rtsp";
- 			enum "rx";
-+			enum "s7comm";
- 			enum "sap";
- 			enum "sctp";
- 			enum "sflow";
- 			enum "shoutcast";
- 			enum "signal";
-+			enum "sina(weibo)";
- 			enum "sip";
- 			enum "skype";
- 			enum "skypecall";
-@@ -242,6 +248,7 @@ module vyatta-ndpi-application-names-v1 {
- 			enum "smtps";
- 			enum "snapchat";
- 			enum "snmp";
-+			enum "soap";
- 			enum "socks";
- 			enum "someip";
- 			enum "sopcast";
-@@ -255,7 +262,8 @@ module vyatta-ndpi-application-names-v1 {
- 			enum "steam";
- 			enum "stun";
- 			enum "syslog";
--			enum "targus_dataspeed";
-+			enum "targus dataspeed";
-+			enum "teams";
- 			enum "teamspeak";
- 			enum "teamviewer";
- 			enum "telegram";
-@@ -269,7 +277,6 @@ module vyatta-ndpi-application-names-v1 {
- 			enum "tor";
- 			enum "truphone";
- 			enum "tuenti";
--			enum "tvants";
- 			enum "tvuplayer";
- 			enum "twitch";
- 			enum "twitter";
-@@ -288,12 +295,12 @@ module vyatta-ndpi-application-names-v1 {
- 			enum "warcraft3";
- 			enum "waze";
- 			enum "webex";
-+			enum "websocket";
- 			enum "wechat";
--			enum "weibo";
- 			enum "whatsapp";
- 			enum "whatsappcall";
- 			enum "whatsappfiles";
--			enum "whois_das";
-+			enum "whois-das";
- 			enum "wikipedia";
- 			enum "windowsupdate";
- 			enum "wireguard";
-@@ -304,6 +311,7 @@ module vyatta-ndpi-application-names-v1 {
- 			enum "yahoo";
- 			enum "youtube";
- 			enum "youtubeupload";
-+			enum "zabbix";
+ 		/* New enums MUST only be added to the end of this list.
+ 		 * Old enums MAY be deprecated or obsoleted, but must not be removed.
+@@ -307,6 +312,19 @@
  			enum "zattoo";
  			enum "zeromq";
  			enum "zoom";
-diff --git a/yang/vyatta-ndpi-application-types-v1.yang b/yang/vyatta-ndpi-application-types-v1.yang
-index 1bad8ea..1366a41 100644
++			enum "anydesk";
++			enum "bloomberg";
++			enum "capwap";
++			enum "discord";
++			enum "doh_dot";
++			enum "iec60870";
++			enum "microsoft365";
++			enum "nats";
++			enum "s7comm";
++			enum "soap";
++			enum "teams";
++			enum "websocket";
++			enum "zabbix";
+ 		}
+ 	}
+ }
 --- a/yang/vyatta-ndpi-application-types-v1.yang
 +++ b/yang/vyatta-ndpi-application-types-v1.yang
-@@ -51,8 +51,8 @@ module vyatta-ndpi-application-types-v1 {
- 		 This file was auto-generated with
- 		 generation/application_types_yang.sh";
- 
--	revision 2020-01-06 {
--		description "Initial revision based on nDPI 3.0.0.";
-+	revision 2020-11-02 {
-+		description "Revision based on nDPI version 3.4.0 (Stable)";
+@@ -55,6 +55,10 @@
+ 		description "Initial revision based on nDPI 3.0.0.";
  	}
  
++        revision 2020-11-02 {
++		description "Revision based on nDPI version 3.4.0 (Stable)";
++	}
++
  	typedef application-types {
-@@ -64,12 +64,14 @@ module vyatta-ndpi-application-types-v1 {
- 			enum "chat";
- 			enum "cloud";
- 			enum "collaborative";
+ 		/* New enums MUST only be added to the end of this list.
+ 		 * Old enums MAY be deprecated or obsoleted, but must not be removed.
+@@ -85,6 +89,8 @@
+ 			enum "voip";
+ 			enum "vpn";
+ 			enum "web";
 +			enum "connectivitycheck";
- 			enum "database";
- 			enum "datatransfer";
--			enum "download";
-+			enum "download";
- 			enum "email";
- 			enum "filesharing";
- 			enum "game";
-+			enum "iot-scada";
- 			enum "media";
- 			enum "music";
- 			enum "network";
--- 
-2.20.1
-
++			enum "iot_scada";
+ 		}
+ 	}
+ }
