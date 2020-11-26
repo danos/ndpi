@@ -2,11 +2,9 @@ Description: Change SONAME include the minor version of the library, as
  upstream typically break ABI at every minor release.
 Author: Ludovico Cavedon <cavedon@debian.org>
 
-Index: ndpi/src/lib/Makefile.in
-===================================================================
---- ndpi.orig/src/lib/Makefile.in
-+++ ndpi/src/lib/Makefile.in
-@@ -20,6 +20,7 @@ RANLIB     = ranlib
+--- a/src/lib/Makefile.in
++++ b/src/lib/Makefile.in
+@@ -21,6 +21,7 @@
  OBJECTS   = $(patsubst protocols/%.c, protocols/%.o, $(wildcard protocols/*.c)) $(patsubst third_party/src/%.c, third_party/src/%.o, $(wildcard third_party/src/*.c)) $(patsubst ./%.c, ./%.o, $(wildcard ./*.c))
  HEADERS   = $(wildcard ../include/*.h)
  NDPI_VERSION_MAJOR   = @NDPI_MAJOR@
@@ -14,25 +12,25 @@ Index: ndpi/src/lib/Makefile.in
  NDPI_LIB_STATIC      = libndpi.a
  NDPI_LIB_SHARED_BASE = libndpi.so
  NDPI_LIB_SHARED      = $(NDPI_LIB_SHARED_BASE).@NDPI_VERSION_SHORT@
-@@ -33,7 +34,7 @@ ifeq ($(OS),Darwin)
- CC=clang
- SONAME_FLAG=
+@@ -39,7 +40,7 @@
+ NDPI_LIB_SHARED_BASE = libndpi
+ NDPI_LIB_SHARED      = $(NDPI_LIB_SHARED_BASE)-@NDPI_VERSION_SHORT@.dll
  else
 -SONAME_FLAG=-Wl,-soname,$(NDPI_LIB_SHARED_BASE).$(NDPI_VERSION_MAJOR)
 +SONAME_FLAG=-Wl,-soname,$(NDPI_LIB_SHARED_BASE).$(NDPI_VERSION_MAJOR).$(NDPI_VERSION_MINOR)
  endif
+ endif
  
- all: $(NDPI_LIBS)
-@@ -47,7 +48,7 @@ $(NDPI_LIB_STATIC): $(OBJECTS)
+@@ -54,7 +55,7 @@
  $(NDPI_LIB_SHARED): $(OBJECTS)
- 	$(CC) -shared -fPIC $(SONAME_FLAG) -o $@ $(OBJECTS)
+ 	$(CC) -shared -fPIC $(SONAME_FLAG) -o $@ $(OBJECTS) $(LDFLAGS)
  	ln -fs $(NDPI_LIB_SHARED) $(NDPI_LIB_SHARED_BASE)
 -	ln -fs $(NDPI_LIB_SHARED) $(NDPI_LIB_SHARED_BASE).$(NDPI_VERSION_MAJOR)
 +	ln -fs $(NDPI_LIB_SHARED) $(NDPI_LIB_SHARED_BASE).$(NDPI_VERSION_MAJOR).$(NDPI_VERSION_MINOR)
  
  %.o: %.c $(HEADERS) Makefile
  	$(CC) $(CFLAGS) -c $< -o $@
-@@ -65,6 +66,6 @@ install: $(NDPI_LIBS)
+@@ -78,6 +79,6 @@
  	mkdir -p $(DESTDIR)$(libdir)
  	cp $(NDPI_LIBS) $(DESTDIR)$(libdir)/
  	cp -P $(NDPI_LIB_SHARED_BASE) $(DESTDIR)$(libdir)/

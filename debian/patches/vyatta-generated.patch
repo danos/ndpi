@@ -9,12 +9,9 @@ Subject: Add generated vyatta yang for nDPI
  create mode 100644 yang/vyatta-ndpi-application-names-v1.yang
  create mode 100644 yang/vyatta-ndpi-application-types-v1.yang
 
-diff --git a/yang/vyatta-ndpi-application-names-v1.yang b/yang/vyatta-ndpi-application-names-v1.yang
-new file mode 100644
-index 0000000..e1290fd
 --- /dev/null
 +++ b/yang/vyatta-ndpi-application-names-v1.yang
-@@ -0,0 +1,312 @@
+@@ -0,0 +1,329 @@
 +module vyatta-ndpi-application-names-v1 {
 +	namespace "urn:vyatta.com:mgmt:vyatta-ndpi-application-names:1";
 +	prefix vyatta-ndpi-application-names-v1;
@@ -67,6 +64,10 @@ index 0000000..e1290fd
 +
 +		 This file was auto-generated with
 +		 generation/application_names_yang.sh";
++
++	revision 2020-11-26 {
++		description "Revision based on nDPI 3.4 (stable)";
++	}
 +
 +	revision 2020-01-06 {
 +		description "Initial revision based on nDPI 3.0.0.";
@@ -324,15 +325,25 @@ index 0000000..e1290fd
 +			enum "zattoo";
 +			enum "zeromq";
 +			enum "zoom";
++			enum "anydesk";
++			enum "bloomberg";
++			enum "capwap";
++			enum "discord";
++			enum "doh_dot";
++			enum "iec60870";
++			enum "microsoft365";
++			enum "nats";
++			enum "s7comm";
++			enum "soap";
++			enum "teams";
++			enum "websocket";
++			enum "zabbix";
 +		}
 +	}
 +}
-diff --git a/yang/vyatta-ndpi-application-types-v1.yang b/yang/vyatta-ndpi-application-types-v1.yang
-new file mode 100644
-index 0000000..1bad8ea
 --- /dev/null
 +++ b/yang/vyatta-ndpi-application-types-v1.yang
-@@ -0,0 +1,90 @@
+@@ -0,0 +1,96 @@
 +module vyatta-ndpi-application-types-v1 {
 +	namespace "urn:vyatta.com:mgmt:vyatta-ndpi-application-types:1";
 +	prefix vyatta-ndpi-application-types-v1;
@@ -386,6 +397,10 @@ index 0000000..1bad8ea
 +		 This file was auto-generated with
 +		 generation/application_types_yang.sh";
 +
++	revision 2020-11-26 {
++		description "Initial revision based on nDPI 3.4 (stable)";
++	}
++
 +	revision 2020-01-06 {
 +		description "Initial revision based on nDPI 3.0.0.";
 +	}
@@ -420,6 +435,8 @@ index 0000000..1bad8ea
 +			enum "voip";
 +			enum "vpn";
 +			enum "web";
++			enum "connectivitycheck";
++			enum "iot_scada";
 +		}
 +	}
 +}

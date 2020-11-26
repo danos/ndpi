@@ -2,26 +2,18 @@ Description: link ndpiReader dynamically against libndpi. Also avoid linking
  against unncecessary C++ libraries.
 Author: Ludovico Cavedon <cavedon@debian.org>
 
-Index: ndpi/example/Makefile.in
-===================================================================
---- ndpi.orig/example/Makefile.in
-+++ ndpi/example/Makefile.in
-@@ -2,14 +2,15 @@ CC=@CC@
- CXX=@CXX@
- CFLAGS=-g -I../src/include -DHAVE_JSON_C @CFLAGS@
- LIBNDPI=../src/lib/libndpi.a
--LDFLAGS=$(LIBNDPI) @PCAP_LIB@ -lpthread -lm @LDFLAGS@
-+LDFLAGS=-L../src/lib -lndpi @PCAP_LIB@ -lpthread -lm @LDFLAGS@
- OBJS=ndpiReader.o reader_util.o
- PREFIX?=@prefix@
- 
- all: ndpiReader @DPDK_TARGET@
- 
--ndpiReader: $(OBJS) $(LIBNDPI)
--	$(CXX) $(CFLAGS) $(OBJS) -o $@ $(LDFLAGS)
-+ndpiReader: $(LIBNDPI)
-+ndpiReader: $(OBJS)
-+	$(CC) $(CFLAGS) $(OBJS) -o $@ $(LDFLAGS)
- 
- %.o: %.c $(HEADERS) Makefile
- 	$(CC) $(CFLAGS) -c $< -o $@
+---
+ example/Makefile.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/example/Makefile.in
++++ b/example/Makefile.in
+@@ -4,7 +4,7 @@
+ SRCHOME=../src
+ CFLAGS=-g -fPIC -DPIC -I$(SRCHOME)/include -DHAVE_JSON_C @PCAP_INC@ @CFLAGS@
+ LIBNDPI=$(SRCHOME)/lib/libndpi.a
+-LDFLAGS=$(LIBNDPI) @PCAP_LIB@ @LIBS@ @ADDITIONAL_LIBS@ -lpthread -lm @LDFLAGS@
++LDFLAGS=-L../src/lib -lndpi @PCAP_LIB@ @LIBS@ @ADDITIONAL_LIBS@ -lpthread -lm @LDFLAGS@
+ HEADERS=intrusion_detection.h reader_util.h $(SRCHOME)/include/ndpi_api.h \
+         $(SRCHOME)/include/ndpi_typedefs.h $(SRCHOME)/include/ndpi_protocol_ids.h
+ OBJS=ndpiReader.o reader_util.o intrusion_detection.o

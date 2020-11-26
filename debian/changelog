@@ -1,12 +1,12 @@
 ndpi (3.4-1) stable; urgency=medium
 
   * Changes in debian folder for version 3.4
-    - refresh patch files for latest ndpi version (also kept old files)
+    - refresh patch files for latest ndpi version
     - Update series file
     - Update rules file ( disable tests with a broken pcap file )
     - Update control file
     - Update changelog file
-    - Added docs, symbols and install files for ndpi3.4 (kept old files)
+    - Added docs, symbols and install files for ndpi3.4
     - Added libndpi3.4 in libndpi3.4.symbols file
   * Updated with latest nDPI code 
   * Removed obsolete protocol files from nDPI src/lib/protocols

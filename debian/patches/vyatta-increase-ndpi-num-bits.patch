@@ -1,10 +1,10 @@
 ---
- src/include/ndpi_define.h.in |    2 +-
+ src/include/ndpi_define.h.in | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 --- a/src/include/ndpi_define.h.in
 +++ b/src/include/ndpi_define.h.in
-@@ -252,7 +252,7 @@
+@@ -256,7 +256,7 @@
  #define NDPI_COMPARE_IPV6_ADDRESS_STRUCTS(x,y)  \
    ((x.u6_addr.u6_addr64[0] < y.u6_addr.u6_addr64[0]) || ((x.u6_addr.u6_addr64[0] == y.u6_addr.u6_addr64[0]) && (x.u6_addr.u6_addr64[1] < y.u6_addr.u6_addr64[1])))
  

@@ -1,31 +1,36 @@
 Description: Honour cppflags too
 Author: Gianfranco Costamagna <locutusofborg@debian.org>
-Index: ndpi/example/Makefile.in
-===================================================================
---- ndpi.orig/example/Makefile.in
-+++ ndpi/example/Makefile.in
-@@ -10,10 +10,10 @@ all: ndpiReader @DPDK_TARGET@
+---
+ example/Makefile.in | 6 +++---
+ src/lib/Makefile.in | 4 ++--
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+--- a/example/Makefile.in
++++ b/example/Makefile.in
+@@ -25,13 +25,13 @@
+ 	ar rsv libndpiReader.a $(COMMON_SOURCES:%.c=%.o)
  
- ndpiReader: $(LIBNDPI)
- ndpiReader: $(OBJS)
--	$(CC) $(CFLAGS) $(OBJS) -o $@ $(LDFLAGS)
-+	$(CC) $(CPPFLAGS) $(CFLAGS) $(OBJS) -o $@ $(LDFLAGS)
+ ndpiReader: libndpiReader.a $(LIBNDPI) ndpiReader.o
+-	$(CC) $(CFLAGS) ndpiReader.o libndpiReader.a -o $@ $(LDFLAGS)
++	$(CC) $(CPPFLAGS) $(CFLAGS) ndpiReader.o libndpiReader.a -o $@ $(LDFLAGS)
+ 
+ ndpiSimpleIntegration: ndpiSimpleIntegration.o
+-	$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS)
++	$(CC) $(CPPFLAGS) $(CFLAGS) $< -o $@ $(LDFLAGS)
  
  %.o: %.c $(HEADERS) Makefile
 -	$(CC) $(CFLAGS) -c $< -o $@
 +	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
  
- install:
+ install: ndpiReader
  	mkdir -p $(DESTDIR)$(PREFIX)/bin/
-Index: ndpi/src/lib/Makefile.in
-===================================================================
---- ndpi.orig/src/lib/Makefile.in
-+++ ndpi/src/lib/Makefile.in
-@@ -46,12 +46,12 @@ $(NDPI_LIB_STATIC): $(OBJECTS)
- 	   $(RANLIB) $@	       
+--- a/src/lib/Makefile.in
++++ b/src/lib/Makefile.in
+@@ -53,12 +53,12 @@
+ 	   $(RANLIB) $@      
  
  $(NDPI_LIB_SHARED): $(OBJECTS)
--	$(CC) -shared -fPIC $(SONAME_FLAG) -o $@ $(OBJECTS)
+-	$(CC) -shared -fPIC $(SONAME_FLAG) -o $@ $(OBJECTS) $(LDFLAGS)
 +	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) -shared -fPIC $(SONAME_FLAG) -o $@ $(OBJECTS)
  	ln -fs $(NDPI_LIB_SHARED) $(NDPI_LIB_SHARED_BASE)
  	ln -fs $(NDPI_LIB_SHARED) $(NDPI_LIB_SHARED_BASE).$(NDPI_VERSION_MAJOR).$(NDPI_VERSION_MINOR)
@@ -35,4 +40,4 @@ Index: ndpi/src/lib/Makefile.in
 +	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
  
  clean:
- 	/bin/rm -f $(NDPI_LIB_STATIC) $(OBJECTS) *.o *.so *.lo $(NDPI_LIB_SHARED)
+ 	/bin/rm -f $(NDPI_LIB_STATIC) $(OBJECTS) *.o *.so *.lo libndpi.so*

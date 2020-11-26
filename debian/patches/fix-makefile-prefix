@@ -1,10 +1,8 @@
 Description: Ensure prefix and libdir point to /usr and not /usr/local
 Author: Bernd Zeimetz <bzed@debian.org>
 
-Index: ndpi/src/lib/Makefile.in
-===================================================================
---- ndpi.orig/src/lib/Makefile.in
-+++ ndpi/src/lib/Makefile.in
+--- a/src/lib/Makefile.in
++++ b/src/lib/Makefile.in
 @@ -11,7 +11,7 @@
  # Installation directories
  #
@@ -13,4 +11,4 @@ Index: ndpi/src/lib/Makefile.in
 +libdir     = ${prefix}/lib/$(DEB_TARGET_MULTIARCH)
  includedir = ${prefix}/include/ndpi
  CC         = @CC@
- CFLAGS     += -fPIC -DPIC -I../include -Ithird_party/include -DNDPI_LIB_COMPILATION -O2 -g -Wall
+ CFLAGS     += -fPIC -DPIC -I../include -Ithird_party/include -DNDPI_LIB_COMPILATION -Wall @CFLAGS@ @CUSTOM_NDPI@
