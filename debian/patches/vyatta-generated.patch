@@ -11,7 +11,7 @@ Subject: Add generated vyatta yang for nDPI
 
 --- /dev/null
 +++ b/yang/vyatta-ndpi-application-names-v1.yang
-@@ -0,0 +1,329 @@
+@@ -0,0 +1,351 @@
 +module vyatta-ndpi-application-names-v1 {
 +	namespace "urn:vyatta.com:mgmt:vyatta-ndpi-application-names:1";
 +	prefix vyatta-ndpi-application-names-v1;
@@ -79,7 +79,9 @@ Subject: Add generated vyatta yang for nDPI
 +		 * It's not important to preserve alphabetical order.
 +		 */
 +		type enumeration {
-+			enum "104";
++			enum "104" {
++				status obsolete;
++			}
 +			enum "afp";
 +			enum "aimini";
 +			enum "ajp";
@@ -94,7 +96,9 @@ Subject: Add generated vyatta yang for nDPI
 +			enum "applestore";
 +			enum "armagetron";
 +			enum "ayiya";
-+			enum "battlefield";
++			enum "battlefield" {
++				status obsolete;
++			}
 +			enum "bgp";
 +			enum "bittorrent";
 +			enum "bjnp";
@@ -120,7 +124,9 @@ Subject: Add generated vyatta yang for nDPI
 +			enum "dnp3";
 +			enum "dns";
 +			enum "dnscrypt";
-+			enum "dnsoverhttps";
++			enum "dnsoverhttps" {
++				status obsolete;
++			}
 +			enum "dofus";
 +			enum "drda";
 +			enum "dropbox";
@@ -180,7 +186,9 @@ Subject: Add generated vyatta yang for nDPI
 +			enum "kontiki";
 +			enum "lastfm";
 +			enum "ldap";
-+			enum "line";
++			enum "line" {
++				status obsolete;
++			}
 +			enum "linkedin";
 +			enum "lisp";
 +			enum "llmnr";
@@ -197,7 +205,9 @@ Subject: Add generated vyatta yang for nDPI
 +			enum "mpeg_ts";
 +			enum "mqtt";
 +			enum "ms_onedrive";
-+			enum "msn";
++			enum "msn" {
++				status obsolete;
++			}
 +			enum "mssql_tds";
 +			enum "mysql";
 +			enum "nestlogsink";
@@ -210,24 +220,34 @@ Subject: Add generated vyatta yang for nDPI
 +			enum "ntop";
 +			enum "ntp";
 +			enum "ocs";
-+			enum "office365";
++			enum "office365" {
++				status obsolete;
++			}
 +			enum "ookla";
 +			enum "opendns";
 +			enum "openft";
 +			enum "openvpn";
 +			enum "oracle";
-+			enum "oscar";
++			enum "oscar" {
++				status obsolete;
++			}
 +			enum "ospf";
-+			enum "pando_media_booster";
++			enum "pando_media_booster" {
++				status obsolete;
++			}
 +			enum "pandora";
 +			enum "pastebin";
-+			enum "pcanywhere";
++			enum "pcanywhere" {
++				status obsolete;
++			}
 +			enum "playstation";
 +			enum "playstore";
 +			enum "pop3";
 +			enum "pops";
 +			enum "postgresql";
-+			enum "pplive";
++			enum "pplive" {
++				status obsolete;
++			}
 +			enum "ppstream";
 +			enum "pptp";
 +			enum "ps_vue";
@@ -287,7 +307,9 @@ Subject: Add generated vyatta yang for nDPI
 +			enum "tor";
 +			enum "truphone";
 +			enum "tuenti";
-+			enum "tvants";
++			enum "tvants" {
++				status obsolete;
++			}
 +			enum "tvuplayer";
 +			enum "twitch";
 +			enum "twitter";
