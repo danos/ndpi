@@ -12,6 +12,7 @@ Build-Depends:
     libwireshark-dev (>= 3.0~),
     pkg-config,
 Standards-Version: 4.5.0
+Rules-Requires-Root: no
 Homepage: http://www.ntop.org/products/ndpi/
 Vcs-Git: https://salsa.debian.org/debian/ndpi.git
 Vcs-Browser: https://salsa.debian.org/debian/ndpi
