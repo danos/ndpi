@@ -31,6 +31,7 @@
 
 #include "uthash.h"
 #include <pcap.h>
+#include "ndpi_includes.h"
 #include "ndpi_classify.h"
 #include "ndpi_typedefs.h"
 
@@ -50,6 +51,7 @@
 #define PREFETCH_OFFSET    3
 
 extern int dpdk_port_init(int port, struct rte_mempool *mbuf_pool);
+extern int dpdk_port_deinit(int port);
 #endif
 
 /* ETTA Spec defiintions for feature readiness */
@@ -127,13 +129,13 @@ struct flow_metrics {
 
 struct ndpi_entropy {
   // Entropy fields
-  struct timeval src2dst_last_pkt_time, dst2src_last_pkt_time, flow_last_pkt_time;
+  pkt_timeval src2dst_last_pkt_time, dst2src_last_pkt_time, flow_last_pkt_time;
   u_int16_t src2dst_pkt_len[MAX_NUM_PKTS];                     /*!< array of packet appdata lengths */
-  struct timeval src2dst_pkt_time[MAX_NUM_PKTS];               /*!< array of arrival times          */
+  pkt_timeval src2dst_pkt_time[MAX_NUM_PKTS];               /*!< array of arrival times          */
   u_int16_t dst2src_pkt_len[MAX_NUM_PKTS];                     /*!< array of packet appdata lengths */
-  struct timeval dst2src_pkt_time[MAX_NUM_PKTS];               /*!< array of arrival times          */
-  struct timeval src2dst_start;                                /*!< first packet arrival time       */
-  struct timeval dst2src_start;                                /*!< first packet arrival time       */
+  pkt_timeval dst2src_pkt_time[MAX_NUM_PKTS];               /*!< array of arrival times          */
+  pkt_timeval src2dst_start;                                /*!< first packet arrival time       */
+  pkt_timeval dst2src_start;                                /*!< first packet arrival time       */
   u_int32_t src2dst_opackets;                                  /*!< non-zero packet counts          */
   u_int32_t dst2src_opackets;                                  /*!< non-zero packet counts          */
   u_int16_t src2dst_pkt_count;                                 /*!< packet counts                   */
@@ -174,7 +176,7 @@ typedef struct ndpi_flow_info {
   u_int32_t fin_count, src2dst_fin_count, dst2src_fin_count;
   u_int32_t rst_count, src2dst_rst_count, dst2src_rst_count;
   u_int32_t c_to_s_init_win, s_to_c_init_win;
-  u_int64_t first_seen, last_seen;
+  u_int64_t first_seen_ms, last_seen_ms;
   u_int64_t src2dst_bytes, dst2src_bytes;
   u_int64_t src2dst_goodput_bytes, dst2src_goodput_bytes;
   u_int32_t src2dst_packets, dst2src_packets;
@@ -193,16 +195,21 @@ typedef struct ndpi_flow_info {
   char host_server_name[240];
   char bittorent_hash[41];
   char dhcp_fingerprint[48];
-
+  ndpi_risk risk;
+  
   struct {
     u_int16_t ssl_version;
     char client_requested_server_name[64], server_info[64],
       client_hassh[33], server_hassh[33], *server_names,
       *tls_alpn, *tls_supported_versions,
-      server_organization[64],
+      *tls_issuerDN, *tls_subjectDN,
       ja3_client[33], ja3_server[33],
       sha1_cert_fingerprint[20];
     u_int8_t sha1_cert_fingerprint_set;
+    struct {
+      u_int16_t cipher_suite;
+      char *esni;
+    } encrypted_sni;    
     time_t notBefore, notAfter;
     u_int16_t server_cipher;
     ndpi_cipher_weakness client_unsafe_cipher, server_unsafe_cipher;
@@ -221,6 +228,13 @@ typedef struct ndpi_flow_info {
 
   struct ndpi_entropy entropy;
   struct ndpi_entropy last_entropy;
+
+  /* Payload lenght bins */
+#ifdef DIRECTION_BINS
+  struct ndpi_bin payload_len_bin_src2dst, payload_len_bin_dst2src;
+#else
+  struct ndpi_bin payload_len_bin;
+#endif
 } ndpi_flow_info_t;
 
 
@@ -295,7 +309,8 @@ void ndpi_free_flow_info_half(struct ndpi_flow_info *flow);
 /* Process a packet and update the workflow  */
 struct ndpi_proto ndpi_workflow_process_packet(struct ndpi_workflow * workflow,
 					       const struct pcap_pkthdr *header,
-					       const u_char *packet);
+					       const u_char *packet,
+                           FILE * csv_fp);
 
 
 /* flow callbacks for complete detected flow
@@ -314,13 +329,23 @@ static inline void ndpi_workflow_set_flow_giveup_callback(struct ndpi_workflow *
 
  /* compare two nodes in workflow */
 int ndpi_workflow_node_cmp(const void *a, const void *b);
-void process_ndpi_collected_info(struct ndpi_workflow * workflow, struct ndpi_flow_info *flow);
+void process_ndpi_collected_info(struct ndpi_workflow * workflow, struct ndpi_flow_info *flow, FILE * csv_fp);
 u_int32_t ethernet_crc32(const void* data, size_t n_bytes);
+void ndpi_flow_info_free_data(struct ndpi_flow_info *flow);
 void ndpi_flow_info_freer(void *node);
-void ndpi_free_flow_data_analysis(struct ndpi_flow_info *flow);
 const char* print_cipher_id(u_int32_t cipher);
 float ndpi_flow_get_byte_count_entropy(const uint32_t byte_count[256], unsigned int num_bytes);
 
 extern int nDPI_LogLevel;
+
+#ifdef NDPI_ENABLE_DEBUG_MESSAGES
+ #define LOG(log_level, args...)	\
+  {					\
+    if(log_level <= nDPI_LogLevel)	\
+      printf(args);			\
+  }
+#else
+ #define LOG(...) {}
+#endif
 
 #endif

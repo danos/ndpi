@@ -1,29 +1,39 @@
 CC=@CC@
 CXX=@CXX@
+BUILD_MINGW=@BUILD_MINGW@
 SRCHOME=../src
-CFLAGS=-g -fPIC -DPIC -I$(SRCHOME)/include @CFLAGS@
+CFLAGS=-g -fPIC -DPIC -I$(SRCHOME)/include @PCAP_INC@ @CFLAGS@
 LIBNDPI=$(SRCHOME)/lib/libndpi.a
-LDFLAGS=$(LIBNDPI) @PCAP_LIB@ @ADDITIONAL_LIBS@ -lpthread -lm @LDFLAGS@
+LDFLAGS=$(LIBNDPI) @PCAP_LIB@ @LIBS@ @ADDITIONAL_LIBS@ -lpthread -lm @LDFLAGS@
 HEADERS=intrusion_detection.h reader_util.h $(SRCHOME)/include/ndpi_api.h \
         $(SRCHOME)/include/ndpi_typedefs.h $(SRCHOME)/include/ndpi_protocol_ids.h
 OBJS=ndpiReader.o reader_util.o intrusion_detection.o
 PREFIX?=@prefix@
 
+ifneq ($(BUILD_MINGW),)
+all:
+	@echo 'Examples disabled due to mingw build.'
+
+else
+
 all: ndpiReader @DPDK_TARGET@
 
-EXECUTABLE_SOURCES := ndpiReader.c
+EXECUTABLE_SOURCES := ndpiReader.c ndpiSimpleIntegration.c
 COMMON_SOURCES := $(filter-out $(EXECUTABLE_SOURCES),$(wildcard *.c ))
 
 libndpiReader.a: $(COMMON_SOURCES:%.c=%.o) $(LIBNDPI)
 	ar rsv libndpiReader.a $(COMMON_SOURCES:%.c=%.o)
 
-ndpiReader: libndpiReader.a $(LIBNDPI) $(EXECUTABLE_SOURCES:%.c=%.o)
-	$(CXX) $(CFLAGS) $(EXECUTABLE_SOURCES:%.c=%.o) libndpiReader.a -o $@ $(LDFLAGS)
+ndpiReader: libndpiReader.a $(LIBNDPI) ndpiReader.o
+	$(CC) $(CFLAGS) ndpiReader.o libndpiReader.a -o $@ $(LDFLAGS)
+
+ndpiSimpleIntegration: ndpiSimpleIntegration.o
+	$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS)
 
 %.o: %.c $(HEADERS) Makefile
 	$(CC) $(CFLAGS) -c $< -o $@
 
-install:
+install: ndpiReader
 	mkdir -p $(DESTDIR)$(PREFIX)/bin/
 	mkdir -p $(DESTDIR)$(PREFIX)/share/ndpi
 	cp ndpiReader $(DESTDIR)$(PREFIX)/bin/
@@ -44,6 +54,12 @@ clean:
 	/bin/rm -f _install _postbuild _postinstall _preinstall
 	/bin/rm -rf build
 
+distdir:
+	cp categories.txt mining_hosts.txt protos.txt README.DPDK '$(distdir)/'
+	find . -maxdepth 1 -type f -name '*.c' -o -name '*.h' -o -name '*.py' | xargs -I'{}' cp '{}' '$(distdir)/{}'
+
 distclean: clean
 	/bin/rm -f Makefile.dpdk
 	/bin/rm -f Makefile
+
+endif
