@@ -7,6 +7,8 @@ ndpi (3.4-1) unstable; urgency=medium
 
   [ Gianfranco Costamagna ]
   * New upstream version 3.4
+  * Team upload (salsa.d.o namespace)
+  * Update copyright years
   * Bump std-version to 4.5.0, and compat level to 13
   * Drop old define-have-json-c.patch: not needed anymore
   * Rebase patches for new release (keeping one little library as static)
