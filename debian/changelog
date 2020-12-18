@@ -11,6 +11,7 @@ ndpi (3.4-1) unstable; urgency=medium
     - CVE-2020-15472 CVE-2020-15473 CVE-2020-15474
     - CVE-2020-15475 CVE-2020-15476
   * Team upload (salsa.d.o namespace)
+  * Add libgcrypt20-dev dependency, used for tests
   * Update copyright years
   * Bump std-version to 4.5.0, and compat level to 13
   * Drop old define-have-json-c.patch: not needed anymore
