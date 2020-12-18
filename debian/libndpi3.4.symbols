@@ -1,4 +1,4 @@
-libndpi.so.3.0 libndpi3.0 #MINVER#
+libndpi.so.3.4 libndpi3.4 #MINVER#
 * Build-Depends-Package: libndpi-dev
  NDPI_BITMASK_COMPARE@Base 2.6
  NDPI_PROTOCOL_IP_clear@Base 2.6
