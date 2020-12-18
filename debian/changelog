@@ -6,7 +6,10 @@ ndpi (3.4-1) unstable; urgency=medium
     Repository-Browse.
 
   [ Gianfranco Costamagna ]
-  * New upstream version 3.4
+  * New upstream version 3.4 (Closes: #972050)
+    - CVE-2020-11939 CVE-2020-11940 CVE-2020-15471
+    - CVE-2020-15472 CVE-2020-15473 CVE-2020-15474
+    - CVE-2020-15475 CVE-2020-15476
   * Team upload (salsa.d.o namespace)
   * Update copyright years
   * Bump std-version to 4.5.0, and compat level to 13
