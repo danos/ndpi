@@ -6,24 +6,12 @@ diff --git a/example/Makefile.in b/example/Makefile.in
 index 737da4f..52ae6b7 100644
 --- a/example/Makefile.in
 +++ b/example/Makefile.in
-@@ -3,7 +3,7 @@ CXX=@CXX@
+@@ -4,7 +4,7 @@ CXX=@CXX@
  SRCHOME=../src
- CFLAGS=-g -fPIC -DPIC -I$(SRCHOME)/include @CFLAGS@
+ CFLAGS=-g -fPIC -DPIC -I$(SRCHOME)/include @PCAP_INC@ @CFLAGS@
  LIBNDPI=$(SRCHOME)/lib/libndpi.a
--LDFLAGS=$(LIBNDPI) @PCAP_LIB@ @ADDITIONAL_LIBS@ -lpthread -lm @LDFLAGS@
+-LDFLAGS=$(LIBNDPI) @PCAP_LIB@ @LIBS@ @ADDITIONAL_LIBS@ -lpthread -lm @LDFLAGS@
 +LDFLAGS=-L../src/lib -lndpi @PCAP_LIB@ @ADDITIONAL_LIBS@ -lpthread -lm @LDFLAGS@
  HEADERS=intrusion_detection.h reader_util.h $(SRCHOME)/include/ndpi_api.h \
          $(SRCHOME)/include/ndpi_typedefs.h $(SRCHOME)/include/ndpi_protocol_ids.h
  OBJS=ndpiReader.o reader_util.o intrusion_detection.o
-@@ -17,8 +17,9 @@ COMMON_SOURCES := $(filter-out $(EXECUTABLE_SOURCES),$(wildcard *.c ))
- libndpiReader.a: $(COMMON_SOURCES:%.c=%.o) $(LIBNDPI)
- 	ar rsv libndpiReader.a $(COMMON_SOURCES:%.c=%.o)
- 
--ndpiReader: libndpiReader.a $(LIBNDPI) $(EXECUTABLE_SOURCES:%.c=%.o)
--	$(CXX) $(CFLAGS) $(EXECUTABLE_SOURCES:%.c=%.o) libndpiReader.a -o $@ $(LDFLAGS)
-+ndpiReader: libndpiReader.a $(LIBNDPI)
-+ndpiReader: $(EXECUTABLE_SOURCES:%.c=%.o)
-+	$(CC) $(CFLAGS) $(EXECUTABLE_SOURCES:%.c=%.o) libndpiReader.a -o $@ $(LDFLAGS)
- 
- %.o: %.c $(HEADERS) Makefile
- 	$(CC) $(CFLAGS) -c $< -o $@
