@@ -2,7 +2,7 @@
  * tftp.c
  *
  * Copyright (C) 2009-2011 by ipoque GmbH
- * Copyright (C) 2011-19 - ntop.org
+ * Copyright (C) 2011-20 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -41,26 +41,31 @@ void ndpi_search_tftp(struct ndpi_detection_module_struct
 
   NDPI_LOG_DBG(ndpi_struct, "search TFTP\n");
 
-  if (packet->payload_packet_len > 3 && flow->l4.udp.tftp_stage == 0
-      && ntohl(get_u_int32_t(packet->payload, 0)) == 0x00030001) {
+  if ((packet->payload_packet_len > 3)
+      && (flow->l4.udp.tftp_stage == 0)
+      && (ntohl(get_u_int32_t(packet->payload, 0)) == 0x00030001)) {
     NDPI_LOG_DBG2(ndpi_struct, "maybe tftp. need next packet\n");
     flow->l4.udp.tftp_stage = 1;
     return;
   }
-  if (packet->payload_packet_len > 3 && (flow->l4.udp.tftp_stage == 1)
-      && ntohl(get_u_int32_t(packet->payload, 0)) == 0x00040001) {
 
-    NDPI_LOG_INFO(ndpi_struct, "found tftp\n");
-    ndpi_int_tftp_add_connection(ndpi_struct, flow);
-    return;
-  }
-  if (packet->payload_packet_len > 1
-      && ((packet->payload[0] == 0 && packet->payload[packet->payload_packet_len - 1] == 0)
-	  || (packet->payload_packet_len == 4 && ntohl(get_u_int32_t(packet->payload, 0)) == 0x00040000))) {
-    NDPI_LOG_DBG2(ndpi_struct, "skip initial packet\n");
-    return;
-  }
+  if(flow->l4.udp.tftp_stage == 1) {
+    if (packet->payload_packet_len > 3 && (flow->l4.udp.tftp_stage == 1)
+	&& ntohl(get_u_int32_t(packet->payload, 0)) == 0x00040001) {
 
+      NDPI_LOG_INFO(ndpi_struct, "found tftp\n");
+      ndpi_int_tftp_add_connection(ndpi_struct, flow);
+      return;
+    }
+
+    if (packet->payload_packet_len > 1
+	&& ((packet->payload[0] == 0 && packet->payload[packet->payload_packet_len - 1] == 0)
+	    || (packet->payload_packet_len == 4 && ntohl(get_u_int32_t(packet->payload, 0)) == 0x00040000))) {
+      NDPI_LOG_DBG2(ndpi_struct, "skip initial packet\n");
+      return;
+    }
+  }
+  
   NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
 }
 

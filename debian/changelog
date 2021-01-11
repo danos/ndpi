@@ -1,3 +1,27 @@
+ndpi (3.4-1) unstable; urgency=medium
+
+  [ Debian Janitor ]
+  * debian/copyright: use spaces rather than tabs to start continuation lines.
+  * Set upstream metadata fields: Bug-Database, Bug-Submit, Repository,
+    Repository-Browse.
+
+  [ Gianfranco Costamagna ]
+  * New upstream version 3.4 (Closes: #972050)
+    - CVE-2020-11939 CVE-2020-11940 CVE-2020-15471
+    - CVE-2020-15472 CVE-2020-15473 CVE-2020-15474
+    - CVE-2020-15475 CVE-2020-15476
+  * Team upload (salsa.d.o namespace)
+  * Add R^3: no
+  * Add libgcrypt20-dev dependency, used for tests
+  * Update copyright years
+  * Bump std-version to 4.5.0, and compat level to 13
+  * Drop old define-have-json-c.patch: not needed anymore
+  * Rebase patches for new release (keeping one little library as static)
+  * Drop dh_auto_install override: txt files are now correctly
+    installed upstream
+
+ -- Gianfranco Costamagna <locutusofborg@debian.org>  Fri, 18 Dec 2020 10:50:44 +0100
+
 ndpi (3.0-2) unstable; urgency=medium
 
   * Remove libndpi-wireshark package

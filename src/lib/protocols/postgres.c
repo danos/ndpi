@@ -2,7 +2,7 @@
  * postgres.c
  *
  * Copyright (C) 2009-2011 by ipoque GmbH
- * Copyright (C) 2011-19 - ntop.org
+ * Copyright (C) 2011-20 - ntop.org
  *
  * This file is part of nDPI, an open source deep packet inspection
  * library based on the OpenDPI and PACE technology by ipoque GmbH
@@ -97,7 +97,7 @@ void ndpi_search_postgres_tcp(struct ndpi_detection_module_struct
 				return;
 			}
 			size = (u_int16_t)ntohl(get_u_int32_t(packet->payload, 1)) + 1;
-			if (packet->payload[size - 1] == 'S') {
+			if (size > 0 && size - 1 < packet->payload_packet_len && packet->payload[size - 1] == 'S') {
 				if ((size + get_u_int32_t(packet->payload, (size + 1))) == packet->payload_packet_len) {
 					NDPI_LOG_INFO(ndpi_struct, "found postgres asymmetrically\n");
 					ndpi_int_postgres_add_connection(ndpi_struct, flow);
@@ -105,7 +105,7 @@ void ndpi_search_postgres_tcp(struct ndpi_detection_module_struct
 				}
 			}
 			size += get_u_int32_t(packet->payload, (size + 1)) + 1;
-			if (packet->payload[size - 1] == 'S') {
+			if (size > 0 && size - 1 < packet->payload_packet_len && packet->payload[size - 1] == 'S') {
 				NDPI_LOG_INFO(ndpi_struct, "found postgres asymmetrically\n");
 				ndpi_int_postgres_add_connection(ndpi_struct, flow);
 				return;

@@ -1,7 +1,7 @@
 /*
  * hangout.c
  *
- * Copyright (C) 2012-19 - ntop.org
+ * Copyright (C) 2012-20 - ntop.org
  *
  * This module is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published by
@@ -108,6 +108,8 @@ void ndpi_search_hangout(struct ndpi_detection_module_struct *ndpi_struct,
 #endif
 
 	ndpi_lru_add_to_cache(ndpi_struct->stun_cache, key, NDPI_PROTOCOL_HANGOUT_DUO);
+	if(ndpi_struct->ndpi_notify_lru_add_handler_ptr)
+	  ndpi_struct->ndpi_notify_lru_add_handler_ptr(ndpi_hangout_cache, key, NDPI_PROTOCOL_HANGOUT_DUO); 
       }
       
       ndpi_set_detected_protocol(ndpi_struct, flow, NDPI_PROTOCOL_HANGOUT_DUO,

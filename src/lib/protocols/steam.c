@@ -1,7 +1,7 @@
 /*
  * steam.c
  *
- * Copyright (C) 2011-19 - ntop.org
+ * Copyright (C) 2011-20 - ntop.org
  * Copyright (C) 2014 Tomasz Bujlow <tomasz@skatnet.dk>
  * 
  * The signature is mostly based on the Libprotoident library
@@ -266,7 +266,6 @@ void ndpi_search_steam(struct ndpi_detection_module_struct *ndpi_struct, struct 
       NDPI_EXCLUDE_PROTO(ndpi_struct, flow);
       return;
     }
-
 
     /* skip marked or retransmitted packets */
     if(packet->tcp_retransmission != 0) {

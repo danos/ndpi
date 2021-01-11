@@ -13,4 +13,4 @@ Index: ndpi/src/lib/Makefile.in
 +libdir     = ${prefix}/lib/$(DEB_TARGET_MULTIARCH)
  includedir = ${prefix}/include/ndpi
  CC         = @CC@
- CFLAGS     += -fPIC -DPIC -I../include -Ithird_party/include -DNDPI_LIB_COMPILATION -O2 -g -Wall
+ CFLAGS     += -fPIC -DPIC -I../include -Ithird_party/include -DNDPI_LIB_COMPILATION -Wall @CFLAGS@ @CUSTOM_NDPI@
