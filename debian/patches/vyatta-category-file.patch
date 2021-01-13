@@ -1,10 +1,10 @@
 ---
- src/lib/ndpi_main.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ src/lib/ndpi_main.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
 --- a/src/lib/ndpi_main.c
 +++ b/src/lib/ndpi_main.c
-@@ -2734,9 +2734,12 @@ int ndpi_load_categories_file(struct ndp
+@@ -2715,9 +2715,13 @@
  
      if(name) {
        category = strtok_r(NULL, "\t", &saveptr);
@@ -12,10 +12,11 @@
 +      if (category_val == 0)
 +        category_val = ndpi_get_category_id(ndpi_str, category);
  
--      if(category)
--        ndpi_load_category(ndpi_str, name, (ndpi_protocol_category_t) atoi(category));
-+      if(category_val > 0)
-+        ndpi_load_category(ndpi_str, name, category_val);
-     }
-   }
+-      if(category) {
+-	int rc = ndpi_load_category(ndpi_str, name, (ndpi_protocol_category_t) atoi(category));
++
++      if(category_val > 0) {
++       int rc = ndpi_load_category(ndpi_str, name, category_val);
  
+ 	if(rc >= 0)
+ 	  num++;
