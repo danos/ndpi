@@ -26,6 +26,11 @@ ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
 	rm -f tests/pcap/skype.pcap
 	rm -f tests/pcap/skype_no_unknown.pcap
 	rm -f tests/pcap/1kxun.pcap
+	# disable tests which are broken in 3.4
+	# see https://github.com/ntop/nDPI/issues/1119
+	rm -r tests/pcap/exe_download.pcap
+	rm -r tests/pcap/ftp_failed.pcap
+	rm -r tests/pcap/fuzz-2006-06-26-2594.pcap
 	cd tests && LD_LIBRARY_PATH=$(CURDIR)/src/lib ./do.sh
 endif
 
