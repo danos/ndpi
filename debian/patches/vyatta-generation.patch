@@ -44,7 +44,7 @@ Subject: Add vyatta nDPI generation scripts
 +CC=@CC@
 +CFLAGS=-g -I../src/include @CFLAGS@
 +LIBNDPI=../src/lib/libndpi.a
-+LDFLAGS=$(LIBNDPI) @PCAP_LIB@ -lpthread -lm @LDFLAGS@
++LDFLAGS=$(LIBNDPI) @PCAP_LIB@ -lpthread -lm @LDFLAGS@ @ADDITIONAL_LIBS@
 +
 +all: applications_list ndpi_show_name
 +
