@@ -1,3 +1,17 @@
+ndpi (3.4-1vyatta1) unstable; urgency=medium
+
+  [ Paul Aitken ]
+  * 3.0-2
+  * Update vyatta patches for 3.4
+  * Revert "Bump std-version to 4.5.0, and compat level to 13"
+  * add libgcrypt support in vyatta-generation
+  * disable some failing tests
+
+  [ Nick Brown ]
+  * add missing dependency
+
+ -- Nicholas Brown <nick.brown@att.com>  Mon, 18 Jan 2021 10:33:27 +0000
+
 ndpi (3.4-1) unstable; urgency=medium
 
   [ Debian Janitor ]
