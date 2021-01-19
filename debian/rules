@@ -14,7 +14,7 @@ export WIRESHARK_PLUGINDIR
 
 override_dh_auto_configure:
 	./autogen.sh
-	dh_auto_configure -- --prefix=/usr
+	dh_auto_configure -- --prefix=/usr --disable-gcrypt
 
 override_dh_auto_test:
 ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
@@ -31,6 +31,21 @@ ifeq (,$(filter nocheck,$(DEB_BUILD_OPTIONS)))
 	rm -r tests/pcap/exe_download.pcap
 	rm -r tests/pcap/ftp_failed.pcap
 	rm -r tests/pcap/fuzz-2006-06-26-2594.pcap
+	# disable tests which require libgcrypt
+	# see https://github.com/ntop/nDPI/issues/1117
+	rm -r tests/pcap/gquic.pcap
+	rm -r tests/pcap/quic-23.pcap
+	rm -r tests/pcap/quic-24.pcap
+	rm -r tests/pcap/quic-27.pcap
+	rm -r tests/pcap/quic-28.pcap
+	rm -r tests/pcap/quic-29.pcap
+	rm -r tests/pcap/quic-mvfst-22.pcap
+	rm -r tests/pcap/quic-mvfst-27.pcap
+	rm -r tests/pcap/quic-mvfst-exp.pcap
+	rm -r tests/pcap/quic_q50.pcap
+	rm -r tests/pcap/quic_t50.pcap
+	rm -r tests/pcap/quic_t51.pcap
+	#
 	cd tests && LD_LIBRARY_PATH=$(CURDIR)/src/lib ./do.sh
 endif
 

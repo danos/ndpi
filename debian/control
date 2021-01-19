@@ -6,7 +6,6 @@ Build-Depends:
     debhelper-compat (= 12),
     dh-exec (>=0.3),
     dpkg-dev (>= 1.16.1.1),
-    libgcrypt20-dev,
     libjson-c-dev,
     libpcap-dev,
     pkg-config,
@@ -18,8 +17,7 @@ Vcs-Browser: https://salsa.debian.org/debian/ndpi
 Package: libndpi-dev
 Section: libdevel
 Architecture: any
-Depends: libndpi3.4 (= ${binary:Version}), ${misc:Depends},
-    libgcrypt20-dev
+Depends: libndpi3.4 (= ${binary:Version}), ${misc:Depends}
 Description: extensible deep packet inspection library - development files
  nDPI is a ntop-maintained superset of the popular OpenDPI library. Released
  under the LGPL license, its goal is to extend the original library by adding
